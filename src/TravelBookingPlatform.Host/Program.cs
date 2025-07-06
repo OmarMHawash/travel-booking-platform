@@ -12,11 +12,12 @@ try
 
     WebApplication app = builder.Build();
     app.ConfigurePipeline();
-    
+
     // Uncomment the line below if you want to apply migrations on startup (e.g., for dev/testing)
     if (app.Environment.IsDevelopment())
     {
         await app.ApplyMigrations();
+        await app.SeedDatabase();
     }
 
     Log.Information("Starting web host");

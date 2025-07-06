@@ -8,6 +8,9 @@ public class City : AggregateRoot
     public string Country { get; private set; }
     public string PostCode { get; private set; }
 
+    // Navigation properties
+    public ICollection<Hotel> Hotels { get; private set; } = new List<Hotel>();
+
     // For EF Core
     private City() { }
 

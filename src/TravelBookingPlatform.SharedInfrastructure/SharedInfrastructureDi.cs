@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TravelBookingPlatform.SharedInfrastructure.Persistence;
 using TravelBookingPlatform.Core.Domain.Repositories;
 using TravelBookingPlatform.SharedInfrastructure.Middleware;
+using TravelBookingPlatform.SharedInfrastructure.Seeding;
 using System.Reflection;
 using TravelBookingPlatform.Core.Domain;
 
@@ -34,6 +35,9 @@ public static class SharedInfrastructureDi
         // Register Unit of Work and base repository
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+
+        // Register Database Seeder
+        services.AddScoped<DatabaseSeeder>();
 
         // Add MediatR pipeline behaviors (e.g., for validation)
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

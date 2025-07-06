@@ -16,6 +16,7 @@ using TravelBookingPlatform.Modules.Identity.Infrastructure;
 using TravelBookingPlatform.SharedInfrastructure;
 using TravelBookingPlatform.SharedInfrastructure.Logging;
 using TravelBookingPlatform.SharedInfrastructure.Persistence;
+using TravelBookingPlatform.SharedInfrastructure.Seeding;
 
 namespace TravelBookingPlatform.Host.Configuration;
 
@@ -267,6 +268,25 @@ public static class StartupExtensions
         catch (Exception ex)
         {
             Log.Error(ex, "An error occurred while applying database migrations.");
+        }
+    }
+
+    /// <summary>
+    /// Seeds the database with sample data.
+    /// </summary>
+    /// <param name="app">The WebApplication instance.</param>
+    public static async Task SeedDatabase(this WebApplication app)
+    {
+        using IServiceScope scope = app.Services.CreateScope();
+        IServiceProvider services = scope.ServiceProvider;
+        try
+        {
+            DatabaseSeeder seeder = services.GetRequiredService<DatabaseSeeder>();
+            await seeder.SeedAsync();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while seeding the database.");
         }
     }
 }

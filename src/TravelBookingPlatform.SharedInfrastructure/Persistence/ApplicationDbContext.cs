@@ -23,6 +23,10 @@ public class ApplicationDbContext : DbContext
 
     // Hotels module entities
     public DbSet<City> Cities { get; set; } = null!;
+    public DbSet<Hotel> Hotels { get; set; } = null!;
+    public DbSet<Room> Rooms { get; set; } = null!;
+    public DbSet<RoomType> RoomTypes { get; set; } = null!;
+    public DbSet<Booking> Bookings { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

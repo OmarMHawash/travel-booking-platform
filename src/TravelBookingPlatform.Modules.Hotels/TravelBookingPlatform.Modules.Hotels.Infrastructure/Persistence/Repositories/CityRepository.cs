@@ -39,4 +39,34 @@ public class CityRepository : BaseRepository<City>, ICityRepository
 
         return await query.AnyAsync(c => c.PostCode == postCode);
     }
+
+    public async Task<IReadOnlyList<City>> GetCitySuggestionsAsync(string searchText, int maxResults = 10)
+    {
+        var searchTerm = searchText.ToLower();
+        return await _dbSet
+            .Where(c => c.Name.ToLower().Contains(searchTerm) || c.Country.ToLower().Contains(searchTerm))
+            .OrderBy(c => c.Name)
+            .Take(maxResults)
+            .ToListAsync();
+    }
+
+    public async Task<IReadOnlyList<City>> GetPopularDestinationsAsync(int count = 5)
+    {
+        // For now, return cities with the most hotels. In a real implementation,
+        // this could be based on booking frequency, user searches, etc.
+        return await _dbSet
+            .Include(c => c.Hotels)
+            .OrderByDescending(c => c.Hotels.Count)
+            .Take(count)
+            .ToListAsync();
+    }
+
+    public async Task<IReadOnlyList<City>> SearchCitiesAsync(string searchText)
+    {
+        var searchTerm = searchText.ToLower();
+        return await _dbSet
+            .Where(c => c.Name.ToLower().Contains(searchTerm) || c.Country.ToLower().Contains(searchTerm))
+            .OrderBy(c => c.Name)
+            .ToListAsync();
+    }
 }
