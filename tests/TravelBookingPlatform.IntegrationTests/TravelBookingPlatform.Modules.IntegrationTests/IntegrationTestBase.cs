@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,30 +25,25 @@ public class IntegrationTestBase : IClassFixture<IntegrationTestWebApplicationFa
 
 public class IntegrationTestWebApplicationFactory : WebApplicationFactory<Program>
 {
+    public bool UseTestAuthentication { get; set; } = true; // Default to test authentication
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.ConfigureAppConfiguration((context, config) =>
+        {
+            // Add test-specific configuration  
+            config.AddJsonFile("appsettings.Testing.json", optional: true);
+        });
+
         builder.ConfigureServices(services =>
         {
-            // Remove the existing authentication and authorization services
-            var authenticationDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IAuthenticationService));
-            if (authenticationDescriptor != null)
-                services.Remove(authenticationDescriptor);
-
-            var authorizationDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IAuthorizationService));
-            if (authorizationDescriptor != null)
-                services.Remove(authorizationDescriptor);
-
-            // Add test authentication that always succeeds
-            services.AddAuthentication("Test")
-                .AddScheme<TestAuthenticationSchemeOptions, TestAuthenticationHandler>("Test", options => { });
-
-            services.AddAuthorization(options =>
+            if (UseTestAuthentication)
             {
-                options.DefaultPolicy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .AddAuthenticationSchemes("Test")
-                    .Build();
-            });
+                // Add test authentication for non-Identity tests
+                services.AddAuthentication("Test")
+                    .AddScheme<TestAuthenticationSchemeOptions, TestAuthenticationHandler>("Test", options => { });
+                services.AddAuthorization();
+            }
         });
 
         builder.UseEnvironment("Testing");

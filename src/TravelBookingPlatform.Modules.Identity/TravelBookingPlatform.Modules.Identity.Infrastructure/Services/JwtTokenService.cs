@@ -23,7 +23,7 @@ public class JwtTokenService : ITokenService
         _secretKey = _configuration["JwtSettings:SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey is not configured");
         _issuer = _configuration["JwtSettings:Issuer"] ?? throw new InvalidOperationException("JWT Issuer is not configured");
         _audience = _configuration["JwtSettings:Audience"] ?? throw new InvalidOperationException("JWT Audience is not configured");
-        _expirationMinutes = int.Parse(_configuration["JwtSettings:ExpirationMinutes"] ?? "60");
+        _expirationMinutes = int.Parse(_configuration["JwtSettings:ExpirationMinutes"] ?? _configuration["JwtSettings:ExpirationInMinutes"] ?? "60");
     }
 
     public TokenDto GenerateToken(User user)
