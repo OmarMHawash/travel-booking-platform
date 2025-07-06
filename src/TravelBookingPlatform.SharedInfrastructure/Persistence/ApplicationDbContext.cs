@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using TravelBookingPlatform.Modules.Identity.Domain.Entities;
+using TravelBookingPlatform.Modules.Hotels.Domain.Entities;
 
 namespace TravelBookingPlatform.SharedInfrastructure.Persistence;
 
@@ -19,6 +20,9 @@ public class ApplicationDbContext : DbContext
 
     // Identity module entities
     public DbSet<User> Users { get; set; } = null!;
+
+    // Hotels module entities
+    public DbSet<City> Cities { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -6,7 +6,7 @@ using TravelBookingPlatform.Modules.Identity.Infrastructure.Services;
 
 namespace TravelBookingPlatform.Modules.Identity.Infrastructure;
 
-public static class DependencyInjection
+public static class IdentityInfrastructureDI
 {
     public static IServiceCollection AddIdentityInfrastructure(this IServiceCollection services)
     {

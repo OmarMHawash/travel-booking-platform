@@ -24,7 +24,7 @@ public class CityConfiguration : IEntityTypeConfiguration<City>
             .IsRequired()
             .HasMaxLength(20);
 
-        // Add unique constraints
+        // unique constraints
         builder.HasIndex(c => c.Name)
             .IsUnique()
             .HasDatabaseName("IX_City_Name_Unique");

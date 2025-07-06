@@ -34,7 +34,6 @@ public class CitiesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreateCity(CreateCityCommand command)
     {
-        // MediatR will automatically find the CreateCityCommandHandler and apply FluentValidation (if configured globally)
         CityDto cityDto = await _mediator.Send(command);
         return CreatedAtAction(nameof(GetCities), new { id = cityDto.Id }, cityDto);
     }
@@ -53,5 +52,4 @@ public class CitiesController : ControllerBase
         return Ok(cities);
     }
 
-    // Other CRUD operations (GetById, Update, Delete) would follow a similar pattern
 }

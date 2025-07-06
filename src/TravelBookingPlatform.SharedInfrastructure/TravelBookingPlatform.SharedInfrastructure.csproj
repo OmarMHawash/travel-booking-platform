@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TravelBookingPlatform.Core\TravelBookingPlatform.Core.Domain\TravelBookingPlatform.Core.Domain.csproj" />
+    <ProjectReference Include="..\TravelBookingPlatform.Modules.Hotels\TravelBookingPlatform.Modules.Hotels.Domain\TravelBookingPlatform.Modules.Hotels.Domain.csproj" />
     <ProjectReference Include="..\TravelBookingPlatform.Modules.Identity\TravelBookingPlatform.Modules.Identity.Domain\TravelBookingPlatform.Modules.Identity.Domain.csproj" />
   </ItemGroup>
 

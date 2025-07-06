@@ -24,7 +24,6 @@ public class City : AggregateRoot
         Country = country;
         PostCode = postCode;
     }
-    
 
     public void Update(string name, string country, string postCode)
     {

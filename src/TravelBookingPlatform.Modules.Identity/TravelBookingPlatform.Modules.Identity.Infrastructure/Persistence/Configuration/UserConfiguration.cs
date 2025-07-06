@@ -21,15 +21,15 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsUnique();
 
         builder.OwnsOne(u => u.Email, email =>
-{
-    email.Property(e => e.Value)
-        .IsRequired()
-        .HasMaxLength(100)
-        .HasColumnName("EmailAddress");
+        {
+            email.Property(e => e.Value)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasColumnName("EmailAddress");
 
-    email.HasIndex(e => e.Value)
-        .IsUnique();
-});
+            email.HasIndex(e => e.Value)
+                .IsUnique();
+        });
 
         builder.Property(u => u.PasswordHash)
             .IsRequired()
