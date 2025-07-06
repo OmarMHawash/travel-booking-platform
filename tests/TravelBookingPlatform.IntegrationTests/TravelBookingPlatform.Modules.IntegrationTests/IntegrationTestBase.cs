@@ -15,14 +15,14 @@ public class IntegrationTestBase : IClassFixture<IntegrationTestWebApplicationFa
     protected readonly IntegrationTestWebApplicationFactory Factory;
     protected readonly HttpClient Client;
 
-    protected IntegrationTestBase(IntegrationTestWebApplicationFactory factory)
+    public IntegrationTestBase(IntegrationTestWebApplicationFactory factory)
     {
         Factory = factory;
         Client = factory.CreateClient();
     }
 }
 
-public abstract class IntegrationTestWebApplicationFactory : WebApplicationFactory<Program>
+public class IntegrationTestWebApplicationFactory : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
