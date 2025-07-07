@@ -27,6 +27,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Room> Rooms { get; set; } = null!;
     public DbSet<RoomType> RoomTypes { get; set; } = null!;
     public DbSet<Booking> Bookings { get; set; } = null!;
+    public DbSet<Deal> Deals { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

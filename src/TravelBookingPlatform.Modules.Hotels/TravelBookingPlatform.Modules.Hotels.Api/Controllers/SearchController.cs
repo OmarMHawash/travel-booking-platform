@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using TravelBookingPlatform.Modules.Hotels.Application.DTOs;
@@ -13,11 +15,13 @@ public class SearchController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly ILogger<SearchController> _logger;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public SearchController(IMediator mediator, ILogger<SearchController> logger)
+    public SearchController(IMediator mediator, ILogger<SearchController> logger, IServiceScopeFactory serviceScopeFactory)
     {
         _mediator = mediator;
         _logger = logger;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     /// <summary>
@@ -137,33 +141,6 @@ public class SearchController : ControllerBase
         [FromQuery] string q,
         [FromQuery] int limit = 10)
     {
-        if (string.IsNullOrWhiteSpace(q))
-        {
-            return BadRequest(new
-            {
-                Error = "SearchTextRequired",
-                Message = "Search text is required and cannot be empty."
-            });
-        }
-
-        if (q.Length < 2)
-        {
-            return BadRequest(new
-            {
-                Error = "SearchTextTooShort",
-                Message = "Search text must be at least 2 characters long."
-            });
-        }
-
-        if (limit < 1 || limit > 50)
-        {
-            return BadRequest(new
-            {
-                Error = "InvalidLimit",
-                Message = "Limit must be between 1 and 50."
-            });
-        }
-
         var query = new GetSearchSuggestionsQuery(q, limit);
         var suggestions = await _mediator.Send(query);
 
@@ -190,33 +167,6 @@ public class SearchController : ControllerBase
         [FromQuery] string q,
         [FromQuery] int limit = 10)
     {
-        if (string.IsNullOrWhiteSpace(q))
-        {
-            return BadRequest(new
-            {
-                Error = "SearchTextRequired",
-                Message = "Search text is required and cannot be empty."
-            });
-        }
-
-        if (q.Length < 2)
-        {
-            return BadRequest(new
-            {
-                Error = "SearchTextTooShort",
-                Message = "Search text must be at least 2 characters long."
-            });
-        }
-
-        if (limit < 1 || limit > 50)
-        {
-            return BadRequest(new
-            {
-                Error = "InvalidLimit",
-                Message = "Limit must be between 1 and 50."
-            });
-        }
-
         var query = new GetSearchSuggestionsQuery(q, limit);
         var suggestions = await _mediator.Send(query);
 
@@ -228,6 +178,40 @@ public class SearchController : ControllerBase
             Suggestions = citySuggestions,
             Query = q,
             Count = citySuggestions.Count
+        });
+    }
+
+    /// <summary>
+    /// Get home page data including featured deals and popular destinations
+    /// </summary>
+    /// <returns>Combined home page data</returns>
+    [HttpGet("home-page")]
+    [ResponseCache(Duration = 600)] // Cache for 10 minutes
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetHomePageData()
+    {
+        // Use separate scopes to avoid DbContext concurrency issues
+        var featuredDealsTask = Task.Run(async () =>
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+            return await mediator.Send(new GetFeaturedDealsQuery(6));
+        });
+
+        var popularDestinationsTask = Task.Run(async () =>
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+            return await mediator.Send(new GetPopularDestinationsQuery(5));
+        });
+
+        await Task.WhenAll(featuredDealsTask, popularDestinationsTask);
+
+        return Ok(new
+        {
+            FeaturedDeals = await featuredDealsTask,
+            PopularDestinations = await popularDestinationsTask,
+            LastUpdated = DateTime.UtcNow
         });
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using TravelBookingPlatform.Core.Domain.Exceptions;
 using TravelBookingPlatform.Modules.Identity.Application.Commands;
 using TravelBookingPlatform.Modules.Identity.Application.DTOs;
 using TravelBookingPlatform.Modules.Identity.Application.Queries;
@@ -29,19 +30,19 @@ public class UserController : ControllerBase
     /// <returns>The current user's details.</returns>
     [HttpGet("profile")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetProfile()
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var userGuid))
         {
-            return BadRequest(new { message = "Invalid user ID" });
+            throw new BusinessValidationException("Invalid user ID", "UserId");
         }
 
         var user = await _mediator.Send(new GetUserByIdQuery { UserId = userGuid });
         if (user == null)
         {
-            return NotFound(new { message = "User not found" });
+            throw new BusinessValidationException("User not found", "UserId");
         }
 
         return Ok(user);
@@ -55,13 +56,24 @@ public class UserController : ControllerBase
     [HttpGet("{id}")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetUser(Guid id)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetUser(string id)
     {
-        var user = await _mediator.Send(new GetUserByIdQuery { UserId = id });
+        // Override automatic model state validation to use our custom format
+        if (!ModelState.IsValid)
+        {
+            throw new BusinessValidationException("Invalid user ID format", "Id");
+        }
+
+        if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out var userGuid))
+        {
+            throw new BusinessValidationException("Invalid user ID format", "Id");
+        }
+
+        var user = await _mediator.Send(new GetUserByIdQuery { UserId = userGuid });
         if (user == null)
         {
-            return NotFound(new { message = "User not found" });
+            throw new BusinessValidationException("User not found", "Id");
         }
 
         return Ok(user);
@@ -70,27 +82,20 @@ public class UserController : ControllerBase
     /// <summary>
     /// Changes the current user's password.
     /// </summary>
-    /// <param name="dto">Password change details.</param>
-    /// <returns>Success status.</returns>
+    /// <param name="command">Password change details.</param>
+    /// <returns>Success response.</returns>
     [HttpPost("change-password")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
+    public async Task<IActionResult> ChangePassword(ChangePasswordCommand command)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var userGuid))
         {
-            return BadRequest(new { message = "Invalid user ID" });
+            throw new BusinessValidationException("Invalid user ID", "UserId");
         }
 
-        var command = new ChangePasswordCommand
-        {
-            UserId = userGuid,
-            CurrentPassword = dto.CurrentPassword,
-            NewPassword = dto.NewPassword
-        };
-
+        command.UserId = userGuid;
         await _mediator.Send(command);
         return Ok(new { message = "Password changed successfully" });
     }

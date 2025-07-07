@@ -29,12 +29,22 @@ public class CitiesIntegrationTests : IntegrationTestBase
     public async Task CreateCity_ShouldReturnCreatedStatusCode_WhenValidCityProvided()
     {
         // Arrange
-        var uniqueId = Guid.NewGuid().ToString("N")[..8]; // Use first 8 chars of GUID for uniqueness
-        var createCityDto = _fixture.Build<CreateCityDto>()
-            .With(x => x.Name, $"Test City {uniqueId}")
-            .With(x => x.Country, $"Test Country {uniqueId}")
-            .With(x => x.PostCode, $"{uniqueId}")
-            .Create();
+        var uniqueId = Guid.NewGuid().ToString("N")[..8]; // Get 8 character hex string
+        var cityNames = new[] { "Springfield", "Madison", "Franklin", "Georgetown", "Kingston", "Bristol", "Clinton", "Fairview" };
+        var countries = new[] { "United States", "Canada", "United Kingdom", "Australia", "New Zealand", "Ireland" };
+        var suffixes = new[] { "North", "South", "East", "West", "Central", "Upper", "Lower", "New" };
+
+        var random = new Random();
+
+        // Create unique postcode using only digits
+        var uniquePostCode = $"{random.Next(10000, 99999)}"; // 5 digit postcode
+
+        var createCityDto = new CreateCityDto
+        {
+            Name = $"{suffixes[random.Next(suffixes.Length)]} {cityNames[random.Next(cityNames.Length)]}", // Only letters and spaces
+            Country = countries[random.Next(countries.Length)],
+            PostCode = uniquePostCode
+        };
 
         // Act
         var response = await Client.PostAsJsonAsync("/api/v1/cities", createCityDto);
@@ -52,13 +62,13 @@ public class CitiesIntegrationTests : IntegrationTestBase
     [Fact]
     public async Task CreateCity_ShouldReturnBadRequest_WhenInvalidDataProvided()
     {
-        // Arrange
-        var uniqueId = Guid.NewGuid().ToString("N")[..8];
-        var invalidCreateCityDto = _fixture.Build<CreateCityDto>()
-            .With(x => x.Name, "") // Invalid empty name
-            .With(x => x.Country, $"Test Country {uniqueId}")
-            .With(x => x.PostCode, $"{uniqueId}")
-            .Create();
+        // Arrange - Test various invalid scenarios that should fail with new validation
+        var invalidCreateCityDto = new CreateCityDto
+        {
+            Name = "1", // Too short and contains numbers
+            Country = "USA123", // Contains numbers
+            PostCode = "AB" // Too short and invalid format
+        };
 
         // Act
         var response = await Client.PostAsJsonAsync("/api/v1/cities", invalidCreateCityDto);

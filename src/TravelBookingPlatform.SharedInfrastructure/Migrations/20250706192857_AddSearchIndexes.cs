@@ -11,28 +11,18 @@ namespace OmarHawash.TravelBookingPlatform.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             // Add indexes for better search performance
+            // Note: IX_Hotel_Rating already exists from AddHotelBookingEntities migration
+            // Only add new indexes that don't already exist
             migrationBuilder.CreateIndex(
-                name: "IX_Hotels_Name",
-                table: "Hotels",
-                column: "Name");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Cities_Name_Country",
-                table: "Cities",
+                name: "IX_City_Name_Country",
+                table: "City",
                 columns: new[] { "Name", "Country" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Hotels_Rating",
-                table: "Hotels",
-                column: "Rating");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(name: "IX_Hotels_Name", table: "Hotels");
-            migrationBuilder.DropIndex(name: "IX_Cities_Name_Country", table: "Cities");
-            migrationBuilder.DropIndex(name: "IX_Hotels_Rating", table: "Hotels");
+            migrationBuilder.DropIndex(name: "IX_City_Name_Country", table: "City");
         }
     }
 }

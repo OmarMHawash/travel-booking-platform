@@ -4,6 +4,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using TravelBookingPlatform.Core.Domain;
+using TravelBookingPlatform.Core.Domain.Exceptions;
 using TravelBookingPlatform.Modules.Identity.Application.Commands;
 using TravelBookingPlatform.Modules.Identity.Application.Commands.Handlers;
 using TravelBookingPlatform.Modules.Identity.Application.DTOs;
@@ -101,7 +102,7 @@ public class RegisterUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldThrowInvalidOperationException_WhenEmailAlreadyExists()
+    public async Task Handle_ShouldThrowBusinessValidationException_WhenEmailAlreadyExists()
     {
         // Arrange
         var command = _fixture.Build<RegisterUserCommand>()
@@ -111,17 +112,18 @@ public class RegisterUserCommandHandlerTests
         _userRepository.EmailExistsAsync(command.Email).Returns(true);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+        var exception = await Assert.ThrowsAsync<BusinessValidationException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
         exception.Message.Should().Be("Email already exists.");
+        exception.PropertyName.Should().Be("Email");
 
         await _userRepository.DidNotReceive().AddAsync(Arg.Any<User>());
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Handle_ShouldThrowInvalidOperationException_WhenUsernameAlreadyExists()
+    public async Task Handle_ShouldThrowBusinessValidationException_WhenUsernameAlreadyExists()
     {
         // Arrange
         var command = _fixture.Build<RegisterUserCommand>()
@@ -133,10 +135,11 @@ public class RegisterUserCommandHandlerTests
         _userRepository.UsernameExistsAsync(command.Username).Returns(true);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+        var exception = await Assert.ThrowsAsync<BusinessValidationException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
         exception.Message.Should().Be("Username already exists.");
+        exception.PropertyName.Should().Be("Username");
 
         await _userRepository.DidNotReceive().AddAsync(Arg.Any<User>());
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());

@@ -32,7 +32,7 @@ public class CreateCityCommandValidatorTests
         // Arrange
         var command = _fixture.Build<CreateCityCommand>()
             .With(x => x.Name, "New York")
-            .With(x => x.Country, "USA")
+            .With(x => x.Country, "United States")
             .With(x => x.PostCode, "10001")
             .Create();
 
@@ -44,18 +44,19 @@ public class CreateCityCommandValidatorTests
         result.Errors.Should().BeEmpty();
     }
 
-    [Fact]
-    public async Task Validator_ShouldHaveNoError_WhenCommandIsValidWithRandomData()
+    [Theory]
+    [InlineData("London", "United Kingdom", "SW1A 1AA")]
+    [InlineData("Paris", "France", "75001")]
+    [InlineData("Toronto", "Canada", "M5V 3A8")]
+    [InlineData("New York", "USA", "12345-6789")]
+    [InlineData("Amsterdam", "Netherlands", "1012 NX")]
+    public async Task Validator_ShouldHaveNoError_WhenCommandIsValidWithVariousFormats(string name, string country, string postCode)
     {
-        // Arrange - Using AutoFixture to generate valid random data
-        var randomName = _fixture.Create<string>();
-        var randomCountry = _fixture.Create<string>();
-        var randomPostCode = _fixture.Create<string>();
-
+        // Arrange
         var command = _fixture.Build<CreateCityCommand>()
-            .With(x => x.Name, randomName.Length > 100 ? randomName[..50] : randomName) // Ensure name is within limits
-            .With(x => x.Country, randomCountry.Length > 100 ? randomCountry[..50] : randomCountry) // Ensure country is within limits
-            .With(x => x.PostCode, randomPostCode.Length > 20 ? randomPostCode[..10] : randomPostCode) // Ensure postcode is within limits
+            .With(x => x.Name, name)
+            .With(x => x.Country, country)
+            .With(x => x.PostCode, postCode)
             .Create();
 
         // Act
@@ -75,6 +76,28 @@ public class CreateCityCommandValidatorTests
         // Arrange
         var command = _fixture.Build<CreateCityCommand>()
             .With(x => x.Name, name!)
+            .With(x => x.Country, "USA")
+            .With(x => x.PostCode, "10001")
+            .Create();
+
+        // Act
+        var result = await _validator.ValidateAsync(command);
+
+        // Assert
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(e => e.PropertyName == "Name");
+    }
+
+    [Theory]
+    [InlineData("A")] // Too short
+    [InlineData("1")] // Number only
+    [InlineData("New York123")] // Contains numbers
+    [InlineData("City@Name")] // Invalid characters
+    public async Task Validator_ShouldHaveError_WhenNameIsInvalidFormat(string name)
+    {
+        // Arrange
+        var command = _fixture.Build<CreateCityCommand>()
+            .With(x => x.Name, name)
             .With(x => x.Country, "USA")
             .With(x => x.PostCode, "10001")
             .Create();
@@ -108,6 +131,52 @@ public class CreateCityCommandValidatorTests
         result.Errors.Should().Contain(e => e.PropertyName == "Country");
     }
 
+    [Theory]
+    [InlineData("A")] // Too short
+    [InlineData("1")] // Number only
+    [InlineData("USA123")] // Contains numbers
+    [InlineData("Country@Name")] // Invalid characters
+    public async Task Validator_ShouldHaveError_WhenCountryIsInvalidFormat(string country)
+    {
+        // Arrange
+        var command = _fixture.Build<CreateCityCommand>()
+            .With(x => x.Name, "New York")
+            .With(x => x.Country, country)
+            .With(x => x.PostCode, "10001")
+            .Create();
+
+        // Act
+        var result = await _validator.ValidateAsync(command);
+
+        // Assert
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(e => e.PropertyName == "Country");
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData("12")] // Too short
+    [InlineData("INVALID@CODE")] // Invalid characters
+
+    public async Task Validator_ShouldHaveError_WhenPostCodeIsInvalid(string? postCode)
+    {
+        // Arrange
+        var command = _fixture.Build<CreateCityCommand>()
+            .With(x => x.Name, "New York")
+            .With(x => x.Country, "USA")
+            .With(x => x.PostCode, postCode!)
+            .Create();
+
+        // Act
+        var result = await _validator.ValidateAsync(command);
+
+        // Assert
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(e => e.PropertyName == "PostCode");
+    }
+
     [Fact]
     public async Task Validator_ShouldHaveError_WhenNameIsTooLong()
     {
@@ -132,7 +201,7 @@ public class CreateCityCommandValidatorTests
         // Arrange
         var command = _fixture.Build<CreateCityCommand>()
             .With(x => x.Name, "New York")
-            .With(x => x.Country, new string('a', 101)) // 101 characters (assuming country has similar limit)
+            .With(x => x.Country, new string('a', 101)) // 101 characters
             .With(x => x.PostCode, "10001")
             .Create();
 
@@ -142,6 +211,24 @@ public class CreateCityCommandValidatorTests
         // Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(e => e.PropertyName == "Country");
+    }
+
+    [Fact]
+    public async Task Validator_ShouldHaveError_WhenPostCodeIsTooLong()
+    {
+        // Arrange
+        var command = _fixture.Build<CreateCityCommand>()
+            .With(x => x.Name, "New York")
+            .With(x => x.Country, "USA")
+            .With(x => x.PostCode, new string('1', 21)) // 21 characters
+            .Create();
+
+        // Act
+        var result = await _validator.ValidateAsync(command);
+
+        // Assert
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(e => e.PropertyName == "PostCode");
     }
 
     [Fact]
@@ -194,6 +281,48 @@ public class CreateCityCommandValidatorTests
             .With(x => x.Name, "Unique City")
             .With(x => x.Country, "USA")
             .With(x => x.PostCode, "54321")
+            .Create();
+
+        // Act
+        var result = await _validator.ValidateAsync(command);
+
+        // Assert
+        result.IsValid.Should().BeTrue();
+        result.Errors.Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineData("Saint-Pierre")] // Hyphen
+    [InlineData("O'Connor")] // Apostrophe
+    [InlineData("St. Louis")] // Period
+    public async Task Validator_ShouldHaveNoError_WhenNameContainsValidSpecialCharacters(string name)
+    {
+        // Arrange
+        var command = _fixture.Build<CreateCityCommand>()
+            .With(x => x.Name, name)
+            .With(x => x.Country, "USA")
+            .With(x => x.PostCode, "12345")
+            .Create();
+
+        // Act
+        var result = await _validator.ValidateAsync(command);
+
+        // Assert
+        result.IsValid.Should().BeTrue();
+        result.Errors.Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineData("United Kingdom")] // Space
+    [InlineData("Saint-Martin")] // Hyphen
+    [InlineData("Côte d'Ivoire")] // Apostrophe (if supported)
+    public async Task Validator_ShouldHaveNoError_WhenCountryContainsValidSpecialCharacters(string country)
+    {
+        // Arrange
+        var command = _fixture.Build<CreateCityCommand>()
+            .With(x => x.Name, "TestCity")
+            .With(x => x.Country, country)
+            .With(x => x.PostCode, "12345")
             .Create();
 
         // Act

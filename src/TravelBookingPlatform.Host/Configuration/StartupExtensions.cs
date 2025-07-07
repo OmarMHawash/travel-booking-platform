@@ -194,6 +194,12 @@ public static class StartupExtensions
         // Add API Controllers
         builder.Services.AddControllers();
 
+        // Configure API behavior to suppress automatic model validation responses
+        builder.Services.Configure<Microsoft.AspNetCore.Mvc.ApiBehaviorOptions>(options =>
+        {
+            options.SuppressModelStateInvalidFilter = true;
+        });
+
         // Add APIs problem Details 
         builder.Services.AddProblemDetails(options =>
         {

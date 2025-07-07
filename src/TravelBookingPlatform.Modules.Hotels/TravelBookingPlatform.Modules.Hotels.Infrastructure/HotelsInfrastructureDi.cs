@@ -15,6 +15,7 @@ public static class HotelsInfrastructureDi
         services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
         services.AddScoped<IRoomRepository, RoomRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<IDealRepository, DealRepository>();
 
         return services;
     }

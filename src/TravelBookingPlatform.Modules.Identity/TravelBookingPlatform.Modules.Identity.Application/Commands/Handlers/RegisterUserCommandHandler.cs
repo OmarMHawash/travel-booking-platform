@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using TravelBookingPlatform.Core.Domain;
+using TravelBookingPlatform.Core.Domain.Exceptions;
 using TravelBookingPlatform.Modules.Identity.Application.DTOs;
 using TravelBookingPlatform.Modules.Identity.Application.Services;
 using TravelBookingPlatform.Modules.Identity.Domain.Entities;
@@ -32,13 +33,13 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, U
         // Check if email already exists
         if (await _userRepository.EmailExistsAsync(request.Email))
         {
-            throw new InvalidOperationException("Email already exists.");
+            throw new BusinessValidationException("Email already exists.", "Email");
         }
 
         // Check if username already exists
         if (await _userRepository.UsernameExistsAsync(request.Username))
         {
-            throw new InvalidOperationException("Username already exists.");
+            throw new BusinessValidationException("Username already exists.", "Username");
         }
 
         // Hash the password

@@ -1,5 +1,4 @@
 using Asp.Versioning;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,24 +29,8 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register(RegisterUserCommand command)
     {
-        try
-        {
-            var userDto = await _mediator.Send(command);
-            return CreatedAtAction(nameof(Register), new { id = userDto.Id }, userDto);
-        }
-        catch (ValidationException ex)
-        {
-            var errors = ex.Errors.Select(e => new
-            {
-                Property = e.PropertyName,
-                Error = e.ErrorMessage
-            });
-            return BadRequest(new { message = "Validation failed", errors = errors });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var userDto = await _mediator.Send(command);
+        return CreatedAtAction(nameof(Register), new { id = userDto.Id }, userDto);
     }
 
     /// <summary>
@@ -61,23 +44,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login(LoginCommand command)
     {
-        try
-        {
-            var authResponse = await _mediator.Send(command);
-            return Ok(authResponse);
-        }
-        catch (ValidationException ex)
-        {
-            var errors = ex.Errors.Select(e => new
-            {
-                Property = e.PropertyName,
-                Error = e.ErrorMessage
-            });
-            return BadRequest(new { message = "Validation failed", errors = errors });
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(new { message = ex.Message });
-        }
+        var authResponse = await _mediator.Send(command);
+        return Ok(authResponse);
     }
 }

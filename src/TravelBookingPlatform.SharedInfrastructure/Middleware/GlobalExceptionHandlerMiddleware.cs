@@ -1,8 +1,10 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
+using TravelBookingPlatform.Core.Domain.Exceptions;
 
 namespace TravelBookingPlatform.SharedInfrastructure.Middleware;
 
@@ -50,50 +52,156 @@ public class GlobalExceptionHandlerMiddleware
                 statusCode = (int)HttpStatusCode.BadRequest;
                 response = new
                 {
-                    type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
-                    title = "Validation Error",
-                    status = (int)HttpStatusCode.BadRequest,
-                    detail = "One or more validation errors occurred.",
-                    instance = context.Request.Path.Value,
-                    errors = validationException.Errors
-                        .GroupBy(x => x.PropertyName)
-                        .ToDictionary(
-                            g => g.Key,
-                            g => g.Select(x => x.ErrorMessage).ToArray()
-                        )
+                    message = "Validation failed",
+                    errors = validationException.Errors.Select(e => new
+                    {
+                        property = e.PropertyName,
+                        error = e.ErrorMessage
+                    }).ToArray()
                 };
                 break;
-            case UnauthorizedAccessException:
-                statusCode = (int)HttpStatusCode.Unauthorized;
-                response = new
-                {
-                    type = "https://tools.ietf.org/html/rfc7235#section-3.1",
-                    title = "Unauthorized",
-                    status = (int)HttpStatusCode.Unauthorized,
-                    detail = exception.Message,
-                    instance = context.Request.Path.Value
-                };
-                break;
-            case ArgumentException:
+
+            case BusinessValidationException businessException:
                 statusCode = (int)HttpStatusCode.BadRequest;
                 response = new
                 {
-                    type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
-                    title = "Bad Request",
-                    status = (int)HttpStatusCode.BadRequest,
-                    detail = exception.Message,
-                    instance = context.Request.Path.Value
+                    message = "Validation failed",
+                    errors = new[]
+                    {
+                        new
+                        {
+                            property = businessException.PropertyName ?? "General",
+                            error = businessException.Message
+                        }
+                    }
                 };
                 break;
+
+            case InvalidOperationException invalidOperationException:
+                statusCode = (int)HttpStatusCode.BadRequest;
+                response = new
+                {
+                    message = "Validation failed",
+                    errors = new[]
+                    {
+                        new
+                        {
+                            property = "General",
+                            error = invalidOperationException.Message
+                        }
+                    }
+                };
+                break;
+
+            case ArgumentException argumentException:
+                statusCode = (int)HttpStatusCode.BadRequest;
+                response = new
+                {
+                    message = "Validation failed",
+                    errors = new[]
+                    {
+                        new
+                        {
+                            property = argumentException.ParamName ?? "General",
+                            error = argumentException.Message
+                        }
+                    }
+                };
+                break;
+
+            case NotFoundException notFoundException:
+                statusCode = (int)HttpStatusCode.NotFound;
+                response = new
+                {
+                    message = "Resource not found",
+                    errors = new[]
+                    {
+                        new
+                        {
+                            property = "General",
+                            error = notFoundException.Message
+                        }
+                    }
+                };
+                break;
+
+            case ForeignKeyViolationException foreignKeyException:
+                statusCode = (int)HttpStatusCode.BadRequest;
+                response = new
+                {
+                    message = "Validation failed",
+                    errors = new[]
+                    {
+                        new
+                        {
+                            property = foreignKeyException.ForeignKeyName ?? "General",
+                            error = foreignKeyException.Message
+                        }
+                    }
+                };
+                break;
+
+            case UnauthorizedAccessException unauthorizedException:
+                statusCode = (int)HttpStatusCode.Unauthorized;
+                response = new
+                {
+                    message = "Authentication failed",
+                    errors = new[]
+                    {
+                        new
+                        {
+                            property = "General",
+                            error = unauthorizedException.Message
+                        }
+                    }
+                };
+                break;
+
+            case DbUpdateException dbException when dbException.InnerException?.Message.Contains("FOREIGN KEY constraint") == true:
+                statusCode = (int)HttpStatusCode.BadRequest;
+                response = new
+                {
+                    message = "Validation failed",
+                    errors = new[]
+                    {
+                        new
+                        {
+                            property = "General",
+                            error = "The operation failed because one or more referenced entities do not exist."
+                        }
+                    }
+                };
+                break;
+
+            case DbUpdateException dbException when dbException.InnerException?.Message.Contains("UNIQUE constraint") == true:
+                statusCode = (int)HttpStatusCode.Conflict;
+                response = new
+                {
+                    message = "Validation failed",
+                    errors = new[]
+                    {
+                        new
+                        {
+                            property = "General",
+                            error = "The operation failed because it would create a duplicate entry."
+                        }
+                    }
+                };
+                break;
+
             default:
                 statusCode = (int)HttpStatusCode.InternalServerError;
                 response = new
                 {
-                    type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
-                    title = "Internal Server Error",
-                    status = (int)HttpStatusCode.InternalServerError,
-                    detail = "An unexpected error occurred.",
-                    instance = context.Request.Path.Value
+                    message = "An error occurred",
+                    errors = new[]
+                    {
+                        new
+                        {
+                            property = "General",
+                            error = "An unexpected error occurred."
+                        }
+                    }
                 };
                 break;
         }
