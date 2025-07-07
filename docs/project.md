@@ -1,144 +1,264 @@
-﻿### **Travel & Accommodation Booking Platform**
+﻿# Travel Booking Platform - Backend API Specification
 
-**Persona:** You are an expert Project Manager and Lead Software Architect.
+## Architecture Overview
 
-**Objective:** Your task is to act as a comprehensive guide and generator for the software project detailed below. Use the provided information to respond to requests related to project planning, technical architecture, feature development, task breakdown, and documentation.
+- **Framework**: .NET Core Web API
+- **Architecture**: Clean Architecture with Modular Monolith
+- **Authentication**: JWT-based with Role-Based Access Control (RBAC)
+- **Database**: Entity Framework Core with SQL Server
+- **Patterns**: CQRS, Repository Pattern, Unit of Work
 
-**Project Context:** We are building a "Travel and Accommodation Booking Platform". The platform will be an API-driven application with distinct roles for regular users and administrators. The project will be managed using Agile methodology with a detailed sprint plan.
+## Core Modules
 
----
+1. **Identity Module**: User authentication and authorization
+2. **Hotels Module**: Hotel, room, and booking management
+3. **Shared Infrastructure**: Cross-cutting concerns
 
-### **1. Project Overview**
+## Domain Entities & Relationships
 
-*   **Project Title:** Travel and Accommodation Booking Platform
-*   **Core Goal:** To develop a comprehensive, API-driven web application for searching, booking, and managing hotel accommodations.
-*   **User Roles:**
-    *   **Typical User:** Can search, view, and book hotels.
-    *   **Admin:** Can manage the platform's core data (cities, hotels, rooms).
+### Identity Domain
 
----
+```csharp
+// User entity with role-based access
+User {
+    Id: Guid (PK)
+    Email: string (unique)
+    PasswordHash: string
+    FirstName: string
+    LastName: string
+    Role: enum (Admin, User)
+    CreatedAt: DateTime
+    UpdatedAt: DateTime
+}
 
-### **2. Functional Requirements (Features)**
+// Roles enum
+Role { Admin, User }
+```
 
-**2.1. User Account & Authentication**
-*   **Login/Register:** Standard user authentication.
-*   **Roles:** Role-Based Access Control (RBAC) distinguishing between `Admin` and `Typical User`.
+### Hotels Domain
 
-**2.2. Home Page**
-*   **Free-text Search Component:**
-    *   Search by hotel name or city.
-    *   Interactive calendar for check-in/check-out dates.
-    *   Inputs for the number of adults and children.
-    *   Room selection options.
-*   **Featured Deals:**
-    *   Display 3-5 special offer hotels.
-    *   Include thumbnail image, hotel name, location, star rating, original price, and discounted price.
-*   **User's Recently Visited Hotels:**
-    *   Personalized section showing the last 3-5 hotels the user viewed.
-    *   Include thumbnail, name, city, star rating, and price.
-*   **Trending Destination Highlights:**
-    *   A curated list of the TOP 5 most visited cities.
-    *   Each city should have a visually appealing thumbnail and its name.
+```csharp
+City {
+    Id: Guid (PK)
+    Name: string
+    Country: string
+    PostOffice: string
+    CreatedAt: DateTime
+    UpdatedAt: DateTime
+    // Navigation: Hotels[]
+}
 
-**2.3. Search Results Page**
-*   **Sidebar Filters:**
-    *   Filter by price range, star rating, and amenities.
-    *   Filter by hotel type (e.g., luxury, budget, boutique).
-*   **Hotel Listings:**
-    *   Display hotels matching search criteria.
-    *   Implement infinite scroll for pagination.
-    *   Each listing includes a thumbnail, name, star rating, price per night, and a brief description.
+Hotel {
+    Id: Guid (PK)
+    Name: string
+    Description: string
+    StarRating: int (1-5)
+    CityId: Guid (FK)
+    Address: string
+    Latitude: decimal
+    Longitude: decimal
+    CreatedAt: DateTime
+    UpdatedAt: DateTime
+    // Navigation: City, Rooms[], Bookings[]
+}
 
-**2.4. Hotel Details Page**
-*   **Visual Gallery:** A gallery of high-quality images of the hotel with a full-screen view mode.
-*   **Detailed Information:** Comprehensive details including hotel name, description, rating, and user reviews.
-*   **Interactive Map:** An embedded map showing the hotel's location and nearby attractions.
-*   **Room Availability & Selection:**
-    *   List of available room types with images, descriptions, amenities, and prices.
-    *   "Add to cart" or "Select Room" functionality.
+RoomType {
+    Id: Guid (PK)
+    Name: string (Single, Double, Suite, etc.)
+    Description: string
+    BasePrice: decimal
+    MaxAdults: int
+    MaxChildren: int
+    CreatedAt: DateTime
+    UpdatedAt: DateTime
+}
 
-**2.5. Secure Checkout and Confirmation**
-*   **Checkout Process:**
-    *   Form for user's personal and payment details.
-    *   Field for special requests.
-    *   **[Optional]** Integrate a third-party payment gateway.
-*   **Confirmation Page:**
-    *   Display a summary of the booking: confirmation number, hotel details, room info, dates, and total price.
-    *   Provide options to print or save the confirmation as a PDF.
-*   **Email Confirmation:** Automatically send an email to the user with the payment status and invoice details.
+Room {
+    Id: Guid (PK)
+    RoomNumber: string
+    HotelId: Guid (FK)
+    RoomTypeId: Guid (FK)
+    IsAvailable: bool
+    CreatedAt: DateTime
+    UpdatedAt: DateTime
+    // Navigation: Hotel, RoomType, Bookings[]
+}
 
-**2.6. Admin Management Dashboard**
-*   **Layout:** A functional, collapsible left-hand navigation sidebar.
-*   **Navigation Links:** Quick access to manage `Cities`, `Hotels`, and `Rooms`.
-*   **Data Grids with Filters:**
-    *   **Cities Grid:** Columns for Name, Country, Post Office, Hotel Count, Created/Modified Dates, Delete action.
-    *   **Hotels Grid:** Columns for Name, Star Rate, Owner, Room Count, Created/Modified Dates, Delete action.
-    *   **Rooms Grid:** Columns for Room Number, Availability, Adult/Child Capacity, Created/Modified Dates, Delete action.
-*   **CRUD Functionality:**
-    *   **Create:** A "Create New" button that opens a form for the selected entity (City, Hotel, or Room).
-    *   **Update:** Clicking a grid row opens a pre-filled form to update the entity's details.
+Booking {
+    Id: Guid (PK)
+    UserId: Guid (FK)
+    HotelId: Guid (FK)
+    RoomId: Guid (FK)
+    CheckInDate: DateTime
+    CheckOutDate: DateTime
+    TotalPrice: decimal
+    Status: enum (Pending, Confirmed, Cancelled)
+    SpecialRequests: string
+    Adults: int
+    Children: int
+    CreatedAt: DateTime
+    UpdatedAt: DateTime
+    // Navigation: User, Hotel, Room
+}
+```
 
----
+## API Endpoints Structure
 
-### **3. Non-Functional & Technical Requirements**
+### Authentication Endpoints
 
-*   **Architecture:** API-Based Application (RESTful principles), JWT-based Authentication, Permissions System (RBAC).
-*   **Code Quality:** Clean code, in-code and project documentation, optimized data storage and manipulation, efficient server resource usage.
-*   **Testing:** Unit Testing, Integration and API Testing, and [Bonus] Performance Testing.
-*   **Reliability:** Robust error handling, tracking, and logging.
-*   **Security:** Implement standard security best practices.
-*   **[Bonus] DevOps:** CI/CD pipeline, Dockerization, and deployment to a cloud provider (Azure/AWS).
+```
+POST /api/auth/register          - User registration
+POST /api/auth/login            - User login (returns JWT)
+POST /api/auth/change-password  - Change user password
+```
 
----
+### User Management Endpoints
 
-### **4. Project Management & Team Roles**
+```
+GET  /api/users/{id}            - Get user by ID
+GET  /api/users/email/{email}   - Get user by email
+```
 
-*   **Tool:** Use Jira for project management, task tracking, and progress monitoring.
-*   **Roles & Responsibilities:**
-    *   **Project Manager & Business Analyst:** Defines epics and user stories; tracks progress.
-    *   **Software Architect & Technical Lead:** Defines technical specifications and project structure; assigns tasks.
-    *   **Software Developer:** Implements tasks, writes notes, creates tickets, and collaborates.
-    *   **Quality Assurance (QA):** Performs integration, API, and acceptance testing.
-    *   **[Bonus] DevOps:** Manages CI/CD, deployment platforms, and Dockerization.
+### Cities Endpoints
 
+```
+GET    /api/cities              - Get all cities
+POST   /api/cities              - Create city (Admin only)
+PUT    /api/cities/{id}         - Update city (Admin only)
+DELETE /api/cities/{id}         - Delete city (Admin only)
+```
 
-#### **Sprint 1: Foundation & Core Discovery (Total: 25 Points)**
-*   **Goal:** Establish the project foundation, authentication, and core home page features.
-    | Story | Story Points | Epic |
-    | :--- | :--- | :--- |
-    | Project setup & architecture | 5 | epic-6: Project Foundation |
-    | Database schema & minimal models | 5 | epic-6: Project Foundation |
-    | Login/Register & Auth (RBAC) | 5 | epic-1: User Management |
-    | Free-text Search component | 3 | epic-2: Home Page |
-    | Featured Deals display | 2 | epic-2: Home Page |
-    | Personalized Recently Visited | 3 | epic-2: Home Page |
-    | Trending Destinations display | 2 | epic-2: Home Page |
+### Hotels Search & Discovery
 
-#### **Sprint 2: Search, Details & Admin Panel (Total: 31 Points)**
-*   **Goal:** Build out search result functionality, the hotel detail view, and the admin management backend.
-    | Story | Story Points | Epic |
-    | :--- | :--- | :--- |
-    | Hotel search filter sidebar | 3 | epic-7: Search & Discovery |
-    | Hotel listing with infinite scroll | 3 | epic-7: Search & Discovery |
-    | Hotel page image gallery | 2 | epic-3: Hotel Details |
-    | Hotel Rating & Reviews system | 3 | epic-3: Hotel Details |
-    | Interactive Map integration | 5 | epic-3: Hotel Details |
-    | Room availability & selection | 5 | epic-3: Hotel Details |
-    | Admin CRUD: Create Entity forms | 5 | epic-5: Admin Management |
-    | Admin CRUD: Update Entity forms | 5 | epic-5: Admin Management |
+```
+GET /api/search/hotels          - Search hotels with filters
+GET /api/search/suggestions     - Get search suggestions
+GET /api/destinations/popular   - Get popular destinations
+```
 
-#### **Sprint 3: Checkout & Confirmation (Total: 24 Points + Buffer)**
-*   **Goal:** Finalize the booking process from checkout to confirmation.
-    | Story | Story Points | Epic |
-    | :--- | :--- | :--- |
-    | Checkout form (personal details) | 2 | epic-4: Booking & Checkout |
-    | Add payment method form | 3 | epic-4: Booking & Checkout |
-    | Special requests field | 1 | epic-4: Booking & Checkout |
-    | Third-party payment integration | 8 | epic-4: Booking & Checkout |
-    | Confirmation page details | 2 | epic-4: Booking & Checkout |
-    | Confirmation page "Print to PDF" | 3 | epic-4: Booking & Checkout |
-    | Send confirmation email | 5 | epic-4: Booking & Checkout |
+### Hotels Management (Admin)
 
-# Important Notes:
-- Development is done via Jetbrains Rider IDE
-- using Windows 11
+```
+GET    /api/hotels              - Get all hotels
+POST   /api/hotels              - Create hotel (Admin only)
+PUT    /api/hotels/{id}         - Update hotel (Admin only)
+DELETE /api/hotels/{id}         - Delete hotel (Admin only)
+```
+
+### Rooms Management (Admin)
+
+```
+GET    /api/rooms               - Get all rooms
+POST   /api/rooms               - Create room (Admin only)
+PUT    /api/rooms/{id}          - Update room (Admin only)
+DELETE /api/rooms/{id}          - Delete room (Admin only)
+```
+
+### Booking Endpoints
+
+```
+GET  /api/bookings              - Get user bookings
+POST /api/bookings              - Create booking
+GET  /api/bookings/{id}         - Get booking details
+PUT  /api/bookings/{id}/cancel  - Cancel booking
+```
+
+## Business Rules & Validation
+
+### Authentication
+
+- Email must be unique and valid format
+- Password must be at least 8 characters with complexity requirements
+- JWT tokens expire after configurable time period
+- Role-based authorization for admin endpoints
+
+### Hotels & Search
+
+- Star rating must be between 1-5
+- Search supports filtering by: price range, star rating, city, check-in/out dates
+- Hotels must belong to valid cities
+- Room capacity validation (adults + children <= room max capacity)
+
+### Bookings
+
+- Check-out date must be after check-in date
+- Rooms must be available for selected dates
+- Price calculation based on room type and number of nights
+- Booking status workflow: Pending → Confirmed/Cancelled
+
+### Admin Operations
+
+- Only users with Admin role can perform CRUD operations on cities, hotels, and rooms
+- Soft delete for maintaining data integrity
+- Audit trail for all administrative changes
+
+## Technical Requirements
+
+### Security
+
+- JWT authentication with role-based authorization
+- Password hashing using bcrypt or similar
+- Input validation and sanitization
+- HTTPS enforcement
+- CORS configuration for frontend integration
+
+### Database
+
+- Entity Framework Core with migrations
+- Database seeding for initial data
+- Proper indexing for search performance
+- Foreign key constraints and data integrity
+
+### Error Handling
+
+- Global exception handling middleware
+- Structured logging with Serilog
+- Consistent error response format
+- Validation error details
+
+### Performance
+
+- Async/await patterns throughout
+- Efficient database queries with proper includes
+- Pagination for large result sets
+- Caching for frequently accessed data
+
+### Testing
+
+- Unit tests for business logic and handlers
+- Integration tests for API endpoints
+- Repository pattern for testability
+- Mock external dependencies
+
+## Response DTOs Structure
+
+### Common Response Patterns
+
+```csharp
+// Standard API response wrapper
+ApiResponse<T> {
+    Data: T
+    Success: bool
+    Message: string
+    Errors: string[]
+}
+
+// Paginated responses
+PagedResponse<T> {
+    Data: List<T>
+    TotalCount: int
+    PageNumber: int
+    PageSize: int
+    HasNextPage: bool
+    HasPreviousPage: bool
+}
+```
+
+### Key DTOs
+
+- AuthResponseDto (includes token and user info)
+- UserDto, CityDto, HotelDto, RoomDto, BookingDto
+- SearchRequestDto, SearchResultDto
+- CreateCityDto, CreateHotelDto, CreateRoomDto, CreateBookingDto
+
+This specification provides the complete backend requirements for generating a production-ready .NET Core API following clean architecture principles.
