@@ -73,6 +73,17 @@ public class DealConfiguration : IEntityTypeConfiguration<Deal>
         builder.HasIndex(d => new { d.IsActive, d.ValidTo })
             .HasDatabaseName("IX_Deal_Active_ValidTo");
 
+        // Unique constraints for data integrity
+        builder.HasIndex(d => new { d.HotelId, d.RoomTypeId, d.ValidFrom, d.ValidTo })
+            .IsUnique()
+            .HasDatabaseName("IX_Deal_Hotel_RoomType_DateRange_Unique")
+            .HasFilter("[IsActive] = 1");
+
+        builder.HasIndex(d => new { d.HotelId, d.Title })
+            .IsUnique()
+            .HasDatabaseName("IX_Deal_Hotel_Title_Unique")
+            .HasFilter("[IsActive] = 1");
+
         // Relationships
         builder.HasOne(d => d.Hotel)
             .WithMany()

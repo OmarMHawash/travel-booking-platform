@@ -55,4 +55,34 @@ public class DealRepository : BaseRepository<Deal>, IDealRepository
         return await _dbSet
             .AnyAsync(d => d.RoomTypeId == roomTypeId && d.IsActive && d.ValidTo > DateTime.UtcNow);
     }
+
+    public async Task<Deal?> GetOverlappingDealAsync(Guid hotelId, Guid roomTypeId, DateTime validFrom, DateTime validTo)
+    {
+        return await _dbSet
+            .Where(d => d.HotelId == hotelId
+                     && d.RoomTypeId == roomTypeId
+                     && d.IsActive
+                     && ((d.ValidFrom <= validFrom && d.ValidTo >= validFrom) ||
+                         (d.ValidFrom <= validTo && d.ValidTo >= validTo) ||
+                         (d.ValidFrom >= validFrom && d.ValidTo <= validTo)))
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<Deal?> GetByHotelAndTitleAsync(Guid hotelId, string title)
+    {
+        return await _dbSet
+            .Where(d => d.HotelId == hotelId
+                     && d.Title == title
+                     && d.IsActive)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<int> GetActiveFeaturedDealsCountAsync(Guid hotelId)
+    {
+        return await _dbSet
+            .CountAsync(d => d.HotelId == hotelId
+                          && d.IsFeatured
+                          && d.IsActive
+                          && d.ValidTo > DateTime.UtcNow);
+    }
 }

@@ -1,8 +1,10 @@
 using Asp.Versioning;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TravelBookingPlatform.Core.Domain.Exceptions;
 using TravelBookingPlatform.Modules.Hotels.Application.Commands;
 using TravelBookingPlatform.Modules.Hotels.Application.DTOs;
 using TravelBookingPlatform.Modules.Hotels.Application.Queries;
@@ -15,10 +17,12 @@ namespace TravelBookingPlatform.Modules.Hotels.Api.Controllers;
 public class DealsController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IValidator<CreateDealDto> _createDealValidator;
 
-    public DealsController(IMediator mediator)
+    public DealsController(IMediator mediator, IValidator<CreateDealDto> createDealValidator)
     {
         _mediator = mediator;
+        _createDealValidator = createDealValidator;
     }
 
     /// <summary>
@@ -34,7 +38,7 @@ public class DealsController : ControllerBase
     {
         if (count < 1 || count > 50)
         {
-            return BadRequest(new { Message = "Count must be between 1 and 50." });
+            throw new ArgumentException("Count must be between 1 and 50.", nameof(count));
         }
 
         var query = new GetFeaturedDealsQuery(count);
@@ -59,12 +63,12 @@ public class DealsController : ControllerBase
     {
         if (page < 1)
         {
-            return BadRequest(new { Message = "Page number must be greater than 0." });
+            throw new ArgumentException("Page number must be greater than 0.", nameof(page));
         }
 
         if (pageSize < 1 || pageSize > 100)
         {
-            return BadRequest(new { Message = "Page size must be between 1 and 100." });
+            throw new ArgumentException("Page size must be between 1 and 100.", nameof(pageSize));
         }
 
         var query = new GetAllDealsQuery(page, pageSize);
@@ -86,7 +90,7 @@ public class DealsController : ControllerBase
     {
         if (id == Guid.Empty)
         {
-            return BadRequest(new { Message = "Invalid deal ID provided." });
+            throw new ArgumentException("Invalid deal ID provided.", nameof(id));
         }
 
         var query = new GetDealByIdQuery(id);
@@ -94,7 +98,7 @@ public class DealsController : ControllerBase
 
         if (deal == null)
         {
-            return NotFound(new { Message = $"Deal with ID {id} not found." });
+            throw new NotFoundException($"Deal with ID {id} not found.");
         }
 
         return Ok(deal);
@@ -111,12 +115,100 @@ public class DealsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> CreateDeal([FromBody] CreateDealDto dealDto)
+    public async Task<IActionResult> CreateDeal([FromBody] CreateDealDto? dealDto)
     {
+        // Check for model binding errors first
+        if (!ModelState.IsValid)
+        {
+            var modelErrors = ModelState
+                .Where(x => x.Value?.Errors.Count > 0)
+                .SelectMany(x => x.Value.Errors.Select(e => new FluentValidation.Results.ValidationFailure(
+                    CleanPropertyName(x.Key),
+                    TransformErrorMessage(x.Key, e.ErrorMessage, e.Exception))))
+                .ToList();
+
+            throw new ValidationException(modelErrors);
+        }
+
+        // Check if model binding resulted in null (happens when JSON structure is completely invalid)
+        if (dealDto == null)
+        {
+            throw new ArgumentException("Invalid request body. Please provide valid deal data.", "dealDto");
+        }
+
+        // Validate the DTO manually to get detailed field validation errors
+        var validationResult = await _createDealValidator.ValidateAsync(dealDto);
+        if (!validationResult.IsValid)
+        {
+            throw new ValidationException(validationResult.Errors);
+        }
+
         var command = new CreateDealCommand(dealDto);
         var dealId = await _mediator.Send(command);
 
         return CreatedAtAction(nameof(GetDealById), new { id = dealId }, dealId);
+    }
+
+    private static string CleanPropertyName(string propertyName)
+    {
+        // Remove JSON path prefix (e.g., "$." from "$.originalPrice")
+        if (propertyName.StartsWith("$."))
+        {
+            return propertyName.Substring(2);
+        }
+        return propertyName;
+    }
+
+    private static string TransformErrorMessage(string propertyName, string? errorMessage, Exception? exception)
+    {
+        var cleanPropertyName = CleanPropertyName(propertyName);
+
+        // Handle JSON conversion errors
+        if (errorMessage?.Contains("could not be converted to") == true)
+        {
+            if (errorMessage.Contains("System.Decimal"))
+            {
+                return $"{cleanPropertyName} must be a valid decimal number.";
+            }
+            if (errorMessage.Contains("System.Int32"))
+            {
+                return $"{cleanPropertyName} must be a valid integer.";
+            }
+            if (errorMessage.Contains("System.DateTime"))
+            {
+                return $"{cleanPropertyName} must be a valid date in ISO 8601 format (e.g., 2025-12-31T23:59:59).";
+            }
+            if (errorMessage.Contains("System.Guid"))
+            {
+                return $"{cleanPropertyName} must be a valid GUID.";
+            }
+            if (errorMessage.Contains("System.Boolean"))
+            {
+                return $"{cleanPropertyName} must be a valid boolean (true or false).";
+            }
+
+            return $"{cleanPropertyName} has an invalid value format.";
+        }
+
+        // Handle missing required properties
+        if (errorMessage?.Contains("is required") == true)
+        {
+            return $"{cleanPropertyName} is required.";
+        }
+
+        // Return original message if we can't improve it, but clean it up
+        if (!string.IsNullOrEmpty(errorMessage))
+        {
+            // Remove technical details like line numbers and byte positions
+            var cleanMessage = errorMessage.Split('|')[0].Trim();
+            if (cleanMessage.Contains("Path:"))
+            {
+                cleanMessage = cleanMessage.Split("Path:")[0].Trim();
+            }
+            return cleanMessage;
+        }
+
+        return exception?.Message ?? $"{cleanPropertyName} has an invalid value.";
     }
 
     /// <summary>
@@ -136,7 +228,7 @@ public class DealsController : ControllerBase
     {
         if (id == Guid.Empty)
         {
-            return BadRequest(new { Message = "Invalid deal ID provided." });
+            throw new ArgumentException("Invalid deal ID provided.", nameof(id));
         }
 
         var command = new UpdateDealCommand(id, dealDto);
@@ -161,7 +253,7 @@ public class DealsController : ControllerBase
     {
         if (id == Guid.Empty)
         {
-            return BadRequest(new { Message = "Invalid deal ID provided." });
+            throw new ArgumentException("Invalid deal ID provided.", nameof(id));
         }
 
         var command = new ToggleFeaturedDealCommand(id);

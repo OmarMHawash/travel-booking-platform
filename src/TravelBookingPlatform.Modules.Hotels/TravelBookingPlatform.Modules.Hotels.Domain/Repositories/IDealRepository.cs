@@ -10,4 +10,7 @@ public interface IDealRepository : IRepository<Deal>
     Task<List<Deal>> GetDealsByHotelAsync(Guid hotelId);
     Task<Deal?> GetDealWithDetailsAsync(Guid dealId);
     Task<bool> HasActiveDealForRoomTypeAsync(Guid roomTypeId);
+    Task<Deal?> GetOverlappingDealAsync(Guid hotelId, Guid roomTypeId, DateTime validFrom, DateTime validTo);
+    Task<Deal?> GetByHotelAndTitleAsync(Guid hotelId, string title);
+    Task<int> GetActiveFeaturedDealsCountAsync(Guid hotelId);
 }

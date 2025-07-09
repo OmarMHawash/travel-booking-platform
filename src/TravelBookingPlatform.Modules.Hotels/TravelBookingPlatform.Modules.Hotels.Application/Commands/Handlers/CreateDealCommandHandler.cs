@@ -43,6 +43,32 @@ public class CreateDealCommandHandler : IRequestHandler<CreateDealCommand, Guid>
             throw new ForeignKeyViolationException("Deal", "RoomType", dealData.RoomTypeId);
         }
 
+        // Check for overlapping deals
+        var overlappingDeal = await _dealRepository.GetOverlappingDealAsync(
+            dealData.HotelId,
+            dealData.RoomTypeId,
+            dealData.ValidFrom,
+            dealData.ValidTo);
+
+        if (overlappingDeal != null)
+        {
+            throw new BusinessValidationException(
+                $"An active deal already exists for this hotel and room type during the specified period. Existing deal: '{overlappingDeal.Title}' ({overlappingDeal.ValidFrom:yyyy-MM-dd} to {overlappingDeal.ValidTo:yyyy-MM-dd})",
+                "DateRange");
+        }
+
+        // Check for duplicate title
+        var existingTitleDeal = await _dealRepository.GetByHotelAndTitleAsync(
+            dealData.HotelId,
+            dealData.Title);
+
+        if (existingTitleDeal != null)
+        {
+            throw new BusinessValidationException(
+                $"A deal with title '{dealData.Title}' already exists for this hotel.",
+                "Title");
+        }
+
         try
         {
             var deal = new Deal(
