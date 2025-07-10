@@ -1,4 +1,6 @@
-﻿### Architecture Overview:
+﻿# Travel Booking Platform - Project Structure
+
+### Architecture Overview:
 
 > **Status**: ✅ Architecture Implemented | 🚧 Some API Endpoints Pending
 > **Last Verified**: 2025-01-08
@@ -7,6 +9,12 @@
 TravelBookingPlatform.sln
 ├── .editorconfig                                 <-- Shared Code Formatting Configuration
 ├── Directory.Build.props                         <-- Project-wide SDKs, common properties, analyzer rules, syntax/patterns check
+├── docs/                                         <-- Project Documentation & Implementation Plans
+│   ├── structure.md                              <-- Architecture documentation (this file)
+│   ├── project.md                                <-- Current status, progress tracking, lessons learned
+│   ├── tests-structure.md                        <-- Testing infrastructure documentation
+│   └── implementation-plan/                      <-- Feature implementation plans
+│       └── personalized-recently-visited.md     <-- Currently planned feature: Recently Visited for home page
 ├── src/
 │   ├── TravelBookingPlatform.Core/               <-- The SHARED KERNEL (Most Stable, Least Dependencies)
 │   │   ├── TravelBookingPlatform.Core.Domain/    <-- Core domain concepts (e.g., base Entity/AggregateRoot, ValueObject, IUnitOfWork interface, common Domain Event base classes)

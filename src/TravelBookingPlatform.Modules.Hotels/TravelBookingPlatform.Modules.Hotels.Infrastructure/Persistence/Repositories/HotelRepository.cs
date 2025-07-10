@@ -228,4 +228,24 @@ public class HotelRepository : BaseRepository<Hotel>, IHotelRepository
 
         return (hotels, totalCount);
     }
+
+    public async Task<Hotel?> GetHotelWithDetailsAsync(Guid id)
+    {
+        return await _dbSet
+            .Where(h => h.Id == id)
+            .Include(h => h.City)
+            .Include(h => h.Rooms)
+                .ThenInclude(r => r.RoomType)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<IReadOnlyList<Hotel>> GetHotelsWithDetailsAsync(IEnumerable<Guid> hotelIds)
+    {
+        return await _dbSet
+            .Where(h => hotelIds.Contains(h.Id))
+            .Include(h => h.City)
+            .Include(h => h.Rooms)
+                .ThenInclude(r => r.RoomType)
+            .ToListAsync();
+    }
 }

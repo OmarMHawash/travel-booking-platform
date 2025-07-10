@@ -47,6 +47,14 @@ public class HotelsMappingProfile : Profile
                 MaxChildren = src.RoomType.MaxChildren
             } : null));
 
+        // Hotel detail mappings
+        CreateMap<Hotel, HotelDetailDto>()
+            .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageURL));
+
+        CreateMap<Room, RoomDetailDto>();
+
+        CreateMap<RoomType, RoomTypeDetailDto>();
+
         // other mappings here
     }
 }

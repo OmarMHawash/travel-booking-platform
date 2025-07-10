@@ -20,6 +20,7 @@ public class ApplicationDbContext : DbContext
 
     // Identity module entities
     public DbSet<User> Users { get; set; } = null!;
+    public DbSet<UserActivity> UserActivities { get; set; } = null!;
 
     // Hotels module entities
     public DbSet<City> Cities { get; set; } = null!;

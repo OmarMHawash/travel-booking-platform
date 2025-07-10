@@ -10,6 +10,7 @@
     <ProjectReference Include="..\..\TravelBookingPlatform.Core\TravelBookingPlatform.Core.Application\TravelBookingPlatform.Core.Application.csproj" />
     <ProjectReference Include="..\..\TravelBookingPlatform.Core\TravelBookingPlatform.Core.Domain\TravelBookingPlatform.Core.Domain.csproj" />
     <ProjectReference Include="..\TravelBookingPlatform.Modules.Hotels.Domain\TravelBookingPlatform.Modules.Hotels.Domain.csproj" />
+    <ProjectReference Include="..\..\TravelBookingPlatform.Modules.Identity\TravelBookingPlatform.Modules.Identity.Application\TravelBookingPlatform.Modules.Identity.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

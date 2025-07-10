@@ -30,4 +30,8 @@ public interface IHotelRepository : IRepository<Hotel>
     // New enhanced search methods
     Task<IReadOnlyList<Hotel>> GetHotelSuggestionsAsync(string searchText, int maxResults = 10);
     Task<(IReadOnlyList<Hotel> Hotels, int TotalCount)> SearchHotelsWithPaginationAsync(SearchCriteria criteria);
+
+    // Hotel detail methods
+    Task<Hotel?> GetHotelWithDetailsAsync(Guid id);
+    Task<IReadOnlyList<Hotel>> GetHotelsWithDetailsAsync(IEnumerable<Guid> hotelIds);
 }

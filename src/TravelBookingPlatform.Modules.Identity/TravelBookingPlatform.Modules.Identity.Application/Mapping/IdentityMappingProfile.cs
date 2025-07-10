@@ -12,5 +12,7 @@ public class IdentityMappingProfile : Profile
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email.Value));
 
         CreateMap<RegisterUserDto, User>();
+
+        CreateMap<UserActivity, UserActivityDto>();
     }
 }

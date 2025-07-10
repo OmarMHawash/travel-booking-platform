@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Security.Claims;
 using TravelBookingPlatform.Modules.Hotels.Application.DTOs;
 using TravelBookingPlatform.Modules.Hotels.Application.Queries;
 
@@ -182,14 +183,21 @@ public class SearchController : ControllerBase
     }
 
     /// <summary>
-    /// Get home page data including featured deals and popular destinations
+    /// Get home page data including featured deals, popular destinations, and recently visited hotels (for authenticated users)
     /// </summary>
-    /// <returns>Combined home page data</returns>
+    /// <returns>Combined home page data with personalization for authenticated users</returns>
     [HttpGet("home-page")]
-    [ResponseCache(Duration = 600)] // Cache for 10 minutes
+    [ResponseCache(Duration = 600, VaryByHeader = "Authorization")] // Cache for 10 minutes, vary by authentication
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetHomePageData()
     {
+        // Check if user is authenticated to provide personalized content
+        var userId = GetCurrentUserId();
+        var isAuthenticated = userId.HasValue;
+
+        _logger.LogDebug("Home page requested. User authenticated: {IsAuthenticated}, UserId: {UserId}",
+            isAuthenticated, userId);
+
         // Use separate scopes to avoid DbContext concurrency issues
         var featuredDealsTask = Task.Run(async () =>
         {
@@ -205,13 +213,61 @@ public class SearchController : ControllerBase
             return await mediator.Send(new GetPopularDestinationsQuery(5));
         });
 
-        await Task.WhenAll(featuredDealsTask, popularDestinationsTask);
+        // Get recently visited hotels only for authenticated users
+        Task<List<RecentlyVisitedHotelDto>> recentlyVisitedTask = Task.FromResult(new List<RecentlyVisitedHotelDto>());
 
-        return Ok(new
+        if (isAuthenticated)
+        {
+            recentlyVisitedTask = Task.Run(async () =>
+            {
+                try
+                {
+                    using var scope = _serviceScopeFactory.CreateScope();
+                    var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                    return await mediator.Send(new GetRecentlyVisitedHotelsQuery(userId!.Value, 5));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to get recently visited hotels for user {UserId}", userId);
+                    return new List<RecentlyVisitedHotelDto>();
+                }
+            });
+        }
+
+        // Wait for all tasks to complete
+        await Task.WhenAll(featuredDealsTask, popularDestinationsTask, recentlyVisitedTask);
+
+        var recentlyVisited = await recentlyVisitedTask;
+
+        _logger.LogDebug("Home page data retrieved: {FeaturedDealsCount} deals, {PopularDestinationsCount} destinations, {RecentlyVisitedCount} recently visited hotels",
+            (await featuredDealsTask).Count, (await popularDestinationsTask).Count, recentlyVisited.Count);
+
+        // Build response with conditional recently visited content
+        var response = new
         {
             FeaturedDeals = await featuredDealsTask,
             PopularDestinations = await popularDestinationsTask,
+            RecentlyVisited = recentlyVisited, // Empty list for anonymous users
+            IsPersonalized = isAuthenticated,
             LastUpdated = DateTime.UtcNow
-        });
+        };
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Extracts the current user ID from the authentication claims
+    /// </summary>
+    /// <returns>User ID if authenticated, null otherwise</returns>
+    private Guid? GetCurrentUserId()
+    {
+        if (!User.Identity?.IsAuthenticated == true)
+            return null;
+
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim))
+            return null;
+
+        return Guid.TryParse(userIdClaim, out var userId) ? userId : null;
     }
 }

@@ -11,7 +11,9 @@ public static class IdentityInfrastructureDI
     public static IServiceCollection AddIdentityInfrastructure(this IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUserActivityRepository, UserActivityRepository>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<IActivityTrackingService, ActivityTrackingService>();
         services.AddScoped<ITokenService, JwtTokenService>();
 
         return services;
