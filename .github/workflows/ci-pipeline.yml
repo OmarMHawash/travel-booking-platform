@@ -16,7 +16,6 @@ jobs:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
-          SA_PASSWORD: "yourStrong(!)Password"
           ACCEPT_EULA: "Y"
         ports:
           - 1433:1433
@@ -56,4 +55,4 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity minimal
       env:
-        ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=YourTestDB;User Id=sa;Password=yourStrong(!)Password;TrustServerCertificate=True"
+        ConnectionStrings__DefaultConnection: "Server=localhost;Database=TravelBookingPlatform;Trusted_Connection=True;TrustServerCertificate=True"
