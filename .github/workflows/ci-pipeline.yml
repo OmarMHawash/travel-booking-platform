@@ -16,7 +16,7 @@ jobs:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
-          SA_PASSWORD: "test-ci-password"
+          SA_PASSWORD: "yourStrong(!)Password"
           ACCEPT_EULA: "Y"
         ports:
           - 1433:1433
@@ -27,22 +27,33 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+
+    - name: Install SQL Server tools
+      run: |
+        echo "Installing SQL Server tools..."
+        curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+        curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+        sudo apt-get update
+        sudo ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
+
     - name: Wait for SQL Server to be ready
       run: |
         echo "Waiting for SQL Server to start..."
-        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "test-ci-password" -Q "SELECT 1"
-        while [ $? -ne 0 ]
-        do
+        # Loop until sqlcmd is successful
+        for i in {1..30}; do
+          /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "yourStrong(!)Password" -Q "SELECT 1" && break
+          echo "SQL Server not ready yet, waiting..."
           sleep 1
-          /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "test-ci-password" -Q "SELECT 1"
         done
         echo "SQL Server is up and running."
+
     - name: Restore dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --no-restore
+
     - name: Test
       run: dotnet test --no-build --verbosity minimal
-    env:
-        ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=YourTestDB;User Id=sa;Password=test-ci-password;"
-
+      env:
+        ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=YourTestDB;User Id=sa;Password=yourStrong(!)Password;TrustServerCertificate=True"
