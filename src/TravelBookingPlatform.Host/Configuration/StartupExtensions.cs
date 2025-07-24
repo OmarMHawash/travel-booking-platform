@@ -17,8 +17,52 @@ using TravelBookingPlatform.SharedInfrastructure;
 using TravelBookingPlatform.SharedInfrastructure.Logging;
 using TravelBookingPlatform.SharedInfrastructure.Persistence;
 using TravelBookingPlatform.SharedInfrastructure.Seeding;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace TravelBookingPlatform.Host.Configuration;
+
+/// <summary>
+/// Custom operation filter to remove unsupported media types from OpenAPI generation
+/// This removes text/json and application/*+json media types that cause issues with fumadocs-openapi
+/// </summary>
+public class RemoveTextJsonMediaTypeFilter : IOperationFilter
+{
+    public void Apply(OpenApiOperation operation, OperationFilterContext context)
+    {
+        if (operation.RequestBody?.Content != null)
+        {
+            var unsupportedMediaTypes = operation.RequestBody.Content.Keys
+                .Where(key => key.Contains("text/json", StringComparison.OrdinalIgnoreCase) ||
+                             key.Contains("application/*+json", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            foreach (var key in unsupportedMediaTypes)
+            {
+                operation.RequestBody.Content.Remove(key);
+            }
+        }
+
+        if (operation.Responses != null)
+        {
+            foreach (var response in operation.Responses.Values)
+            {
+                if (response.Content != null)
+                {
+                    var unsupportedMediaTypes = response.Content.Keys
+                        .Where(key => key.Contains("text/json", StringComparison.OrdinalIgnoreCase) ||
+                                     key.Contains("application/*+json", StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+
+                    foreach (var key in unsupportedMediaTypes)
+                    {
+                        response.Content.Remove(key);
+                    }
+                }
+            }
+        }
+    }
+}
 
 public static class StartupExtensions
 {
@@ -148,12 +192,26 @@ public static class StartupExtensions
         {
             c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
             { Title = "Travel Booking Platform API", Version = "v1" });
-            string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            if (File.Exists(xmlPath))
+            
+            // Include XML documentation from all API projects
+            var xmlFiles = new[]
             {
-                c.IncludeXmlComments(xmlPath);
+                "TravelBookingPlatform.Host.xml",
+                "TravelBookingPlatform.Modules.Identity.Api.xml",
+                "TravelBookingPlatform.Modules.Hotels.Api.xml"
+            };
+
+            foreach (var xmlFile in xmlFiles)
+            {
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                if (File.Exists(xmlPath))
+                {
+                    c.IncludeXmlComments(xmlPath);
+                }
             }
+
+            // Add custom filter to remove text/json media types
+            c.OperationFilter<RemoveTextJsonMediaTypeFilter>();
 
             // Add JWT Authentication to Swagger
             c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
