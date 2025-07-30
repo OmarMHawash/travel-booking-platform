@@ -23,6 +23,16 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace TravelBookingPlatform.Host.Configuration;
 
 /// <summary>
+/// Helper class for binding OpenAPI server information from appsettings.json.
+/// </summary>
+public class OpenApiServerInfo
+{
+    public string Url { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+}
+
+
+/// <summary>
 /// Custom operation filter to remove unsupported media types from OpenAPI generation
 /// This removes text/json and application/*+json media types that cause issues with fumadocs-openapi
 /// </summary>
@@ -91,6 +101,24 @@ public static class StartupExtensions
     {
         // Configure Serilog
         builder.ConfigureSerilog();
+
+        builder.Services.AddCors(options =>
+        {
+            var policyName = builder.Configuration["Cors:PolicyName"];
+            options.AddPolicy(policyName,
+                policyBuilder =>
+                {
+                    var origins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>();
+                    if (origins != null)
+                    {
+                        policyBuilder.WithOrigins(origins)
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    } else {
+                        Log.Warning("No origins found in Cors:Origins");
+                    }
+                });
+        });
 
         // Configure database and shared infrastructure
         List<Assembly> entityConfigurationAssemblies =
@@ -179,6 +207,7 @@ public static class StartupExtensions
                 options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.ReportApiVersions = true;
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
             })
             .AddApiExplorer(options =>
             {
@@ -192,6 +221,15 @@ public static class StartupExtensions
         {
             c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
             { Title = "Travel Booking Platform API", Version = "v1" });
+
+            var servers = builder.Configuration.GetSection("OpenApi:Servers").Get<List<OpenApiServerInfo>>();
+            if (servers != null && servers.Any())
+            {
+                foreach (var server in servers)
+                {
+                    c.AddServer(new OpenApiServer { Url = server.Url, Description = server.Description });
+                }
+            }
             
             // Include XML documentation from all API projects
             var xmlFiles = new[]
@@ -295,6 +333,8 @@ public static class StartupExtensions
 
         app.UseRouting();
 
+        app.UseCors(app.Configuration["Cors:PolicyName"]!);
+
         // Authentication and Authorization
         app.UseAuthentication();
         app.UseAuthorization();
@@ -304,7 +344,7 @@ public static class StartupExtensions
 
         app.MapControllers();
 
-        return app; // Return app for fluent chaining
+        return app;
     }
 
     /// <summary>

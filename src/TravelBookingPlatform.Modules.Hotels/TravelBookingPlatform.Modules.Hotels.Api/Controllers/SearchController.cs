@@ -131,7 +131,7 @@ public class SearchController : ControllerBase
     }
 
     /// <summary>
-    /// Get hotel suggestions for autocomplete (specific to hotels only)
+    /// Get hotel suggestions autocomplete
     /// </summary>
     /// <param name="q">Search query text</param>
     /// <param name="limit">Maximum number of suggestions to return (default: 10)</param>
@@ -157,7 +157,7 @@ public class SearchController : ControllerBase
     }
 
     /// <summary>
-    /// Get city suggestions for autocomplete (specific to cities only)
+    /// Get city suggestions autocomplete
     /// </summary>
     /// <param name="q">Search query text</param>
     /// <param name="limit">Maximum number of suggestions to return (default: 10)</param>
@@ -183,7 +183,7 @@ public class SearchController : ControllerBase
     }
 
     /// <summary>
-    /// Get home page data including featured deals, popular destinations, and recently visited hotels (for authenticated users)
+    /// Get home page data : featured deals, popular destinations, recently visited
     /// </summary>
     /// <returns>Combined home page data with personalization for authenticated users</returns>
     [HttpGet("home-page")]

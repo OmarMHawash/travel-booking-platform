@@ -21,7 +21,7 @@ public class SystemController : ControllerBase
         {
             ApplicationName = "TravelBookingPlatform",
             Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production",
-            Version = "1.0.0",
+            Version = "0.1.0",
             CurrentTime = DateTimeOffset.UtcNow
         });
     }
