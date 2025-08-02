@@ -11,13 +11,5 @@
         <NoWarn>$(NoWarn);1591</NoWarn> <!-- Disable warning for missing XML comments on public members -->
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <!-- Add other analyzers here, e.g., SonarAnalyzer.CSharp -->
-    </ItemGroup>
-
 </Project>
 

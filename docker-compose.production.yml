@@ -1,0 +1,59 @@
+services:
+  travel-booking-api:
+    container_name: travel-booking-api
+    build:
+      context: .
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080;http://+:8081
+      - "ConnectionStrings__DefaultConnection=Server=sql-server-db;Database=TravelBookingPlatform;User Id=sa;Password=Aa@1231Bb!;TrustServerCertificate=True;"
+      - "ConnectionStrings__SerilogConnection=Server=sql-server-db;Database=master;User Id=sa;Password=Aa@1231Bb!;TrustServerCertificate=True;"
+    depends_on:
+      sql-server-db:
+        condition: service_healthy
+    networks:
+      - travel-network
+
+  # MS SQL Server Database Service
+  sql-server-db:
+    container_name: sql-server-db
+    build:
+      context: ./docker/sql-server
+    environment:
+      - ACCEPT_EULA=Y
+      - "MSSQL_SA_PASSWORD=Aa@1231Bb!"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql-server-data:/var/opt/mssql
+    networks:
+      - travel-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/opt/mssql-tools18/bin/sqlcmd",
+          "-C",
+          "-S",
+          "localhost",
+          "-U",
+          "sa",
+          "-P",
+          "Aa@1231Bb!",
+          "-Q",
+          "SELECT 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+# Define a network for the services to communicate
+networks:
+  travel-network:
+    driver: bridge
+
+# Define a volume to persist database data across container restarts
+volumes:
+  sql-server-data:
+    driver: local
