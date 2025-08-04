@@ -13,9 +13,6 @@ services:
     depends_on:
       sql-server-db:
         condition: service_healthy
-    # Do not publish ports on shared VPS; Coolify will route
-    expose:
-      - "8080"
     networks:
       - travel-network
     restart: unless-stopped
@@ -32,8 +29,6 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-    expose:
-      - "3000"
     networks:
       - travel-network
     restart: unless-stopped
@@ -50,8 +45,6 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-    expose:
-      - "3000"
     networks:
       - travel-network
     restart: unless-stopped
@@ -68,9 +61,6 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=Aa@1231Bb!
-    # Do not publish 1433 on a shared VPS unless absolutely needed
-    expose:
-      - "1433"
     volumes:
       - sql-server-data:/var/opt/mssql
     networks:
