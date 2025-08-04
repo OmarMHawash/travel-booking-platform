@@ -1,0 +1,69 @@
+---
+title: Database & Migrations
+description: How the project uses Entity Framework Core for data persistence and manages schema changes.
+icon: Database
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Steps } from "fumadocs-ui/components/steps";
+import { Step } from "fumadocs-ui/components/steps";
+
+All data persistence in this project is handled by **Entity Framework Core (EF Core) 8**, targeting a **SQL Server** database. This page explains the key components of our data access layer and how to manage database schema changes.
+
+### Key Components
+
+- **`ApplicationDbContext`**: Located in `SharedInfrastructure`, this is the central EF Core `DbContext` for the entire application. It contains `DbSet<>` properties for all entities across all modules.
+- **Repository Pattern**: We use the repository pattern to abstract data access logic. Each module defines its own repository interfaces (e.g., `IHotelRepository`) in its Application layer and implements them in its Infrastructure layer. This keeps data access concerns separate from business logic.
+- **Unit of Work**: The `IUnitOfWork` interface (and its implementation in `SharedInfrastructure`) orchestrates transactions. It ensures that multiple repository operations can be committed to the database as a single, atomic transaction.
+
+### Managing Migrations
+
+When you make a change to a domain entity (e.g., add a new property), you must create a new database migration to apply that change to the database schema.
+
+<Steps>
+<Step>
+#### 1. Make Your Model Change
+
+Modify your entity class in the appropriate Domain project. For example, add a `PhoneNumber` property to the `Hotel` entity.
+
+```csharp title="src/.../Hotels.Domain/Hotel.cs"
+public class Hotel : Entity
+{
+    // ... existing properties
+    public string PhoneNumber { get; set; }
+}
+```
+
+</Step>
+<Step>
+#### 2. Create the Migration
+
+From the root of the repository, navigate to the `Host` project directory and run the `dotnet ef migrations add` command. Give the migration a descriptive name.
+
+```bash
+cd src/TravelBookingPlatform.Host
+dotnet ef migrations add AddPhoneNumberToHotel
+```
+
+This will generate a new migration file in the `SharedInfrastructure/Migrations` folder.
+
+</Step>
+<Step>
+#### 3. Apply the Migration
+
+To apply the new migration to your local database, run the `database update` command.
+
+```bash
+dotnet ef database update
+```
+
+Your database schema now matches your updated domain model.
+
+</Step>
+</Steps>
+
+<Callout>
+  All migration files are centralized in the `SharedInfrastructure` project.
+  This is a deliberate choice for the modular monolith, simplifying database
+  management.
+</Callout>

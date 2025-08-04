@@ -1,0 +1,42 @@
+---
+title: Error Handling
+description: The project's strategy for handling exceptions and returning consistent error responses.
+icon: TriangleAlert
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+A robust application must handle errors gracefully. Our strategy is to use a **global exception handling middleware** to catch all unhandled exceptions and return a standardized, machine-readable error response.
+
+### RFC 7807 ProblemDetails
+
+All error responses from our API conform to the **RFC 7807 ProblemDetails** standard. This provides a consistent JSON structure for communicating HTTP API errors.
+
+_Example `400 Bad Request` Response_
+
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "One or more validation errors occurred.",
+  "errors": {
+    "Name": ["City name is required."]
+  }
+}
+```
+
+### Types of Errors
+
+Our middleware differentiates between two main types of exceptions:
+
+1.  **Business Errors (`400 Bad Request`)**: These are predictable errors that occur when a user violates a business rule. To trigger this, you should throw our custom `BusinessValidationException` from your Application layer.
+    _Example:_ "Email address is already in use."
+
+2.  **System Errors (`500 Internal Server Error`)**: These are unexpected, unrecoverable errors (e.g., database is down, null reference). For these, you don't need to do anything. Let the original exception be thrown. The middleware will catch it, log it with high severity, and return a generic 500 response to the user, hiding sensitive implementation details.
+
+<Callout>
+  By distinguishing between these error types, we can provide meaningful
+  feedback to users for correctable errors while safely handling unexpected
+  system failures.
+</Callout>

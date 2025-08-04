@@ -1,0 +1,106 @@
+---
+title: Add a New Unit Test
+description: Write a fast, isolated unit test for a CQRS handler using NSubstitute.
+icon: Beaker
+---
+
+import { Steps, Step } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+
+Unit tests are essential for verifying the business logic of a single class in isolation. Let's write a unit test for our new `CreateReviewCommandHandler`.
+
+<Steps>
+
+<Step>
+### 1. Create the Test Class
+
+In the `TravelBookingPlatform.UnitTests` project, create a new test class. We will use `NSubstitute` to create mocks for the handler's dependencies.
+
+```csharp title="tests/.../CreateReviewCommandHandlerTests.cs"
+public class CreateReviewCommandHandlerTests
+{
+    private readonly CreateReviewCommandHandler _handler;
+    private readonly IReviewRepository _reviewRepositoryMock;
+    private readonly IHotelRepository _hotelRepositoryMock;
+    private readonly IUnitOfWork _unitOfWorkMock;
+
+    public CreateReviewCommandHandlerTests()
+    {
+        _reviewRepositoryMock = Substitute.For<IReviewRepository>();
+        _hotelRepositoryMock = Substitute.For<IHotelRepository>();
+        _unitOfWorkMock = Substitute.For<IUnitOfWork>();
+
+        _handler = new CreateReviewCommandHandler(
+            _reviewRepositoryMock, _hotelRepositoryMock, _unitOfWorkMock);
+    }
+}
+```
+
+</Step>
+
+<Step>
+### 2. Write the "Happy Path" Test
+
+This test will verify that when given valid data, the handler correctly creates a review and saves it.
+
+```csharp
+[Fact]
+public async Task Handle_WhenHotelExists_ShouldCreateAndSaveReview()
+{
+    // Arrange
+    var command = new CreateReviewCommand(Guid.NewGuid(), 5, "Great!");
+
+    // Configure the mock to simulate that the hotel exists
+    _hotelRepositoryMock.ExistsByIdAsync(command.HotelId).Returns(true);
+
+    // Act
+    var reviewId = await _handler.Handle(command, default);
+
+    // Assert
+    // Verify that a review was added to the repository
+    await _reviewRepositoryMock.Received(1).AddAsync(Arg.Is<Review>(
+        r => r.Id == reviewId && r.Rating == command.Rating
+    ));
+
+    // Verify that SaveChangesAsync was called exactly once
+    await _unitOfWorkMock.Received(1).SaveChangesAsync(default);
+}
+```
+
+</Step>
+
+<Step>
+### 3. Write the "Failure Path" Test
+
+This test will verify that if the hotel does not exist, the handler throws the correct exception and does _not_ save anything.
+
+```csharp
+[Fact]
+public async Task Handle_WhenHotelDoesNotExist_ShouldThrowException()
+{
+    // Arrange
+    var command = new CreateReviewCommand(Guid.NewGuid(), 5, "Great!");
+
+    // Configure the mock to simulate that the hotel does NOT exist
+    _hotelRepositoryMock.ExistsByIdAsync(command.HotelId).Returns(false);
+
+    // Act
+    Func<Task> act = async () => await _handler.Handle(command, default);
+
+    // Assert
+    // Verify that the correct exception was thrown
+    await act.Should().ThrowAsync<BusinessValidationException>();
+
+    // Verify that AddAsync and SaveChangesAsync were NEVER called
+    await _reviewRepositoryMock.DidNotReceive().AddAsync(Arg.Any<Review>());
+    await _unitOfWorkMock.DidNotReceive().SaveChangesAsync(default);
+}
+```
+
+</Step>
+</Steps>
+
+<Callout>
+  These tests run in milliseconds because they never touch a real database,
+  providing a fast and reliable feedback loop during development.
+</Callout>

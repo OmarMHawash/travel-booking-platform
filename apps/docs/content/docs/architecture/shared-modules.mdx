@@ -1,0 +1,35 @@
+---
+title: Shared Infrastructure
+description: The common, cross-cutting components that support all other modules.
+icon: Library
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Unlike the other modules, the Shared Infrastructure projects do not represent a specific business capability. Instead, they provide the technical "glue" and common services that are used by all other modules in the application. This approach promotes code reuse and ensures consistency.
+
+The two main projects are `Core` and `SharedInfrastructure`.
+
+### Key Components & Responsibilities
+
+- **`Core` Projects (`Core.Domain`, `Core.Application`):**
+
+  - Contains base classes and interfaces that are fundamental to our architecture (e.g., `Entity`, `ValueObject`, `IUnitOfWork`, `IRequest`). It has the fewest dependencies.
+
+- **`SharedInfrastructure` Project:**
+  - **ApplicationDbContext:** The central EF Core `DbContext` that includes `DbSet` properties for entities from all modules.
+  - **Unit of Work Pattern:** The concrete implementation for managing atomic transactions across multiple repository operations.
+  - **Generic Repository:** A base repository implementation with common data access methods (`GetByIdAsync`, `Add`, etc.).
+  - **Database Migrations:** The centralized location for all EF Core migrations.
+  - **Global Middleware:** Handlers for global exception logging and RFC 7807-compliant error responses.
+  - **Health Checks:** The `/health` endpoint implementation for monitoring database connectivity.
+
+<Callout title="No Business Logic Here">
+  These shared projects intentionally contain **no business-specific logic**.
+  They are purely technical and foundational, providing the stable base upon
+  which the `Identity` and `Hotels` modules are built.
+</Callout>
+
+### API Endpoints
+
+This layer does not define business-specific API controllers. Its only contribution to the API surface is through middleware and services like the `/health` check endpoint.

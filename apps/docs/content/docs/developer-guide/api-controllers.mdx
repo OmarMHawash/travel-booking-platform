@@ -1,0 +1,46 @@
+---
+title: API & Controllers
+description: Best practices for creating thin, clean, and consistent API controllers.
+icon: Network
+---
+
+API Controllers are the entry point into our system. Our philosophy is that controllers should be as **"thin"** as possible. Their only job is to mediate between the HTTP world and the application's internal logic.
+
+### Controller Responsibilities
+
+A controller action should:
+
+- Define the route and HTTP verb (e.g., `[HttpPost("register")]`).
+- Specify authorization rules (e.g., `[Authorize]`).
+- Receive an incoming request (as a command/query object or parameters).
+- Send the request to MediatR for processing.
+- Return an appropriate HTTP response (`Ok`, `NoContent`, `NotFound`, etc.).
+
+A controller action should **NOT**:
+
+- Contain any business logic.
+- Interact directly with the database or repositories.
+- Perform complex data transformations.
+
+### Anatomy of a Controller Action
+
+This example demonstrates a typical controller action for creating a hotel.
+
+```csharp title="src/.../Hotels.Api/HotelsController.cs"
+[HttpPost]
+[Authorize(Roles = "Admin")] // 1. Authorization rule
+[ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)] // 2. Swagger docs
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+public async Task<IActionResult> CreateHotel([FromBody] CreateHotelCommand command)
+{
+    // 3. Delegate work to MediatR
+    var result = await _sender.Send(command);
+
+    // 4. Return an appropriate HTTP response
+    return CreatedAtAction(nameof(GetHotelById), new { id = result }, result);
+}
+```
+
+### API Versioning
+
+We use `Asp.Versioning` to manage API versions. All controllers are decorated with an `[ApiVersion("1.0")]` attribute, and routes are prefixed with `/api/v{version:apiVersion}`. This allows us to introduce future versions (e.g., v2) without breaking existing clients.

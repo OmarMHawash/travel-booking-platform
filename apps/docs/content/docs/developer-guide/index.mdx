@@ -1,0 +1,72 @@
+---
+title: Overview
+description: The essential guide for developers working on the Travel Booking Platform.
+icon: BookUser
+---
+
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
+import {
+  HardHat,
+  Layers,
+  Wrench,
+  Package,
+  MonitorSmartphone,
+  GitBranch,
+  Hand,
+} from "lucide-react";
+
+## Welcome, Developer!
+
+This guide is your central resource for understanding how to work on the Travel Booking Platform. It contains everything you need to know about the project's structure, coding conventions, key libraries, and best practices.
+
+Following these guidelines will help you contribute effectively and ensure the codebase remains clean, consistent, and maintainable.
+
+<Callout>
+  Before diving in, make sure you have successfully completed the steps in the
+  **[Getting Started](/docs/getting-started)** section to set up your local
+  environment.
+</Callout>
+
+### Guide Sections
+
+This guide is broken down into several key areas.
+
+<Cards>
+  <Card
+    href="./developer-guide/overview"
+    title="Overview"
+    icon={<HardHat />}
+    description="A high-level introduction to the development philosophy and experience."
+  />
+  <Card
+    href="./developer-guide/project-layers"
+    title="Project Layers"
+    icon={<Layers />}
+    description="A practical look at what kind of code belongs in each layer of the Clean Architecture."
+  />
+  <Card
+    href="./developer-guide/libraries-and-packages"
+    title="Libraries & Packages"
+    icon={<Package />}
+    description="A list of the major NuGet packages used in the project and their roles."
+  />
+  <Card
+    href="./developer-guide/environment"
+    title="Development Environment"
+    icon={<MonitorSmartphone />}
+    description="Learn about configuration management, user secrets, and coding standards."
+  />
+  <Card
+    href="./developer-guide/best-practices"
+    title="Best Practices"
+    icon={<Wrench />}
+    description="Detailed explanations of our core development patterns, including CQRS and validation."
+  />
+  <Card
+    href="./developer-guide/guidelines"
+    title="Contribution Guidelines"
+    icon={<GitBranch />}
+    description="The step-by-step process for contributing code, from branching to pull requests."
+  />
+</Cards>

@@ -1,0 +1,36 @@
+---
+title: Database Setup
+description: How to create and seed the database using Entity Framework Core migrations.
+icon: Database
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Now that the application is configured to connect to your database server, you need to create the database schema and populate it with initial data.
+
+This project uses a single command to handle everything. From the `src/TravelBookingPlatform.Host` directory, run:
+
+```bash
+dotnet ef database update
+```
+
+This command will automatically:
+
+1.  Connect to your SQL Server instance.
+2.  Create a new database named `TravelBookingDb` (or as specified in your connection string).
+3.  Apply all the table schemas required by the application.
+4.  **Seed the database** with comprehensive sample data.
+
+<Callout title="What's in the Sample Data?" type="info">
+  The seeding process creates a realistic development environment for you,
+  including:
+
+  <ul>
+  - An **Admin** user and a **Typical User**.
+  - Multiple cities and hotels.
+  - A variety of room types and rooms.
+  - Featured deals and existing bookings for testing.
+  </ul>
+</Callout>
+
+Your database is now ready. The final step is to run the application.

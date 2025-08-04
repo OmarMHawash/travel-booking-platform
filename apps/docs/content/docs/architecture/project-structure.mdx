@@ -1,0 +1,98 @@
+---
+title: Project Structure
+description: A visual and descriptive map of the solution's folders and projects, showing how the architecture is physically organized.
+icon: FolderTree
+---
+
+import { Files, Folder, File } from "fumadocs-ui/components/files";
+import { Callout } from "fumadocs-ui/components/callout";
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { UserCog, BedDouble } from "lucide-react";
+
+The architectural concepts we've discussed are not just abstract ideas; they are physically represented in the way our solution's folders and projects are organized. This structure is deliberate, designed to enforce separation of concerns and make the codebase intuitive to navigate.
+
+## Visual Project Map
+
+Below is an interactive representation of the solution structure.
+
+<Files>
+  <File name="TravelBookingPlatform.sln" />
+  <Folder name="src/" defaultOpen>
+    <Folder name="TravelBookingPlatform.Core/" defaultOpen>
+      <File name="TravelBookingPlatform.Core.Domain/" />
+      <File name="TravelBookingPlatform.Core.Application/" />
+    </Folder>
+    <Folder name="TravelBookingPlatform.Modules.Identity/" defaultOpen>
+      <File name="TravelBookingPlatform.Modules.Identity.Api/" />
+      <File name="TravelBookingPlatform.Modules.Identity.Infrastructure/" />
+      <File name="TravelBookingPlatform.Modules.Identity.Application/" />
+      <File name="TravelBookingPlatform.Modules.Identity.Domain/" />
+    </Folder>
+    <Folder name="TravelBookingPlatform.Modules.Hotels/" defaultOpen>
+      <File name="TravelBookingPlatform.Modules.Hotels.Api/" />
+      <File name="TravelBookingPlatform.Modules.Hotels.Infrastructure/" />
+      <File name="TravelBookingPlatform.Modules.Hotels.Application/" />
+      <File name="TravelBookingPlatform.Modules.Hotels.Domain/" />
+    </Folder>
+    <Folder name="TravelBookingPlatform.SharedInfrastructure/" defaultOpen>
+      <File name="ApplicationDbContext.cs" />
+      <File name="UnitOfWork.cs" />
+      <File name="Migrations/" />
+    </Folder>
+    <Folder name="TravelBookingPlatform.Host/" defaultOpen>
+      <File name="Program.cs" />
+      <File name="appsettings.json" />
+    </Folder>
+  </Folder>
+  <Folder name="tests/" defaultOpen>
+    <File name="TravelBookingPlatform.IntegrationTests/" />
+    <File name="TravelBookingPlatform.UnitTests/" />
+  </Folder>
+</Files>
+
+## Layer Justification
+
+Each top-level directory has a clear and distinct purpose.
+
+- **`src/`**: This is the heart of the application, containing all the source code organized by modules and layers.
+- **`tests/`**: Home to all automated tests. The separation between `UnitTests` and `IntegrationTests` allows us to test different aspects of the system in isolation or together.
+
+## How the Structure Enables Our Goals
+
+This specific layout directly supports our architectural goals.
+
+### Modular Monolith & Microservices Readiness
+
+Each `TravelBookingPlatform.Modules.<ModuleName>` folder is a self-contained "bounded context" representing a distinct business capability. The strict layering (`Domain`, `Application`, `Infrastructure`, `Api`) within each module ensures low coupling. This makes it straightforward to maintain the monolith and provides a clear path to extract a module into its own microservice in the future if needed.
+
+### Technology Integration
+
+The structure provides clear homes for different technologies, ensuring they are used consistently and in the correct layer.
+
+| Technology / Practice  | Implementation Location                                                                                          |
+| :--------------------- | :--------------------------------------------------------------------------------------------------------------- |
+| **.NET 8 / C# 12**     | Solution-wide, configured in project files.                                                                      |
+| **EF Core & SQL**      | `SharedInfrastructure` for the `DbContext` and migrations. Repositories in each module's `Infrastructure` layer. |
+| **MediatR (CQRS)**     | Commands/Queries and Handlers are in each module's `Application` layer.                                          |
+| **JWT & Identity**     | Handled exclusively within the `TravelBookingPlatform.Modules.Identity` module.                                  |
+| **Swagger & API Docs** | Configured in the `Host` project, which discovers controllers from all modules.                                  |
+| **FluentValidation**   | Validators are placed alongside their respective Commands/Queries in the `Application` layer.                    |
+
+## Explore the Modules
+
+Now that you've seen the high-level structure, dive into the specifics of each module to understand their responsibilities and domain models.
+
+<Cards>
+  <Card
+    href="./identity-module"
+    title="Next: Identity Module"
+    icon={<UserCog />}
+    description="Explore the module responsible for users, roles, and security."
+  />
+  <Card
+    href="./hotel-module"
+    title="Next: Hotel Module"
+    icon={<BedDouble />}
+    description="Discover the core business logic for hotels, search, and rooms."
+  />
+</Cards>

@@ -1,0 +1,38 @@
+---
+title: Overview
+description: A high-level introduction to the development philosophy and experience of the platform.
+icon: HardHat
+---
+
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Layers } from "lucide-react";
+
+Welcome to the development team! Working on the Travel Booking Platform is designed to be a structured and rewarding experience. The project is built with a strong emphasis on **clarity, maintainability, and code quality**, following established enterprise-level patterns.
+
+### The Development Philosophy
+
+Our core philosophy is to build software that is:
+
+- **Easy to Understand:** By using patterns like Clean Architecture and CQRS, we ensure that every piece of code has a clear and logical home.
+- **Easy to Test:** The separation of concerns makes it simple to write focused unit tests for business logic and comprehensive integration tests for API workflows.
+- **Easy to Change:** Low coupling between modules and layers means that changes in one part of the system are less likely to break another.
+
+### What to Expect
+
+When you work on this project, you will primarily be interacting with:
+
+- **CQRS Commands and Queries:** Most new features will involve creating a new command or query and its corresponding handler.
+- **Domain Entities:** You will model and enrich business entities with rules and behavior accordingto Domain-Driven Design principles.
+- **API Controllers:** You will expose application functionality through clean, versioned RESTful API endpoints.
+- **FluentValidation:** You will add validation rules to ensure the integrity of incoming data.
+
+This structured approach minimizes guesswork and helps you write high-quality, consistent code from day one.
+
+<Cards>
+  <Card
+    href="./project-layers"
+    title="Next: Project Layers"
+    icon={<Layers />}
+    description="Learn about the practical responsibilities of each architectural layer."
+  />
+</Cards>

@@ -1,0 +1,45 @@
+---
+title: Contribution Guidelines
+description: The process for contributing code, from Git workflow to pull requests.
+icon: GitBranch
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+We welcome contributions! To ensure a smooth and collaborative process, please follow these guidelines when submitting code.
+
+### Git Workflow
+
+We use a simple feature-branch workflow.
+
+1.  **Clone the Repository:** clone the main repository on GitHub.
+2.  **Create a Branch:** For every new feature or bugfix, create a new branch from `dev`. Name it descriptively (e.g., `feat/add-room-management` or `fix/login-validation-bug`).
+3.  **Commit Your Changes:** Make your changes and commit them with clear, descriptive messages.
+4.  **Push to Your Fork:** Push your branch to your forked repository on GitHub.
+5.  **Create a Pull Request:** Open a pull request from your branch to the `dev` branch of the original repository.
+
+### Coding Style
+
+- Please adhere to the styles defined in the `.editorconfig` file. Most IDEs will pick this up automatically.
+- We Primarly favour the components to be as small and focused as possible, seperating into methods, classes and namespaces.
+
+### Commit Messages
+
+We encourage the use of [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) to make the commit history more readable. This is not a strict requirement, but it is highly recommended.
+
+- **`feat:`** for a new feature.
+- **`fix:`** for a bug fix.
+- **`docs:`** for documentation changes.
+- **`test:`** for adding or refactoring tests.
+- **`refactor:`** for code changes that neither fix a bug nor add a feature.
+- **`chore:`** for build process or tooling changes.
+
+_Example:_ `feat: Implement CreateBookingCommand and handler`
+
+### Pull Requests
+
+A good pull request is easy to review and merge.
+
+- **Provide a Clear Title and Description:** Explain _what_ your PR does and _why_ it's needed. If it resolves an existing issue, link to it (e.g., "Closes #123").
+- **Keep it Focused:** A PR should address a single feature or bug. Avoid mixing unrelated changes.
+- **Ensure Tests Pass:** All existing and new tests must be passing before a PR can be merged.

@@ -1,0 +1,47 @@
+---
+title: Introduction
+description: Welcome to the Travel Booking Platform. Learn about the project's goals and how to navigate this documentation.
+icon: Rocket
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Plane } from "lucide-react";
+
+## Welcome to the Travel Booking Platform
+
+The Travel Booking Platform is the engine designed to power a modern, scalable travel and accommodation booking website. It's a backend system that handles everything from user accounts and secure authentication to advanced, real-time hotel searching.
+
+While it is a fully functional application with production-ready components, its primary purpose is to serve as a high-quality, real-world example of enterprise-level software engineering. It's a blueprint for building robust, maintainable, and well-architected applications.
+
+## What is the Goal of This Project?
+
+This platform was built with two primary goals in mind:
+
+- **A Learning & Demonstration Tool:** It serves as a live, practical example of modern backend architecture, including Clean Architecture, CQRS, and modular monolith design. It's built to showcase best practices in a tangible way.
+- **A Foundation for a Real Application:** The architectural principles and code quality are not just for show. The project is a solid foundation that can be extended with booking and payment functionality to become a complete, production-grade application.
+
+<Callout title="Who is this documentation for?" type="info">
+  This documentation is crafted for two main audiences: **Developers** who want
+  to understand, run, and contribute to the codebase, and **Architects or
+  Technical Reviewers** who want to assess the project's design and quality.
+</Callout>
+
+## How to Use This Documentation
+
+This site is organized to help you find the information you need as efficiently as possible. Here’s a quick guide to what you can find in each section:
+
+- **Getting Started:** The first stop for any developer. This section provides a straightforward, step-by-step guide to setting up your local development environment and running the project in minutes.
+- **Architecture:** The "big picture" view. Here you'll learn about the core design decisions, the modular structure, and why technologies like Clean Architecture and CQRS were chosen.
+- **Developer Guide:** The rulebook for contributing. It covers our conventions for coding, error handling, validation, and testing to ensure consistency and quality.
+- **How-To Guides:** A cookbook of practical recipes. Need to add a new API endpoint or a database entity? These guides provide short, focused tutorials for the most common development tasks.
+- **API Reference:** The interactive map of all our API endpoints, powered by Swagger. Here you can see every available request and response and even test them live directly from your browser.
+
+<Cards>
+  <Card href="/docs/getting-started" title="Get Started" icon={<Plane />}>
+    For the hands-on developer. Dive in, clone the repository, and run the API.
+  </Card>
+  <Card href="/docs/architecture" title="Explore the Architecture">
+    For the planner or architect. Understand the blueprint behind the code.
+  </Card>
+</Cards>

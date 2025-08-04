@@ -1,0 +1,78 @@
+---
+title: Overview
+description: An in-depth look at the design principles, structure, and modules that form the Travel Booking Platform.
+icon: Cuboid
+---
+
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
+import {
+  BrainCircuit,
+  FolderTree,
+  UserCog,
+  BedDouble,
+  CalendarCheck,
+  Library,
+} from "lucide-react";
+
+## The Blueprint of the Platform
+
+Welcome to the architectural deep-dive of the Travel Booking Platform. This section explains the "why" and "how" behind the project's construction. The system is intentionally designed using enterprise-level patterns like **Clean Architecture, CQRS, and a Modular Monolith design** to ensure it is scalable, maintainable, and a pleasure for developers to work on.
+
+Understanding these principles is key to contributing effectively and appreciating the project's structure.
+
+### Core Design Principles
+
+These guides cover the high-level patterns and physical layout of the solution.
+
+<Cards>
+  <Card
+    href="./architecture/core-concepts"
+    title="Core Concepts"
+    icon={<BrainCircuit />}
+    description="Learn about the fundamental patterns like Clean Architecture, Domain-Driven Design (DDD), and CQRS that govern the project's design."
+  />
+  <Card
+    href="./architecture/project-structure"
+    title="Project Structure"
+    icon={<FolderTree />}
+    description="A visual map of the solution, showing how folders and projects are organized by layer and feature."
+  />
+</Cards>
+
+### Feature Modules
+
+The platform is built as a Modular Monolith, where distinct business capabilities are isolated into their own modules. Each module has its own internal layers and is responsible for a specific part of the domain.
+
+<Callout>
+  This structure provides clear boundaries and makes it easier to reason about
+  the codebase, and even extract modules into separate microservices in the
+  future.
+</Callout>
+
+<Cards>
+  <Card
+    href="./architecture/identity-module"
+    title="Identity Module"
+    icon={<UserCog />}
+    description="Handles all aspects of user management, including registration, JWT-based authentication, and role-based authorization."
+  />
+  <Card
+    href="./architecture/hotel-module"
+    title="Hotel Module"
+    icon={<BedDouble />}
+    description="The core business domain, responsible for managing cities, hotels, rooms, deals, and the advanced search engine."
+  />
+  <Card
+    href="./architecture/booking-module"
+    title="Booking Module"
+    icon={<CalendarCheck />}
+    description="Defines the logic for reservations. Domain logic is defined, but the API and application layers are pending implementation."
+  />
+  <Card
+    href="./architecture/shared-modules"
+    title="Shared Infrastructure"
+    icon={<Library />}
+    description="Contains cross-cutting concerns like the central DbContext, the Unit of Work pattern, and global middleware."
+  />
+</Cards>

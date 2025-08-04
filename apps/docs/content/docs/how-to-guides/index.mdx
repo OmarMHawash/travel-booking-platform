@@ -1,0 +1,48 @@
+---
+title: Overview
+description: Practical, step-by-step recipes for the most common development tasks.
+icon: BookCopy
+---
+
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
+import { DatabaseZap, CircuitBoard, Beaker, FlaskConical } from "lucide-react";
+
+## The Developer's Cookbook
+
+Welcome to the How-to Guides. This section provides short, focused, step-by-step instructions for performing the most common development tasks on the platform. Think of these as recipes you can follow to build new features consistently and correctly.
+
+<Callout>
+  These guides assume you have a solid understanding of the concepts covered in
+  the **[Architecture](/docs/architecture)** and **[Developer
+  Guide](/docs/developer-guide)** sections.
+</Callout>
+
+To make these guides practical, we will walk through a complete, real-world example: **adding a new "Hotel Review" feature** to the platform.
+
+<Cards>
+  <Card
+    href="./how-to-guides/add-new-entity"
+    title="Add a New Entity"
+    icon={<DatabaseZap />}
+    description="Learn how to add a new domain entity, update the database context, and create the corresponding database migration."
+  />
+  <Card
+    href="./how-to-guides/add-new-api-endpoint"
+    title="Add a New API Endpoint"
+    icon={<CircuitBoard />}
+    description="The complete CQRS flow for creating a new API endpoint, including the command, validator, handler, and controller action."
+  />
+  <Card
+    href="./how-to-guides/add-new-unit-test"
+    title="Add a New Unit Test"
+    icon={<Beaker />}
+    description="How to write a fast, isolated unit test for a CQRS handler to verify its business logic using mocked dependencies."
+  />
+  <Card
+    href="./how-to-guides/add-new-integration-test"
+    title="Add a New Integration Test"
+    icon={<FlaskConical />}
+    description="How to write a mocked integration test to verify a full API workflow from the controller down to the repository."
+  />
+</Cards>

@@ -1,0 +1,53 @@
+---
+title: Overview
+description: A complete guide to setting up the Travel Booking Platform, from prerequisites to a running application.
+icon: Cuboid
+---
+
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
+import { ListChecks, Download, Settings, Database, Play } from "lucide-react";
+
+## Your Path to a Running Application
+
+Welcome! This section will guide you through every step required to get the Travel Booking Platform running on your local machine. By following these five sequential guides, you will go from a fresh start to a fully functional API, complete with a seeded database and interactive documentation.
+
+<Callout title="Follow the Steps in Order">
+  Each guide builds upon the previous one. For a smooth and successful setup,
+  please complete them in the order they are presented below.
+</Callout>
+
+Ready? Let's begin.
+
+<Cards>
+  <Card
+    href="./getting-started/prerequisites"
+    title="Prerequisites"
+    icon={<ListChecks />}
+    description="Ensure you have all the necessary software and tools installed before you start."
+  />
+  <Card
+    href="./getting-started/installation"
+    title="Installation"
+    icon={<Download />}
+    description="Clone the source code repository from GitHub to your local machine."
+  />
+  <Card
+    href="./getting-started/configuration"
+    title="Configuration"
+    icon={<Settings />}
+    description="Securely set up your local database connection string without exposing credentials."
+  />
+  <Card
+    href="./getting-started/database-setup"
+    title="Database Setup"
+    icon={<Database />}
+    description="Create the database schema and populate it with realistic sample data using a single command."
+  />
+  <Card
+    href="./getting-started/running-the-application"
+    title="Running the Application"
+    icon={<Play />}
+    description="Launch the API and verify that your installation is successful and fully operational."
+  />
+</Cards>

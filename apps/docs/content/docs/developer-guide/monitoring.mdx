@@ -1,0 +1,60 @@
+---
+title: Monitoring
+description: How to monitor the application's health using the built-in health check endpoint.
+icon: HeartPulse
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+To support operational monitoring, the application exposes a health check endpoint. This provides a simple, external way to verify that the application is running and able to connect to its critical dependencies.
+
+### The `/health` Endpoint
+
+You can access the health check endpoint by making a `GET` request to `/health` on the application's base URL.
+
+- **URL:** `https://localhost:7123/health`
+
+### Health Check Responses
+
+The endpoint will return an HTTP `200 OK` status and a simple body if all checks pass. If any check fails, it will return an HTTP `503 Service Unavailable`.
+
+_Example Healthy Response:_
+
+```json
+{
+  "status": "Healthy",
+  "results": {
+    "database": {
+      "status": "Healthy",
+      "description": "Database connection is healthy."
+    }
+  }
+}
+```
+
+_Example Unhealthy Response:_
+
+```json
+{
+  "status": "Unhealthy",
+  "results": {
+    "database": {
+      "status": "Unhealthy",
+      "description": "Failed to connect to the database."
+    }
+  }
+}
+```
+
+### Current Checks
+
+Currently, the health check system is configured to perform a single check:
+
+- **Database Connectivity:** It executes a simple query (`SELECT 1`) to ensure it can successfully communicate with the SQL Server database.
+
+<Callout>
+  This endpoint is designed to be polled by automated monitoring tools,
+  container orchestrators (like Kubernetes or Docker Swarm), or load balancers
+  to determine if the application instance is healthy and should receive
+  traffic.
+</Callout>

@@ -1,0 +1,31 @@
+---
+title: Best Practices
+description: Detailed explanations of our core development patterns for CQRS, validation, and more.
+icon: Wrench
+---
+
+To ensure consistency and quality, we follow a set of established best practices for common development tasks.
+
+### CQRS Flow
+
+When adding a new feature, you will almost always follow the CQRS pattern.
+
+1.  **Define the Request:** Create a new `record` in the Application layer (e.g., `CreateHotelCommand` or `GetHotelByIdQuery`). This record should contain all the data needed for the operation.
+2.  **Define the Validator:** Create a new `AbstractValidator<T>` class using FluentValidation that targets your request record. Add all validation rules here.
+3.  **Define the Handler:** Create a new `IRequestHandler<TRequest, TResponse>` class. This is where the core logic lives. The handler will receive the validated request, interact with the domain models and repositories, and return a result.
+
+### Validation
+
+- All data coming from an external source (e.g., an API request) **must be validated**.
+- Validation should be performed in the **Application layer** using FluentValidation.
+- Our CQRS pipeline automatically runs the corresponding validator for every request. If validation fails, it short-circuits the request and returns a `400 Bad Request` with a detailed error response, so your handlers don't need to contain validation boilerplate.
+
+### Error Handling
+
+- For expected business rule violations (e.g., "Email already exists"), throw a custom `BusinessValidationException` from your Application or Domain layer. Our global exception handler will catch this and turn it into a user-friendly `400 Bad Request` response.
+- For unexpected or system-level errors (e.g., a database connection failure), let the original exception propagate. The global handler will catch it, log it as a critical error, and return a generic `500 Internal Server Error` response.
+
+### Testing
+
+- **Unit Tests:** Should test a single class in isolation. Use mocks (e.g., with NSubstitute) for all external dependencies. Place these in the `UnitTests` project. Handlers and Domain entities are prime candidates for unit testing.
+- **Integration Tests:** Should test a complete workflow, often from the API controller down to the (mocked) database. These tests confirm that all the pieces of your feature work together correctly. Place these in the `IntegrationTests` project. We have a `MockedIntegrationTestBase` to make this easier.

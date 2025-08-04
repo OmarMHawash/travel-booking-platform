@@ -1,0 +1,69 @@
+---
+title: Add a New Integration Test
+description: Write a mocked integration test to verify a full API workflow.
+icon: FlaskConical
+---
+
+import { Steps, Step } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+
+Integration tests confirm that all layers of your application work together correctly. We use a **mocked repository** approach to test the full API pipeline without the slowness of a real database. Let's test our new `POST /api/v1/reviews` endpoint.
+
+<Steps>
+
+<Step>
+### 1. Create the Test Class
+
+In the `TravelBookingPlatform.IntegrationTests` project, create a new class that inherits from `MockedIntegrationTestBase`. This base class provides an authenticated HTTP client and mocked repositories.
+
+```csharp title="tests/.../ReviewsIntegrationTests.cs"
+public class ReviewsIntegrationTests : MockedIntegrationTestBase
+{
+    // Tests will go here
+}
+```
+
+</Step>
+
+<Step>
+### 2. Write the Integration Test
+
+This test will simulate a real HTTP client making a request to our API.
+
+```csharp
+[Fact]
+public async Task CreateReview_WithValidData_ShouldReturn201Created()
+{
+    // Arrange
+    // 1. Define the command that will be sent in the request body
+    var command = new CreateReviewCommand(Guid.NewGuid(), 5, "Excellent stay!");
+
+    // 2. Mock the repository dependencies that the handler will call.
+    //    We simulate that the hotel exists.
+    HotelRepositoryMock.ExistsByIdAsync(command.HotelId).Returns(true);
+
+    // Act
+    // 3. Use the pre-configured HTTP client to make the API call.
+    //    The Client is already authenticated as a "TypicalUser".
+    var response = await Client.PostAsJsonAsync("/api/v1/reviews", command);
+
+    // Assert
+    // 4. Verify the HTTP response and that our mocks were called.
+    response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+    // Verify that the repository's AddAsync method was called,
+    // confirming our handler logic was executed.
+    await ReviewRepositoryMock.Received(1).AddAsync(Arg.Any<Review>());
+}
+```
+
+</Step>
+
+</Steps>
+
+<Callout>
+  This test runs the actual `ReviewsController`, the MediatR pipeline, the
+  `FluentValidation` behavior, and the `CreateReviewCommandHandler`. It provides
+  very high confidence that the feature works end-to-end, while remaining fast
+  and reliable.
+</Callout>

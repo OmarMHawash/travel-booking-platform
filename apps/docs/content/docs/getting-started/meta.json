@@ -1,0 +1,15 @@
+{
+  "title": "Getting Started",
+  "description": "Getting started with the project",
+  "icon": "Cuboid",
+  "root": true,
+  "pages": [
+    "---Getting Started---",
+    "index",
+    "prerequisites",
+    "installation",
+    "configuration",
+    "database-setup",
+    "running-the-application"
+  ]
+}

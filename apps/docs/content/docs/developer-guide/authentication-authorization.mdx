@@ -1,0 +1,45 @@
+---
+title: Authentication & Authorization
+description: How the project secures endpoints using JWT and role-based access control.
+icon: KeyRound
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Security is handled by the **Identity Module**, which implements a standard and robust **JSON Web Token (JWT)** authentication flow.
+
+### Authentication Flow
+
+1.  A user sends their credentials to the `POST /api/v1/auth/login` endpoint.
+2.  The `LoginCommandHandler` validates the credentials against the hashed password in the database.
+3.  Upon success, a new JWT is generated containing claims about the user (ID, email, role).
+4.  The JWT is returned to the client. The client must then include this token in the `Authorization` header (`Bearer <token>`) for all subsequent requests to secured endpoints.
+
+### Authorization
+
+Once a user is authenticated, we use authorization to control what they are allowed to do. This is achieved through simple, declarative attributes on our controller actions.
+
+- **`[Authorize]`**: Requires the user to be authenticated, but does not check for a specific role.
+- **`[Authorize(Roles = "Admin")]`**: Requires the user to be authenticated _and_ have the "Admin" role.
+
+```csharp title="src/.../Api/CitiesController.cs"
+[ApiController]
+[Route("api/v1/cities")]
+[Authorize] // All actions in this controller require authentication
+public class CitiesController : ControllerBase
+{
+    // ...
+
+    [HttpPost]
+    [Authorize(Roles = "Admin")] // This specific action requires Admin role
+    public async Task<IActionResult> CreateCity([FromBody] CreateCityCommand command)
+    {
+        // ...
+    }
+}
+```
+
+<Callout>
+  Role policies like "Admin" and "TypicalUser" are defined in `Program.cs` and
+  are available for use throughout the application.
+</Callout>
