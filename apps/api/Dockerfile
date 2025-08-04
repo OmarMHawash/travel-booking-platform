@@ -1,12 +1,11 @@
-# Stage 1: Build and Test
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy all .sln, .csproj, and other project files to leverage Docker layer caching
+# Copy solution and props for restore-layer caching
 COPY ["TravelBookingPlatform.sln", "./"]
 COPY ["Directory.Build.props", "./"]
 
-# --- Source Projects ---
+# Source projects (minimize invalidation)
 COPY ["src/TravelBookingPlatform.Core/TravelBookingPlatform.Core.Domain/TravelBookingPlatform.Core.Domain.csproj", "src/TravelBookingPlatform.Core/TravelBookingPlatform.Core.Domain/"]
 COPY ["src/TravelBookingPlatform.Core/TravelBookingPlatform.Core.Application/TravelBookingPlatform.Core.Application.csproj", "src/TravelBookingPlatform.Core/TravelBookingPlatform.Core.Application/"]
 COPY ["src/TravelBookingPlatform.Modules.Identity/TravelBookingPlatform.Modules.Identity.Domain/TravelBookingPlatform.Modules.Identity.Domain.csproj", "src/TravelBookingPlatform.Modules.Identity/TravelBookingPlatform.Modules.Identity.Domain/"]
@@ -20,32 +19,37 @@ COPY ["src/TravelBookingPlatform.Modules.Hotels/TravelBookingPlatform.Modules.Ho
 COPY ["src/TravelBookingPlatform.SharedInfrastructure/TravelBookingPlatform.SharedInfrastructure.csproj", "src/TravelBookingPlatform.SharedInfrastructure/"]
 COPY ["src/TravelBookingPlatform.Host/TravelBookingPlatform.Host.csproj", "src/TravelBookingPlatform.Host/"]
 
-# --- Test Projects ---
+# Test projects (for restore caching; optional if tests not run in container)
 COPY ["tests/TravelBookingPlatform.UnitTests/TravelBookingPlatform.Core.UnitTests/TravelBookingPlatform.Core.UnitTests.csproj", "tests/TravelBookingPlatform.UnitTests/TravelBookingPlatform.Core.UnitTests/"]
 COPY ["tests/TravelBookingPlatform.UnitTests/TravelBookingPlatform.Identity.UnitTests/TravelBookingPlatform.Identity.UnitTests.csproj", "tests/TravelBookingPlatform.UnitTests/TravelBookingPlatform.Identity.UnitTests/"]
 COPY ["tests/TravelBookingPlatform.UnitTests/TravelBookingPlatform.Hotels.UnitTests/TravelBookingPlatform.Hotels.UnitTests.csproj", "tests/TravelBookingPlatform.UnitTests/TravelBookingPlatform.Hotels.UnitTests/"]
 COPY ["tests/TravelBookingPlatform.IntegrationTests/TravelBookingPlatform.Host.IntegrationTests/TravelBookingPlatform.Host.IntegrationTests.csproj", "tests/TravelBookingPlatform.IntegrationTests/TravelBookingPlatform.Host.IntegrationTests/"]
 COPY ["tests/TravelBookingPlatform.IntegrationTests/TravelBookingPlatform.Modules.IntegrationTests/TravelBookingPlatform.Modules.IntegrationTests.csproj", "tests/TravelBookingPlatform.IntegrationTests/TravelBookingPlatform.Modules.IntegrationTests/"]
 
-
-# Restore dependencies for all projects in the solution. This is a separate layer.
+# Restore
 RUN dotnet restore "TravelBookingPlatform.sln"
 
-# Copy the entire source code and test code. This is done after restore to cache layers better.
+# Copy the entire repo
 COPY . .
 
-# Publish the Host project. Remove --no-restore to make this command more robust.
-RUN dotnet publish "src/TravelBookingPlatform.Host/TravelBookingPlatform.Host.csproj" -c Release -o /app/publish
+# Publish Host project
+RUN dotnet publish "src/TravelBookingPlatform.Host/TravelBookingPlatform.Host.csproj" -c Release -o /app/publish --no-restore
 
-
-# Stage 2: Create the final lightweight runtime image
+# Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
+
+# Optional: run as non-root
+# USER 1000
+
 COPY --from=build /app/publish .
 
-# Expose the port the app will run on
+# Only expose HTTP; let Coolify handle TLS
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
-EXPOSE 8081
 
-# Define the entry point for the container
+# Healthcheck expects your app to have /health endpoint; adjust if needed
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- http://localhost:8080/health || exit 1
+
 ENTRYPOINT ["dotnet", "TravelBookingPlatform.Host.dll"]

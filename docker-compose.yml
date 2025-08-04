@@ -1,62 +1,87 @@
+version: "3.9"
+
 services:
   travel-bp-api:
     container_name: travel-bp-api
     build:
       context: ./apps/api
-    ports:
-      - "8080:8080" # (for HTTP)
-      - "8081:8081" # (for HTTPS)
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080;http://+:8081
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
       - "ConnectionStrings__DefaultConnection=Server=sql-server-db;Database=TravelBookingPlatform;User Id=sa;Password=Aa@1231Bb!;TrustServerCertificate=True;"
       - "ConnectionStrings__SerilogConnection=Server=sql-server-db;Database=master;User Id=sa;Password=Aa@1231Bb!;TrustServerCertificate=True;"
     depends_on:
       sql-server-db:
         condition: service_healthy
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
     networks:
       - travel-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
-  # Next.js Documentation Service (Production)
   travel-bp-docs:
     container_name: travel-bp-docs
     build:
       context: ./apps/docs
-    ports:
-      - "3000:3000"
     environment:
       - NODE_ENV=production
+      - PORT=3000
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
     networks:
       - travel-network
-    restart: unless-stopped # Add restart policy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
-  # Next.js Client Application Service (NEW - Production)
   travel-bp-client:
     container_name: travel-bp-client
     build:
       context: ./apps/client
-    ports:
-      - "3001:3001"
     environment:
       - NODE_ENV=production
+      - PORT=3001
+    expose:
+      - "3001"
+    ports:
+      - "3001:3001"
     networks:
       - travel-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
-  # MS SQL Server Database Service
   sql-server-db:
     container_name: sql-server-db
     build:
       context: ./apps/api/docker/sql-server
     environment:
       - ACCEPT_EULA=Y
-      - "MSSQL_SA_PASSWORD=Aa@1231Bb!"
+      - MSSQL_SA_PASSWORD=Aa@1231Bb!
+    expose:
+      - "1433"
     ports:
       - "1433:1433"
     volumes:
       - sql-server-data:/var/opt/mssql
     networks:
       - travel-network
+    restart: unless-stopped
     healthcheck:
       test:
         [
@@ -74,15 +99,13 @@ services:
         ]
       interval: 10s
       timeout: 5s
-      retries: 3
-      start_period: 20s
+      retries: 5
+      start_period: 30s
 
-# Define a network for the services to communicate
 networks:
   travel-network:
     driver: bridge
 
-# Define a volume to persist database data across container restarts
 volumes:
   sql-server-data:
     driver: local
