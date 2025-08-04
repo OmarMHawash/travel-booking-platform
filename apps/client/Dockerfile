@@ -32,7 +32,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
-EXPOSE 8000
+EXPOSE 3001
 
 # The command to start the production server
 CMD ["node", "server.js"]

@@ -36,7 +36,7 @@ services:
     build:
       context: ./apps/client
     ports:
-      - "8000:8000"
+      - "3001:3001"
     environment:
       - NODE_ENV=production
     networks:
