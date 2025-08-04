@@ -1,5 +1,5 @@
 services:
-  travel-booking-api:
+  travel-bp-api:
     container_name: travel-bp-api
     build:
       context: ./apps/api
@@ -14,8 +14,7 @@ services:
     networks:
       - travel-network
 
-  # Next.js Documentation Service (Production)
-  travel-booking-docs:
+  travel-bp-docs:
     container_name: travel-bp-docs
     build:
       context: ./apps/docs
@@ -25,8 +24,7 @@ services:
       - travel-network
     restart: unless-stopped # Add restart policy
 
-  # Next.js Client Application Service (NEW - Production)
-  travel-booking-client:
+  travel-bp-client:
     container_name: travel-bp-client
     build:
       context: ./apps/client
@@ -36,7 +34,6 @@ services:
       - travel-network
     restart: unless-stopped
 
-  # MS SQL Server Database Service
   sql-server-db:
     container_name: sql-server-db
     build:

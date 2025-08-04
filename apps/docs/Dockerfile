@@ -1,19 +1,14 @@
 # Base image for installing dependencies
-# We use --ignore-scripts to prevent postinstall from running without the full source code
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json yarn.lock ./
-RUN yarn install --ignore-scripts
+RUN yarn install --ignore-scripts --network-timeout 60000
 
 # Builder image
 FROM node:22-alpine AS builder
 WORKDIR /app
-# Copy dependencies from the previous stage
 COPY --from=deps /app/node_modules ./node_modules
-# Copy the rest of the application source code
 COPY . .
-# Now, run the build. This will also trigger the postinstall script if needed,
-# and the `generate-docs` script will run as part of the build.
 RUN yarn build
 
 # Production image
@@ -36,5 +31,4 @@ USER nextjs
 
 EXPOSE 3000
 
-# The command to start the application
 CMD ["yarn", "start"]

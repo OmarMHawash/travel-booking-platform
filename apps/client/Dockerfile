@@ -3,15 +3,15 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 # Install dependencies
-COPY package.json package-lock.json* ./
-RUN npm install
+COPY package.json yarn.lock* ./
+RUN yarn install --network-timeout 60000
 
 # Copy the rest of the source code
 COPY . .
 
 # Run the build command
 # The output: 'standalone' option in next.config.js will be used here
-RUN npm run build
+RUN yarn build
 
 # 2. Runner Stage: Create the final, lean production image
 FROM node:22-alpine AS runner
@@ -32,7 +32,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
-EXPOSE 3000
+EXPOSE 8000
 
 # The command to start the production server
 CMD ["node", "server.js"]
