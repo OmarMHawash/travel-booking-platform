@@ -1,0 +1,64 @@
+---
+title: Identity Module
+description: The module responsible for user management, authentication, and authorization.
+icon: UserCog
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { BedDouble } from "lucide-react";
+
+The Identity Module is a self-contained unit that handles all concerns related to users and security. It is the gatekeeper of the application, ensuring that only authenticated and authorized users can access protected resources.
+
+### Key Responsibilities
+
+- **User Registration:** Onboarding new users with secure password hashing.
+- **Authentication:** Verifying user credentials and issuing JSON Web Tokens (JWT).
+- **Authorization:** Enforcing access control using a role-based system (Admin, TypicalUser).
+- **User Profile Management:** Allowing users to view their own data and change their passwords.
+
+### Domain Model
+
+The core of this module is the `User` entity, which represents a user in the system.
+
+```csharp title="User.cs"
+User {
+    Id: Guid (PK)
+    Email: string (unique, value object)
+    PasswordHash: string
+    FirstName: string
+    LastName: string
+    Role: enum (Admin, TypicalUser)
+    IsActive: bool
+    CreatedAt: DateTime
+    UpdatedAt: DateTime
+}
+```
+
+### API Endpoints
+
+All endpoints required for the Identity module are fully implemented and operational.
+
+```http title="Implemented API Endpoints"
+# User Authentication & Registration
+POST /api/v1/auth/register          # Creates a new user account.
+POST /api/v1/auth/login             # Authenticates a user and returns a JWT.
+
+# User Management (requires authentication)
+POST /api/v1/auth/change-password   # Allows a user to change their own password.
+GET  /api/v1/user/profile           # Retrieves the profile of the currently logged-in user.
+GET  /api/v1/user/{id}              # Retrieves a specific user by ID (Admin only).
+```
+
+<Callout title="Module Status: Production-Ready" type="success">
+  The Identity Module is 100% complete, tested, and considered production-ready.
+</Callout>
+
+<Cards>
+  <Card
+    href="./hotel-module"
+    title="Next: Hotel Module"
+    icon={<BedDouble />}
+    description="Explore the core business domain for managing hotels, rooms, and search."
+  />
+</Cards>

@@ -1,0 +1,32 @@
+---
+title: Development Environment
+description: Information about local configuration, coding standards, and the development workflow.
+icon: MonitorSmartphone
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+A consistent and well-understood development environment is key to productivity. This page outlines the standards and tools used in this project.
+
+### Configuration Management
+
+We use a standard .NET configuration approach with a key security consideration.
+
+- **`appsettings.Development.json`**: This file, located in the `Host` project, contains non-sensitive configuration settings for the development environment. It is safe to commit to source control.
+- **User Secrets**: For sensitive data like your local database connection string, we use the .NET Secret Manager. As outlined in the [Configuration](/docs/getting-started/configuration) guide, this keeps your credentials off source control. **Never store passwords or connection strings directly in `appsettings.json` files.**
+
+### Coding Standards with `.editorconfig`
+
+The repository includes an `.editorconfig` file at the root. This file defines a set of coding style rules (e.g., indentation, spacing, naming conventions) that are enforced by most modern IDEs, including Visual Studio, Rider, and VS Code.
+
+This ensures that all code contributed to the project maintains a consistent format, regardless of the developer's personal editor settings.
+
+### Database Seeding for Development
+
+The first time you run `dotnet ef database update`, the application seeds the database with a rich set of sample data. This is designed to give you a fully functional environment to test against immediately.
+
+<Callout>
+  The seeding logic is located in the `SharedInfrastructure` project and is
+  designed to run only if the database is empty, so it will not interfere with
+  your existing data on subsequent runs.
+</Callout>

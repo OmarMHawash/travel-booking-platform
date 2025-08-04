@@ -1,0 +1,90 @@
+---
+title: Core Concepts
+description: Learn about the fundamental patterns like Clean Architecture, CQRS, and Modular Monolith that govern the project's design.
+icon: BrainCircuit
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Files, Folder, File } from "fumadocs-ui/components/files";
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { FolderTree } from "lucide-react";
+
+The Travel Booking Platform is built upon a foundation of proven architectural patterns. These concepts are not used in isolation; they work together to create a system that is robust, maintainable, testable, and scalable.
+
+## Clean Architecture
+
+Clean Architecture is the master blueprint for the entire solution. Its primary goal is the **separation of concerns**, organizing the code into distinct layers with a strict dependency rule.
+
+- **Domain Layer:** Contains the core business logic and entities. This is the heart of your application. It has zero dependencies on any other layer.
+- **Application Layer:** Orchestrates the use cases of the application. It contains the business logic that is specific to the application, not the domain. It depends only on the Domain layer.
+- **Infrastructure Layer:** Contains the implementation details. This is where you find databases, external API clients, and other technologies. It depends on the Application layer.
+- **API/Presentation Layer:** The entry point for external users (e.g., a REST API). It handles HTTP requests and responses, delegating work to the Application layer.
+
+<Callout title="The Dependency Rule" type="warn">
+  The golden rule of Clean Architecture is that **dependencies must only point
+  inwards**. The Domain layer knows nothing about the layers outside of it. This
+  makes the core business logic independent of any specific technology,
+  framework, or database.
+</Callout>
+
+This structure is physically represented in our project's folders:
+
+<Files>
+  <Folder name="TravelBookingPlatform.Modules.Hotels" defaultOpen>
+    <File name="TravelBookingPlatform.Modules.Hotels.Api" />
+    <File name="TravelBookingPlatform.Modules.Hotels.Infrastructure" />
+    <File name="TravelBookingPlatform.Modules.Hotels.Application" />
+    <File name="TravelBookingPlatform.Modules.Hotels.Domain" />
+  </Folder>
+</Files>
+
+## CQRS (Command Query Responsibility Segregation)
+
+CQRS is a pattern that separates the logic for **writing** data from the logic for **reading** data.
+
+- **Commands:** These represent an intent to change the state of the system (e.g., `RegisterUserCommand`, `CreateBookingCommand`). They do not return data.
+- **Queries:** These are used to retrieve data from the system (e.g., `GetHotelByIdQuery`, `SearchHotelsQuery`). They never modify state.
+
+**Why use CQRS?**
+
+- **Optimized Models:** You can have a highly normalized model for writing (to ensure data integrity) and a denormalized, optimized model for reading (for performance).
+- **Simpler Logic:** Each command and query handler has a single, focused responsibility, making the code easier to understand and test.
+- **Scalability:** The read and write sides of the application can be scaled independently.
+
+In this project, CQRS is implemented using the popular **MediatR** library. Every API endpoint dispatches either a Command or a Query to its corresponding Handler via MediatR.
+
+## Modular Monolith
+
+A Modular Monolith is an architectural style that strikes a balance between a traditional, tightly-coupled monolith and a complex microservices architecture.
+
+The application is deployed as a **single unit (a monolith)**, but internally it is composed of highly independent **modules** that represent different business capabilities.
+
+- **`Identity Module`:** Handles all user-related concerns.
+- **`Hotels Module`:** Handles hotel search, management, and booking.
+
+**Why use a Modular Monolith?**
+
+- **Simpler Development:** Enjoy the simplicity of developing and deploying a single application.
+- **Clear Boundaries:** Enforces strong logical separation between different parts of the system.
+- **Future-Proof:** Well-defined modules are much easier to extract into separate microservices if and when the need arises.
+
+## Domain-Driven Design (DDD)
+
+DDD is a software development philosophy that emphasizes creating a rich, expressive model of the core business **domain**. Instead of anemic data structures, we create "rich" entities that encapsulate business rules and behavior.
+
+For example, in our `Booking` entity, the logic to prevent a double-booking for the same room and dates is contained **within the `Booking` domain model itself**, not scattered in some external service class. This ensures that the business rules are always enforced and the domain model is always in a valid state.
+
+<Callout title="Putting It All Together">
+  Each **Module** in our **Modular Monolith** follows **Clean Architecture**.
+  The Application layer within each module uses **CQRS** to orchestrate the rich
+  **Domain** models that are designed using **DDD** principles.
+</Callout>
+
+<Cards>
+  <Card
+    href="./project-structure"
+    title="Next: Project Structure"
+    icon={<FolderTree />}
+    description="See how these concepts are translated into the physical folder and project layout of the solution."
+  />
+</Cards>

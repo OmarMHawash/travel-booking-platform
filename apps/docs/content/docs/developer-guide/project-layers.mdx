@@ -1,0 +1,61 @@
+---
+title: Project Layers
+description: A practical guide to what kind of code belongs in each layer of the Clean Architecture.
+icon: Layers
+---
+
+import { Files, Folder, File } from "fumadocs-ui/components/files";
+import { Callout } from "fumadocs-ui/components/callout";
+
+While the [Core Concepts](/docs/architecture/core-concepts) page explains the theory of Clean Architecture, this guide provides a practical look at what kind of code lives in each layer of a module. Understanding this is crucial for knowing where to add new code.
+
+Let's use the `Hotels` module as an example.
+
+<Files>
+  <Folder name="TravelBookingPlatform.Modules.Hotels" defaultOpen>
+    <Folder name="...Api/" defaultOpen>
+      <File name="HotelsController.cs" />
+      <Callout type="info" className="!my-1 !py-1 !text-sm">
+        Handles HTTP requests, calls MediatR, and returns responses. No business
+        logic.
+      </Callout>
+    </Folder>
+    <Folder name="...Application/" defaultOpen>
+      <File name="GetHotelByIdQuery.cs" />
+      <File name="GetHotelByIdQueryHandler.cs" />
+      <File name="HotelDto.cs" />
+      <File name="GetHotelByIdQueryValidator.cs" />
+      <Callout type="info" className="!my-1 !py-1 !text-sm">
+        Contains application logic: CQRS handlers, DTOs, validation, and
+        interfaces for infrastructure.
+      </Callout>
+    </Folder>
+    <Folder name="...Infrastructure/" defaultOpen>
+      <File name="HotelRepository.cs" />
+      <Callout type="info" className="!my-1 !py-1 !text-sm">
+        Implements interfaces from Application. Interacts with external concerns
+        like databases.
+      </Callout>
+    </Folder>
+    <Folder name="...Domain/" defaultOpen>
+      <File name="Hotel.cs" />
+      <File name="Room.cs" />
+      <File name="Booking.cs" />
+      <Callout type="info" className="!my-1 !py-1 !text-sm">
+        Core business entities and value objects. Contains pure business rules.
+        No external dependencies.
+      </Callout>
+    </Folder>
+  </Folder>
+</Files>
+
+### The Dependency Flow
+
+The most important rule is that **dependencies only point inwards**.
+
+- **API** depends on **Application**.
+- **Infrastructure** depends on **Application**.
+- **Application** depends on **Domain**.
+- **Domain** depends on **nothing**.
+
+This ensures our core business logic (`Domain`) is completely isolated from any technical implementation details, making it highly portable and testable.

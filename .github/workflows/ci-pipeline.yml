@@ -20,14 +20,14 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ./apps/api
 
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build ./apps/api --no-restore
 
     - name: Run Multiple Unit Tests
       run: |
-        dotnet test ./tests/TravelBookingPlatform.UnitTests/TravelBookingPlatform.Hotels.UnitTests/TravelBookingPlatform.Hotels.UnitTests.csproj --no-build --verbosity minimal
-        dotnet test ./tests/TravelBookingPlatform.UnitTests/TravelBookingPlatform.Identity.UnitTests/TravelBookingPlatform.Identity.UnitTests.csproj --no-build --verbosity minimal
+        dotnet test ./apps/api/tests/TravelBookingPlatform.UnitTests/TravelBookingPlatform.Hotels.UnitTests/TravelBookingPlatform.Hotels.UnitTests.csproj --no-build --verbosity minimal
+        dotnet test ./apps/api/tests/TravelBookingPlatform.UnitTests/TravelBookingPlatform.Identity.UnitTests/TravelBookingPlatform.Identity.UnitTests.csproj --no-build --verbosity minimal
       env:
         ASPNETCORE_ENVIRONMENT: "MockedTesting"

@@ -1,0 +1,27 @@
+{
+  "title": "Developer Guide",
+  "description": "Developer guide for the project",
+  "icon": "Cuboid",
+  "root": true,
+  "pages": [
+    "---Developer Guide---",
+    "index",
+    "---Introduction---",
+    "overview",
+    "project-layers",
+    "libraries-and-packages",
+    "environment",
+    "best-practices",
+    "guidelines",
+    "---Fundamentals---",
+    "database-migrations",
+    "authentication-authorization",
+    "validation",
+    "error-handling",
+    "api-controllers",
+    "testing",
+    "logging",
+    "monitoring",
+    "security"
+  ]
+}

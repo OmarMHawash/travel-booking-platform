@@ -1,0 +1,34 @@
+---
+title: Libraries & Packages
+description: A list of the major NuGet packages and libraries used in the project and their roles.
+icon: Package
+---
+
+This project leverages several high-quality, well-supported libraries to accelerate development and implement our architectural patterns. Here is a list of the key NuGet packages you will encounter.
+
+### Core Framework & API
+
+- **[ASP.NET Core 8](https://docs.microsoft.com/aspnet/core/)**: The primary web framework for building the API.
+- **[Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)**: Generates our interactive Swagger/OpenAPI documentation.
+- **[Asp.Versioning.Mvc.ApiExplorer](https://github.com/dotnet/aspnet-api-versioning)**: Handles API versioning (e.g., `/api/v1/...`).
+
+### Data Access
+
+- **[Microsoft.EntityFrameworkCore.SqlServer](https://docs.microsoft.com/ef/core/)**: The Object-Relational Mapper (ORM) for communicating with our SQL Server database.
+- **[Microsoft.EntityFrameworkCore.Tools](https://docs.microsoft.com/ef/core/cli/dotnet)**: Provides the `dotnet ef` command-line tools for managing database migrations.
+
+### Architecture & Patterns
+
+- **[MediatR](https://github.com/jbogard/MediatR)**: The library we use to implement the CQRS pattern. It provides the in-process messaging pipeline to decouple Commands and Queries from their Handlers.
+- **[FluentValidation.AspNetCore](https://fluentvalidation.net/)**: A popular library for building strongly-typed validation rules. We use it to validate all incoming CQRS requests.
+- **[AutoMapper](https://automapper.org/)**: Used in the Application layer to map between Domain entities and Data Transfer Objects (DTOs).
+
+### Security
+
+- **[Microsoft.AspNetCore.Authentication.JwtBearer](https://docs.microsoft.com/aspnet/core/security/authentication/jwt-bearer)**: The official middleware for validating JWT tokens.
+- **[BCrypt.Net-Next](https://github.com/BcryptNet/bcrypt.net)**: Implements the BCrypt algorithm for securely hashing and verifying user passwords.
+
+### Logging & Monitoring
+
+- **[Serilog.AspNetCore](https://serilog.net/)**: A powerful structured logging library that we use for all application logging.
+- **[Microsoft.AspNetCore.Diagnostics.HealthChecks](https://docs.microsoft.com/aspnet/core/host-and-deploy/health-checks)**: Powers the `/health` endpoint for monitoring application health.

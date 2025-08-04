@@ -1,0 +1,95 @@
+---
+title: Add a New Entity
+description: Learn how to add a new domain entity and its related database setup.
+icon: DatabaseZap
+---
+
+import { Steps, Step } from "fumadocs-ui/components/steps";
+
+Let's add a new `Review` entity to our `Hotels` module, allowing users to leave reviews for hotels. This guide covers the process from the domain model to the database migration.
+
+<Steps>
+
+<Step>
+### 1. Create the Domain Entity
+
+First, define the `Review` entity in the `Hotels.Domain` project. It should inherit from our base `Entity` class.
+
+```csharp title="src/TravelBookingPlatform.Modules.Hotels.Domain/Entities/Review.cs"
+public sealed class Review : Entity
+{
+    public Guid HotelId { get; private set; }
+    public Guid UserId { get; private set; }
+    public int Rating { get; private set; } // e.g., 1-5
+    public string Comment { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+
+    // Private constructor for EF Core
+    private Review() { }
+
+    public static Review Create(Guid hotelId, Guid userId, int rating, string comment)
+    {
+        // Add business rule validations here
+        // e.g., if (rating < 1 || rating > 5) throw new ...
+
+        return new Review
+        {
+            Id = Guid.NewGuid(),
+            HotelId = hotelId,
+            UserId = userId,
+            Rating = rating,
+            Comment = comment,
+            CreatedAt = DateTime.UtcNow
+        };
+    }
+}
+```
+
+</Step>
+
+<Step>
+### 2. Update the `DbContext`
+
+Next, add the new entity to our `ApplicationDbContext` in the `SharedInfrastructure` project so EF Core is aware of it.
+
+```csharp title="src/TravelBookingPlatform.SharedInfrastructure/ApplicationDbContext.cs"
+public class ApplicationDbContext : DbContext, IUnitOfWork
+{
+    // ... existing DbSets
+    public DbSet<Review> Reviews { get; set; }
+
+    // ...
+}
+```
+
+</Step>
+
+<Step>
+### 3. Create the Database Migration
+
+Now that EF Core knows about the `Review` entity, we can create a migration to add the corresponding table to our database.
+
+From the `src/TravelBookingPlatform.Host` directory, run:
+
+```bash
+dotnet ef migrations add AddReviewEntity
+```
+
+This will generate a new migration file under `SharedInfrastructure/Migrations`.
+
+</Step>
+
+<Step>
+### 4. Apply the Migration
+
+Finally, apply the migration to your local database.
+
+```bash
+dotnet ef database update
+```
+
+The `Reviews` table now exists in your database. You are ready to build application features on top of this new entity.
+
+</Step>
+
+</Steps>

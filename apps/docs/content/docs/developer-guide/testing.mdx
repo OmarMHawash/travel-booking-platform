@@ -1,0 +1,50 @@
+---
+title: Testing
+description: The project's testing strategy, covering both unit and integration tests.
+icon: Beaker
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+We employ a two-pronged testing strategy to ensure code quality and correctness. All tests are written using **xUnit**, with **FluentAssertions** for readable assertions and **NSubstitute** for creating test doubles (mocks).
+
+### Unit Tests (`/tests/TravelBookingPlatform.UnitTests`)
+
+Unit tests focus on a **single class** in isolation. All external dependencies are mocked. This allows us to test a specific piece of logic quickly and reliably.
+
+- **What to Test:** Domain entity business rules, Application layer command/query handlers.
+- **Key Characteristic:** Fast execution, no external dependencies (like a database or filesystem).
+
+### Integration Tests (`/tests/TravelBookingPlatform.IntegrationTests`)
+
+Integration tests verify that **multiple components work together correctly** as a complete feature slice. We use a custom `MockedIntegrationTestBase` class that sets up an in-memory test server and mocks the repository layer.
+
+- **What to Test:** The entire flow from an API controller action, through the MediatR pipeline, to the application handler.
+- **Key Characteristic:** Tests a full "vertical slice" of the application without the overhead of a real database, providing a great balance of speed and confidence.
+
+_Example of a Mocked Integration Test_
+
+```csharp
+public class CreateCityIntegrationTests : MockedIntegrationTestBase
+{
+    [Fact]
+    public async Task CreateCity_WithValidData_ShouldReturn201Created()
+    {
+        // Arrange
+        var command = new CreateCityCommand("Test City", "Test Country", "12345");
+        // Mock repository to simulate a successful check
+        CityRepositoryMock.ExistsByNameAsync(command.Name, null).Returns(false);
+
+        // Act
+        var response = await Client.PostAsJsonAsync("/api/v1/cities", command);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+}
+```
+
+<Callout>
+  Our test infrastructure also includes `TestDataBuilders` which use AutoFixture
+  to help generate valid test data, making test setup quick and easy.
+</Callout>

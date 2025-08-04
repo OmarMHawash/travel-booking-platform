@@ -1,0 +1,115 @@
+---
+title: Add a New API Endpoint
+description: Follow the complete CQRS flow for creating a new API endpoint.
+icon: CircuitBoard
+---
+
+import { Steps, Step } from "fumadocs-ui/components/steps";
+
+Following our example, let's create a new `POST /api/v1/reviews` endpoint to allow authenticated users to post a hotel review. This guide covers the entire "vertical slice" from the API controller to the application handler.
+
+<Steps>
+
+<Step>
+### 1. Create the CQRS Command & Validator
+
+In the `Hotels.Application` project, create a new file for the `CreateReview` feature. Define the command `record` and its `validator`.
+
+```csharp title="src/.../Hotels.Application/Features/Reviews/CreateReview.cs"
+// The Command
+public sealed record CreateReviewCommand(
+    Guid HotelId,
+    int Rating,
+    string Comment) : IRequest<Guid>;
+
+// The Validator
+public sealed class CreateReviewCommandValidator : AbstractValidator<CreateReviewCommand>
+{
+    public CreateReviewCommandValidator()
+    {
+        RuleFor(x => x.HotelId).NotEmpty();
+        RuleFor(x => x.Rating).InclusiveBetween(1, 5);
+        RuleFor(x => x.Comment).NotEmpty().MaximumLength(1000);
+    }
+}
+```
+
+</Step>
+
+<Step>
+### 2. Implement the CQRS Handler
+
+In the same file, create the handler. It will contain the core logic for this use case. We'll need to inject repositories and the `IUnitOfWork`.
+
+```csharp title="src/.../Hotels.Application/Features/Reviews/CreateReview.cs"
+// The Handler
+public sealed class CreateReviewCommandHandler
+    : IRequestHandler<CreateReviewCommand, Guid>
+{
+    private readonly IReviewRepository _reviewRepository;
+    private readonly IHotelRepository _hotelRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public CreateReviewCommandHandler(...) { /* ... constructor ... */ }
+
+    public async Task<Guid> Handle(CreateReviewCommand request, CancellationToken ct)
+    {
+        // Logic: Ensure the hotel exists before adding a review.
+        if (!await _hotelRepository.ExistsByIdAsync(request.HotelId))
+        {
+            throw new BusinessValidationException("Hotel not found.");
+        }
+
+        // For this example, we'll hardcode the UserId. In a real app,
+        // you would get this from the authenticated user's claims.
+        var userId = Guid.NewGuid(); // Placeholder
+
+        var review = Review.Create(
+            request.HotelId, userId, request.Rating, request.Comment);
+
+        await _reviewRepository.AddAsync(review);
+        await _unitOfWork.SaveChangesAsync(ct);
+
+        return review.Id;
+    }
+}
+```
+
+</Step>
+
+<Step>
+### 3. Create the API Controller
+
+Finally, create a new `ReviewsController` in the `Hotels.Api` project to expose this functionality via HTTP.
+
+```csharp title="src/TravelBookingPlatform.Modules.Hotels.Api/ReviewsController.cs"
+[ApiController]
+[Route("api/v1/reviews")]
+[Authorize] // All review actions require a user to be logged in
+public class ReviewsController : ControllerBase
+{
+    private readonly ISender _sender; // MediatR
+
+    public ReviewsController(ISender sender) => _sender = sender;
+
+    [HttpPost]
+    public async Task<IActionResult> CreateReview(
+        [FromBody] CreateReviewCommand command)
+    {
+        var reviewId = await _sender.Send(command);
+
+        // Best practice: return a 201 Created with a link to the new resource
+        return CreatedAtAction(nameof(GetReviewById), new { id = reviewId }, reviewId);
+    }
+
+    // A placeholder for the GetReviewById action
+    [HttpGet("{id:guid}")]
+    public IActionResult GetReviewById(Guid id) => Ok(new { Id = id });
+}
+```
+
+Your new `POST /api/v1/reviews` endpoint is now live and will appear in the Swagger documentation automatically.
+
+</Step>
+
+</Steps>

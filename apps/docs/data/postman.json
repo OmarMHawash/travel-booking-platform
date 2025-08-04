@@ -1,0 +1,712 @@
+{
+	"info": {
+		"_postman_id": "84631e6b-188f-472b-a49c-2c68bc68ba31",
+		"name": "Travel-Booking-Platform",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39709960"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"uwda\",\r\n    \"email\": \"sadaw@gmail.com\", \r\n    \"password\": \"@asdwwwasd2A\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/Auth/register",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Auth",
+								"register"
+							]
+						},
+						"description": "Generated from cURL: curl -X POST \"http://localhost:5226/api/v1/Auth/register\" \\\r\n  -H \"Content-Type: application/json\" \\\r\n  -d '{\r\n    \"username\": \"testuser\",\r\n    \"email\": \"test@example.com\", \r\n    \"password\": \"Test123!@#\"\r\n  }'"
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"admin@travelbooking.com\",\r\n    \"password\": \"Admin123!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/Auth/login",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Auth",
+								"login"
+							]
+						},
+						"description": "Generated from cURL: curl -X POST \"http://localhost:5226/api/v1/Auth/login\" \\\r\n  -H \"Content-Type: application/json\" \\\r\n  -d '{\r\n    \"username\": \"testuser\",\r\n    \"password\": \"Test123!@#\"\r\n  }'"
+					},
+					"response": []
+				},
+				{
+					"name": "profile - Token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_JWT_TOKEN_HERE"
+							}
+						],
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/User/profile",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"User",
+								"profile"
+							]
+						},
+						"description": "Generated from cURL: curl -X GET \"http://localhost:5226/api/v1/User/profile\" \\\r\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN_HERE\""
+					},
+					"response": []
+				},
+				{
+					"name": "profile - UserId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_ADMIN_JWT_TOKEN"
+							}
+						],
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/User/1",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"User",
+								"1"
+							]
+						},
+						"description": "Generated from cURL: curl -X GET \"http://localhost:5226/api/v1/User/{userId}\" \\\r\n  -H \"Authorization: Bearer YOUR_ADMIN_JWT_TOKEN\""
+					},
+					"response": []
+				},
+				{
+					"name": "change password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_JWT_TOKEN"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentPassword\": \"Te123!@#\",\r\n    \"newPassword\": \"jasndAw78uh@*!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5226/api/v1/User/change-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5226",
+							"path": [
+								"api",
+								"v1",
+								"User",
+								"change-password"
+							]
+						},
+						"description": "Generated from cURL: curl -X POST \"http://localhost:5226/api/v1/User/change-password\" \\\r\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\" \\\r\n  -H \"Content-Type: application/json\" \\\r\n  -d '{\r\n    \"currentPassword\": \"Test123!@#\",\r\n    \"newPassword\": \"NewTest123!@#\"\r\n  }'"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "health",
+			"item": [
+				{
+					"name": "health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{dotnet_base_url}}/health",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "health - live",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{dotnet_base_url}}/health/live",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"health",
+								"live"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "City",
+			"item": [
+				{
+					"name": "Cities",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_JWT_TOKEN"
+							}
+						],
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/cities",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cities"
+							]
+						},
+						"description": "Generated from cURL: curl -X GET \"http://localhost:5226/api/v1/Cities\" \\\r\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\""
+					},
+					"response": []
+				},
+				{
+					"name": "City",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_ADMIN_JWT_TOKEN"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"newborn\",\n    \"country\": \"PS\",\n    \"postCode\": \"SA112\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/Cities",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Cities"
+							]
+						},
+						"description": "Generated from cURL: curl -X POST \"http://localhost:5226/api/v1/Cities\" \\\n  -H \"Authorization: Bearer YOUR_ADMIN_JWT_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"name\": \"New York\",\n    \"country\": \"USA\",\n    \"description\": \"The city that never sleeps\"\n  }'"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "Hotels",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"searchText\":\"hotel\",\"pageSize\":5}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/search/hotels",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"search",
+								"hotels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hotel Suggestions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/search/suggestions?q=new&limit=10",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"search",
+								"suggestions"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "new"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Generated from cURL: curl -X GET \"http://localhost:5226/api/v1/search/suggestions?q=new&limit=5\""
+					},
+					"response": []
+				},
+				{
+					"name": "Hotels (Advanced)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"searchText\": \"\",\n    \"checkInDate\": \"2025-07-07\",\n    \"checkOutDate\": \"2025-12-30\",\n    \"numberOfRooms\": 1,\n    \"adults\": 1,\n    \"children\": 1,\n    \"minRating\": 0.0,\n    \"maxRating\": 5.0,\n    \"pageNumber\": 1,\n    \"pageSize\": 3,\n    \"sortBy\": \"Rating\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5226/api/v1/search/hotels",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5226",
+							"path": [
+								"api",
+								"v1",
+								"search",
+								"hotels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Popular Hotels",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/search/popular-destinations?count=5",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"search",
+								"popular-destinations"
+							],
+							"query": [
+								{
+									"key": "count",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hotel-only Suggestions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/search/hotel-suggestions?q=plaza&limit=5",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"search",
+								"hotel-suggestions"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "plaza"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "City-Only Suggestions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/search/city-suggestions?q=new&limit=10",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"search",
+								"city-suggestions"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "new"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Deals",
+			"item": [
+				{
+					"name": "featured",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_ADMIN_JWT_TOKEN",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/deals/featured?count=5",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"deals",
+								"featured"
+							],
+							"query": [
+								{
+									"key": "count",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deal",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {YOUR_JWT_TOKEN}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Summer Special Deal\",\n    \"description\": \"Amazing summer vacation package with 30% discount\",\n    \"hotelId\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"roomTypeId\": null,\n    \"originalPrice\": 200.00,\n    \"discountedPrice\": 140.00,\n    \"validFrom\": \"2024-01-20T00:00:00Z\",\n    \"validTo\": \"2024-03-31T23:59:59Z\",\n    \"isFeatured\": true,\n    \"maxBookings\": 50,\n    \"imageURL\": \"https://example.com/deal-image.jpg\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/deals",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"deals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deal",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {YOUR_JWT_TOKEN}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated Summer Special Deal\",\n    \"description\": \"Updated description with even better discount\",\n    \"originalPrice\": 200.00,\n    \"discountedPrice\": 120.00,\n    \"validFrom\": \"2024-01-20T00:00:00Z\",\n    \"validTo\": \"2024-04-30T23:59:59Z\",\n    \"isFeatured\": true,\n    \"maxBookings\": 100,\n    \"imageURL\": \"https://example.com/updated-deal-image.jpg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/deals/862db917-4f84-45bd-975e-97cd5a95111f",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"deals",
+								"862db917-4f84-45bd-975e-97cd5a95111f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "featured-all",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_ADMIN_JWT_TOKEN"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{dotnet_base_url}}/api/v1/deals/featured?count=5",
+							"host": [
+								"{{dotnet_base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"deals",
+								"featured"
+							],
+							"query": [
+								{
+									"key": "count",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Homepage",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer YOUR_ADMIN_JWT_TOKEN",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{dotnet_base_url}}/api/v1/search/home-page",
+					"host": [
+						"{{dotnet_base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"search",
+						"home-page"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{dotnet_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

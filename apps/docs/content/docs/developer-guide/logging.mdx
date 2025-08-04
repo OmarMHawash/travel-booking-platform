@@ -1,0 +1,56 @@
+---
+title: Logging
+description: How to use the structured logging framework powered by Serilog.
+icon: FileText
+---
+
+For diagnostics and observability, the project uses **Serilog** as its logging framework. We practice **structured logging**, which is a more powerful approach than traditional text-based logging.
+
+### What is Structured Logging?
+
+Instead of writing plain text messages, structured logging captures log events as key-value pairs (often in JSON format).
+
+- **Plain Text:** `User 123 logged in from IP 192.168.1.1`
+- **Structured Log:** `{"Message": "User logged in", "UserId": 123, "IpAddress": "192.168.1.1"}`
+
+This makes log data easy to filter, search, and analyze in modern log aggregation tools (like Seq, Splunk, or ElasticSearch).
+
+### How to Log
+
+The standard .NET `ILogger<T>` interface is used throughout the application. Serilog is configured as the underlying provider. To add logging to a class, simply inject `ILogger<T>` into its constructor.
+
+```csharp
+public class MyService
+{
+    private readonly ILogger<MyService> _logger;
+
+    public MyService(ILogger<MyService> logger)
+    {
+        _logger = logger;
+    }
+
+    public void DoSomething(Guid userId)
+    {
+        _logger.LogInformation("Starting operation for {UserId}", userId);
+
+        try
+        {
+            // ... do work ...
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred during operation for {UserId}", userId);
+        }
+    }
+}
+```
+
+### Configuration
+
+Log sinks (the destinations for log events) are configured in `Program.cs` in the `Host` project. By default, we have configured:
+
+- A **console sink** for easy viewing during local development.
+- A **database sink** to store logs persistently.
+- Automatic **request/response logging** middleware.
+
+Log levels and other settings can be controlled via `appsettings.json`.

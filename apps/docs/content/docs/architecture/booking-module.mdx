@@ -1,0 +1,66 @@
+---
+title: Booking Module
+description: The design, domain model, and implementation status of the reservation system.
+icon: CalendarCheck
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Library } from "lucide-react";
+
+The Booking Module represents the functional area responsible for handling reservations. While the `Booking` entity is intrinsically linked to the Hotel Module's domain, we discuss its logic and status here as a distinct capability. This module is the final piece required to complete the platform's core workflow.
+
+<Callout>
+  The `Booking` domain entity exists and contains business rules for validation
+  (e.g., preventing overlapping bookings), but the application services and API
+  endpoints to interact with it have not yet been built.
+</Callout>
+
+### Key Responsibilities (Planned)
+
+- **Creating Bookings:** Allowing users to reserve rooms for specific dates.
+- **Availability Checks:** Ensuring a room is not double-booked.
+- **Booking Management:** Providing users with a way to view and cancel their reservations.
+
+### Domain Model
+
+The `Booking` entity ties a user to a specific room for a check-in/check-out period.
+
+```csharp title="Booking.cs"
+Booking {
+    Id: Guid (PK)
+    UserId: Guid (FK)
+    RoomId: Guid (FK)
+    CheckInDate: DateTime
+    CheckOutDate: DateTime
+    CreatedAt: DateTime
+    UpdatedAt: DateTime
+}
+```
+
+### API Endpoints & Status
+
+<Callout title="Module Status: Pending Implementation" type="error">
+  There are **no implemented API endpoints** for the Booking Module. The entire
+  controller, along with its backing CQRS commands and queries, needs to be
+  created.
+</Callout>
+
+The following API is planned for implementation:
+
+```http title="Planned API Endpoints"
+# Booking Management (Controller & Logic Missing)
+GET  /api/v1/bookings                    # Get bookings for the current user.
+POST /api/v1/bookings                    # Create a new booking.
+GET  /api/v1/bookings/{id}               # Get details for a specific booking.
+PUT  /api/v1/bookings/{id}/cancel        # Cancel an existing booking.
+```
+
+<Cards>
+  <Card
+    href="./shared-modules"
+    title="Next: Shared Infrastructure"
+    icon={<Library />}
+    description="See the common components that support all other modules."
+  />
+</Cards>

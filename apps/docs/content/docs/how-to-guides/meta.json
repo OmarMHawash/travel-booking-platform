@@ -1,0 +1,14 @@
+{
+  "title": "How-to Guides",
+  "description": "How-to guides for the project",
+  "icon": "Cuboid",
+  "root": true,
+  "pages": [
+    "---How-to Guides---",
+    "index",
+    "add-new-entity",
+    "add-new-api-endpoint",
+    "add-new-unit-test",
+    "add-new-integration-test"
+  ]
+}

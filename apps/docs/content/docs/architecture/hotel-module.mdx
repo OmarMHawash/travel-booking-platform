@@ -1,0 +1,82 @@
+---
+title: Hotel Module
+description: The core business module for managing cities, hotels, rooms, deals, and search.
+icon: BedDouble
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { CalendarCheck } from "lucide-react";
+
+The Hotel Module is the heart of the Travel Booking Platform. It encompasses the core business logic for all entities related to accommodation, discovery, and special offers. This is the largest and most central module in the application.
+
+### Key Responsibilities
+
+- **Entity Management:** Handling the data for Cities, Hotels, Rooms, and Deals.
+- **Advanced Search Engine:** Powering the primary user-facing feature to find available hotels based on multiple criteria.
+- **Discovery Features:** Providing autocomplete suggestions and highlighting popular destinations to improve user experience.
+
+### Domain Models
+
+This module contains a rich set of interconnected domain entities.
+
+```csharp title="Hotel-related Entities"
+City { Id, Name, Country, PostCode, ... }
+Hotel { Id, Name, Description, StarRating, CityId, Address, ... }
+RoomType { Id, Name, BasePrice, MaxAdults, ... }
+Room { Id, RoomNumber, HotelId, RoomTypeId, IsAvailable, ... }
+Deal { Id, Title, OriginalPrice, DiscountedPrice, HotelId, ... }
+```
+
+### API Endpoints
+
+The implementation of this module is partial. Search, discovery, and management of Cities and Deals are complete, but management of Hotels and Rooms is pending.
+
+#### ✅ Implemented Endpoints
+
+```http
+# Search & Discovery
+POST /api/v1/search/hotels              # Advanced hotel search with filters
+GET  /api/v1/search/suggestions         # Autocomplete for search text
+GET  /api/v1/search/popular-destinations# Get trending cities
+GET  /api/v1/search/home-page           # Get combined data for the home page
+
+# Cities & Deals Management (Admin Only)
+GET    /api/v1/cities                    # List all cities
+POST   /api/v1/cities                    # Create a new city
+GET    /api/v1/deals                     # List all deals
+POST   /api/v1/deals                     # Create a new deal
+PUT    /api/v1/deals/{id}                # Update an existing deal
+```
+
+#### ❌ Missing Endpoints
+
+The following controllers and their corresponding application logic have not yet been implemented.
+
+```http
+# Hotels Management (Controller Missing)
+GET    /api/v1/hotels
+POST   /api/v1/hotels
+PUT    /api/v1/hotels/{id}
+DELETE /api/v1/hotels/{id}
+
+# Rooms Management (Controller Missing)
+GET    /api/v1/rooms
+POST   /api/v1/rooms
+PUT    /api/v1/rooms/{id}
+DELETE /api/v1/rooms/{id}
+```
+
+<Callout title="Module Status: Partially Implemented" type="warn">
+  The core search functionality is robust, but the administrative interfaces for
+  managing hotels and rooms need to be built.
+</Callout>
+
+<Cards>
+  <Card
+    href="./booking-module"
+    title="Next: Booking Module"
+    icon={<CalendarCheck />}
+    description="Learn about the design and status of the reservation system."
+  />
+</Cards>

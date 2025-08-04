@@ -1,0 +1,56 @@
+---
+title: Validation
+description: How all incoming data is validated using a CQRS pipeline and FluentValidation.
+icon: ShieldCheck
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+To ensure data integrity and security, **all data entering the system must be validated**. We use the **FluentValidation** library in a highly automated way.
+
+### The Validation Pipeline
+
+Instead of manually calling validation logic in every controller, we use a **MediatR pipeline behavior**. This pipeline automatically intercepts every CQRS request before it reaches its handler.
+
+1.  An API controller receives an HTTP request and creates a Command or Query object.
+2.  The controller sends the request object to MediatR.
+3.  **The pipeline behavior intercepts the request.** It looks for a validator that corresponds to the request type.
+4.  If a validator is found, it is executed.
+5.  If validation fails, the pipeline is short-circuited. A `400 Bad Request` response with the validation errors is immediately returned, and the handler is never executed.
+6.  If validation succeeds, the request proceeds to its handler.
+
+### How to Add Validation
+
+To add validation for a new command, you simply need to create a validator class that inherits from `AbstractValidator<T>`.
+
+_Example: Validator for a `CreateCityCommand`_
+
+```csharp title="src/.../Hotels.Application/Features/Cities/CreateCity.cs"
+// The Command record
+public sealed record CreateCityCommand(string Name, string Country, string PostCode)
+    : IRequest<Guid>;
+
+// The Validator class (in the same file)
+public sealed class CreateCityCommandValidator : AbstractValidator<CreateCityCommand>
+{
+    public CreateCityCommandValidator()
+    {
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("City name is required.")
+            .MaximumLength(100);
+
+        RuleFor(x => x.Country)
+            .NotEmpty()
+            .MaximumLength(100);
+
+        RuleFor(x => x.PostCode)
+            .NotEmpty()
+            .MaximumLength(10);
+    }
+}
+```
+
+<Callout>
+  Because the pipeline is automatic, you don't need to register or call this
+  validator anywhere else. It will be discovered and executed automatically.
+</Callout>

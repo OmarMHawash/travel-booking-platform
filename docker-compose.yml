@@ -1,8 +1,8 @@
 services:
   travel-booking-api:
-    container_name: travel-booking-api
+    container_name: travel-bp-api
     build:
-      context: .
+      context: ./apps/api
     ports:
       - "8080:8080" # (for HTTP)
       - "8081:8081" # (for HTTPS)
@@ -17,11 +17,37 @@ services:
     networks:
       - travel-network
 
+  # Next.js Documentation Service (Production)
+  travel-booking-docs:
+    container_name: travel-bp-docs
+    build:
+      context: ./apps/docs
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - travel-network
+    restart: unless-stopped # Add restart policy
+
+  # Next.js Client Application Service (NEW - Production)
+  travel-booking-client:
+    container_name: travel-bp-client
+    build:
+      context: ./apps/client
+    ports:
+      - "3001:3000" # Mapped to host port 3001
+    environment:
+      - NODE_ENV=production
+    networks:
+      - travel-network
+    restart: unless-stopped
+
   # MS SQL Server Database Service
   sql-server-db:
     container_name: sql-server-db
     build:
-      context: ./docker/sql-server
+      context: ./apps/api/docker/sql-server
     environment:
       - ACCEPT_EULA=Y
       - "MSSQL_SA_PASSWORD=Aa@1231Bb!"

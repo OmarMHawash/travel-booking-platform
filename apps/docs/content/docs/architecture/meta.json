@@ -1,0 +1,17 @@
+{
+  "title": "Architecture",
+  "description": "The architecture of the project",
+  "icon": "Cuboid",
+  "root": true,
+  "pages": [
+    "---Architecture---",
+    "index",
+    "core-concepts",
+    "project-structure",
+    "---Modules---",
+    "identity-module",
+    "hotel-module",
+    "booking-module",
+    "shared-modules"
+  ]
+}

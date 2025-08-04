@@ -1,0 +1,33 @@
+---
+title: Security
+description: An overview of the key security practices implemented in the platform.
+icon: Lock
+---
+
+Security is a primary concern and is integrated into the platform's design at multiple levels.
+
+### Password Hashing
+
+We **never** store passwords in plain text. All user passwords are put through a one-way hashing function using the **BCrypt** algorithm.
+
+- **Hashing on Register:** When a user registers, their password is
+  hashed, and only the hash is stored in the database.
+- **Verification on Login:** When a user logs in, the provided password is
+  hashed and compared to the stored hash. The original password is never needed again.
+- **Salted Hashes:** BCrypt automatically handles salting, which protects against rainbow table attacks.
+
+### JWT Security
+
+Our [Authentication](/docs/developer-guide/authentication-&-authorization) system is built on JSON Web Tokens and includes several security measures:
+
+- **Token Expiration:** JWTs have a configurable, limited lifetime.
+- **Signature Validation:** Every token is signed with a secret key. The API validates this signature on every request to ensure the token has not been tampered with.
+- **Issuer/Audience Validation:** The API checks that the token was issued by a trusted source for its intended audience.
+
+### Input Validation
+
+As detailed in the [Validation](/docs/developer-guide/validation) guide, all data entering the system via API endpoints is rigorously validated. This is a critical defense against a wide range of attacks, including SQL Injection and Cross-Site Scripting (XSS), by ensuring that input conforms to expected formats and constraints.
+
+### Cross-Origin Resource Sharing (CORS)
+
+The `Host` project configures a CORS policy that restricts which external domains can make requests to the API. This is a browser-level security feature that prevents malicious websites from making unauthorized API calls on behalf of a user. The policy can be configured differently for Development and Production environments in `Program.cs`.

@@ -1,0 +1,22 @@
+---
+title: Prerequisites
+description: The required tools and software you need to install before setting up the project.
+icon: ListChecks
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Before you can build and run the Travel Booking Platform, you need to ensure your development environment is properly configured. Please install the following tools.
+
+- **[.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0):** The core framework used to build the application.
+- **[SQL Server](https://www.microsoft.com/sql-server/sql-server-downloads):** The database engine. Any recent edition will work, including the free **Express** or **Developer** editions.
+- **[A Git Client](https://git-scm.com/downloads):** Required for cloning the source code from the repository.
+
+<Callout title="EF Core Tools" type="info">
+The project uses Entity Framework Core for database migrations. If you haven't already, we recommend installing the EF Core command-line tools globally. You'll need them in a later step.
+
+```bash
+dotnet tool install --global dotnet-ef
+```
+
+</Callout>

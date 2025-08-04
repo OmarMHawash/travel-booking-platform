@@ -1,0 +1,41 @@
+---
+title: Running the Application
+description: How to launch the API and verify that your setup is successful.
+icon: Play
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+You have now completed all the setup and configuration steps. It's time to run the API.
+
+### Launching the API
+
+From the `src/TravelBookingPlatform.Host` directory, execute the `dotnet run` command:
+
+```bash
+dotnet run
+```
+
+The application will build and start a local web server. By default, it will be listening on the following URLs:
+
+- **HTTPS:** `https://localhost:7123`
+- **HTTP:** `http://localhost:5123`
+
+### Verifying a Successful Setup
+
+To confirm that everything is working correctly, open your web browser and check two key endpoints:
+
+1.  **API Documentation:** Navigate to **[`https://localhost:7123/swagger`](https://localhost:7123/swagger)**.
+
+    - You should see the interactive Swagger UI, listing all available API endpoints.
+
+2.  **Health Check:** Navigate to **[`https://localhost:7123/health`](https://localhost:7123/health)**.
+    - You should see a simple `Healthy` message, confirming a successful database connection.
+
+<Callout title="Congratulations! You're All Set Up." type="success">
+The platform is now running locally. You can start exploring the API using the Swagger documentation. Try logging in with the default credentials to test authenticated endpoints!
+
+- **Admin User:** `admin@test.com` / `Password123!`
+- **Typical User:** `user@test.com` / `Password123!`
+
+</Callout>
