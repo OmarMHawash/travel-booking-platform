@@ -16,11 +16,6 @@ services:
     networks:
       - travel-network
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
 
   travel-bp-docs:
     container_name: travel-bp-docs
@@ -28,15 +23,9 @@ services:
       context: ./apps/docs
     environment:
       - NODE_ENV=production
-      - PORT=3000
     networks:
       - travel-network
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
 
   travel-bp-client:
     container_name: travel-bp-client
@@ -44,15 +33,9 @@ services:
       context: ./apps/client
     environment:
       - NODE_ENV=production
-      - PORT=3000
     networks:
       - travel-network
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
 
   sql-server-db:
     container_name: sql-server-db

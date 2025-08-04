@@ -44,12 +44,9 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
-# Only expose HTTP; let Coolify handle TLS
-ENV ASPNETCORE_ENVIRONMENT=Production
-ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
 # Healthcheck expects your app to have /health endpoint; adjust if needed
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- http://localhost:8080/health || exit 1
+# HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- http://localhost:8080/health || exit 1
 
 ENTRYPOINT ["dotnet", "TravelBookingPlatform.Host.dll"]
