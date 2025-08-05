@@ -35,7 +35,6 @@ public class GetSearchSuggestionsQueryHandler : IRequestHandler<GetSearchSuggest
                 Name = hotel.Name,
                 Type = SearchSuggestionType.Hotel,
                 Location = $"{hotel.City.Name}, {hotel.City.Country}",
-                ImageUrl = hotel.ImageURL
             });
         }
 

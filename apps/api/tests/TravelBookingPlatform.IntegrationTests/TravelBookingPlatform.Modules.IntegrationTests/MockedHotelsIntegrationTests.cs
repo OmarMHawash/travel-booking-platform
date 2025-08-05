@@ -49,7 +49,6 @@ public class MockedHotelsIntegrationTests : MockedIntegrationTestBase
         result.Name.Should().Be(hotel.Name);
         result.Description.Should().Be(hotel.Description);
         result.Rating.Should().Be(hotel.Rating);
-        result.ImageUrl.Should().Be(hotel.ImageURL);
         result.City.Should().NotBeNull();
         result.Rooms.Should().NotBeEmpty();
         result.TotalRooms.Should().BeGreaterThan(0);
@@ -209,9 +208,7 @@ public class MockedHotelsIntegrationTests : MockedIntegrationTestBase
             "Test Hotel",
             "Test Hotel Description",
             4.5m,
-            city.Id,
-            "https://example.com/hotel.jpg"
-        );
+            city.Id);
 
         // Set the ID using reflection since it's likely protected
         typeof(Hotel).GetProperty("Id")?.SetValue(hotel, hotelId);
@@ -220,8 +217,8 @@ public class MockedHotelsIntegrationTests : MockedIntegrationTestBase
         hotel.GetType().GetProperty("City")?.SetValue(hotel, city);
 
         // Add some rooms with room types
-        var roomType1 = new RoomType("Standard Room", 100m, 2, 1);
-        var roomType2 = new RoomType("Deluxe Room", 200m, 3, 2);
+        var roomType1 = new RoomType("Standard Room", "Standard Room Description", 100m, 2, 1);
+        var roomType2 = new RoomType("Deluxe Room", "Deluxe Room Description", 200m, 3, 2);
 
         var room1 = new Room("101", hotel.Id, roomType1.Id);
         var room2 = new Room("102", hotel.Id, roomType2.Id);
@@ -247,17 +244,15 @@ public class MockedHotelsIntegrationTests : MockedIntegrationTestBase
             "Grand Test Hotel",
             "Luxury test hotel with multiple room types",
             4.8m,
-            city.Id,
-            "https://example.com/grand-hotel.jpg"
-        );
+            city.Id);
 
         typeof(Hotel).GetProperty("Id")?.SetValue(hotel, hotelId);
         hotel.GetType().GetProperty("City")?.SetValue(hotel, city);
 
         // Create multiple room types
-        var standardRoomType = new RoomType("Standard Room", 150m, 2, 0);
-        var deluxeRoomType = new RoomType("Deluxe Room", 250m, 2, 1);
-        var suiteRoomType = new RoomType("Executive Suite", 500m, 4, 2);
+        var standardRoomType = new RoomType("Standard Room", "Standard Room Description", 150m, 2, 0);
+        var deluxeRoomType = new RoomType("Deluxe Room", "Deluxe Room Description", 250m, 2, 1);
+        var suiteRoomType = new RoomType("Executive Suite", "Executive Suite Description", 500m, 4, 2);
 
         // Create multiple rooms
         var rooms = new List<Room>
@@ -291,9 +286,7 @@ public class MockedHotelsIntegrationTests : MockedIntegrationTestBase
             "Empty Test Hotel",
             "Test hotel with no rooms",
             3.5m,
-            city.Id,
-            "https://example.com/empty-hotel.jpg"
-        );
+            city.Id);
 
         typeof(Hotel).GetProperty("Id")?.SetValue(hotel, hotelId);
         hotel.GetType().GetProperty("City")?.SetValue(hotel, city);

@@ -534,8 +534,7 @@ public static class TestDataBuilders
             $"Test Hotel {uniqueId}",
             $"Test Hotel Description {uniqueId}",
             4.5m, // Rating between 0-5
-            cityId ?? Guid.NewGuid(),
-            $"https://example.com/hotel{uniqueId}.jpg"
+            cityId ?? Guid.NewGuid()
         );
     }
 
@@ -548,9 +547,11 @@ public static class TestDataBuilders
         var random = new Random();
         return new RoomType(
             $"Test Room Type {uniqueId}",
+            $"Test Room Type Description {uniqueId}",
             random.Next(50, 300), // Price per night between $50-$300
             random.Next(1, 4), // Max adults 1-4
-            random.Next(0, 2)  // Max children 0-2
+            random.Next(0, 2),  // Max children 0-2
+            null
         );
     }
 }

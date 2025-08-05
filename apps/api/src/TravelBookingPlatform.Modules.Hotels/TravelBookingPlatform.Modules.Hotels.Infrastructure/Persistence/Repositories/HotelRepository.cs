@@ -224,6 +224,7 @@ public class HotelRepository : BaseRepository<Hotel>, IHotelRepository
                 .ThenInclude(r => r.RoomType)
             .Include(h => h.Rooms)
                 .ThenInclude(r => r.Bookings)
+            .Include(h => h.Images)
             .ToListAsync();
 
         return (hotels, totalCount);
@@ -236,6 +237,7 @@ public class HotelRepository : BaseRepository<Hotel>, IHotelRepository
             .Include(h => h.City)
             .Include(h => h.Rooms)
                 .ThenInclude(r => r.RoomType)
+            .Include(h => h.Images)
             .FirstOrDefaultAsync();
     }
 
@@ -246,6 +248,7 @@ public class HotelRepository : BaseRepository<Hotel>, IHotelRepository
             .Include(h => h.City)
             .Include(h => h.Rooms)
                 .ThenInclude(r => r.RoomType)
+            .Include(h => h.Images)
             .ToListAsync();
     }
 
@@ -257,6 +260,15 @@ public class HotelRepository : BaseRepository<Hotel>, IHotelRepository
                 .ThenInclude(r => r.RoomType)
             .Include(h => h.Rooms)
                 .ThenInclude(r => r.Bookings)
+            .Include(h => h.Images)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<Hotel?> GetHotelWithImagesAsync(Guid hotelId)
+    {
+        return await _dbSet
+            .Where(h => h.Id == hotelId)
+            .Include(h => h.Images)
             .FirstOrDefaultAsync();
     }
 }

@@ -74,7 +74,6 @@ public class GetRecentlyVisitedHotelsQueryHandler : IRequestHandler<GetRecentlyV
                 Name = hotel.Name,
                 Description = hotel.Description,
                 Rating = hotel.Rating,
-                ImageUrl = hotel.ImageURL,
                 LastVisitedDate = hotelActivity.LastVisitedDate,
                 VisitCount = hotelActivity.VisitCount,
                 CityId = hotel.CityId,

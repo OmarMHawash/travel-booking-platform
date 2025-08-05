@@ -5,11 +5,11 @@ namespace TravelBookingPlatform.Modules.Hotels.Domain.Entities;
 public class RoomType : AggregateRoot
 {
     public string Name { get; private set; }
-    public string Description { get; private set; } // <-- ADDED
+    public string Description { get; private set; }
     public decimal PricePerNight { get; private set; }
     public int MaxAdults { get; private set; }
     public int MaxChildren { get; private set; }
-    public string? ImageUrl { get; private set; } // <-- ADDED
+    public string? ImageUrl { get; private set; }
 
     // Navigation properties
     public ICollection<Room> Rooms { get; private set; } = new List<Room>();

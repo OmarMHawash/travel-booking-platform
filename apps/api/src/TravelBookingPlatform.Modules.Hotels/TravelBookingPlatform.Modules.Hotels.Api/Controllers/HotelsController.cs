@@ -121,4 +121,19 @@ public class HotelsController : ControllerBase
 
         return Guid.TryParse(userIdClaim, out var userId) ? userId : null;
     }
+
+    /// <summary>
+    /// Gets the image gallery for a specific hotel.
+    /// </summary>
+    /// <param name="hotelId">The ID of the hotel.</param>
+    /// <returns>A list of images for the hotel, ordered by sort order.</returns>
+    [HttpGet("{hotelId}/gallery")]
+    [ProducesResponseType(typeof(List<HotelImageDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetHotelGallery(Guid hotelId)
+    {
+        var query = new GetHotelGalleryQuery(hotelId);
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
 }

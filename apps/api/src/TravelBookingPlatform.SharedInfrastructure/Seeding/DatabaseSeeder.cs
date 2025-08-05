@@ -29,6 +29,7 @@ public class DatabaseSeeder
             await SeedCitiesAsync();
             await SeedRoomTypesAsync();
             await SeedHotelsAsync();
+            await SeedHotelImagesAsync();
             await SeedRoomsAsync();
             await SeedBookingsAsync();
             await SeedDealsAsync();
@@ -164,86 +165,86 @@ public class DatabaseSeeder
         var newYork = cities.First(c => c.Name == "New York");
         hotels.AddRange(new[]
         {
-            new Hotel("The Plaza Hotel", "Luxury hotel in the heart of Manhattan with iconic views and world-class amenities.", 4.8m, newYork.Id, "https://example.com/images/hotels/plaza.jpg"),
-            new Hotel("Manhattan Business Hotel", "Modern business hotel perfect for corporate travelers with state-of-the-art facilities.", 4.2m, newYork.Id, "https://example.com/images/hotels/manhattan-business.jpg")
+            new Hotel("The Plaza Hotel", "Luxury hotel in the heart of Manhattan with iconic views and world-class amenities.", 4.8m, newYork.Id),
+            new Hotel("Manhattan Business Hotel", "Modern business hotel perfect for corporate travelers with state-of-the-art facilities.", 4.2m, newYork.Id)
         });
 
         // London Hotels
         var london = cities.First(c => c.Name == "London");
         hotels.AddRange(new[]
         {
-            new Hotel("The Ritz London", "Legendary luxury hotel offering timeless elegance and exceptional service since 1906.", 4.9m, london.Id, "https://example.com/images/hotels/ritz-london.jpg"),
-            new Hotel("London Bridge Hotel", "Contemporary hotel with stunning Thames views and easy access to major attractions.", 4.1m, london.Id, "https://example.com/images/hotels/london-bridge.jpg")
+            new Hotel("The Ritz London", "Legendary luxury hotel offering timeless elegance and exceptional service since 1906.", 4.9m, london.Id),
+            new Hotel("London Bridge Hotel", "Contemporary hotel with stunning Thames views and easy access to major attractions.", 4.1m, london.Id)
         });
 
         // Paris Hotels
         var paris = cities.First(c => c.Name == "Paris");
         hotels.AddRange(new[]
         {
-            new Hotel("Hotel de Crillon", "Palatial hotel on Place de la Concorde combining French elegance with modern luxury.", 4.7m, paris.Id, "https://example.com/images/hotels/crillon.jpg"),
-            new Hotel("Boutique Marais Hotel", "Charming boutique hotel in the historic Marais district with artistic flair.", 4.3m, paris.Id, "https://example.com/images/hotels/marais.jpg")
+            new Hotel("Hotel de Crillon", "Palatial hotel on Place de la Concorde combining French elegance with modern luxury.", 4.7m, paris.Id),
+            new Hotel("Boutique Marais Hotel", "Charming boutique hotel in the historic Marais district with artistic flair.", 4.3m, paris.Id)
         });
 
         // Tokyo Hotels
         var tokyo = cities.First(c => c.Name == "Tokyo");
         hotels.AddRange(new[]
         {
-            new Hotel("Tokyo Grand Hotel", "Premium hotel offering traditional Japanese hospitality with modern amenities.", 4.6m, tokyo.Id, "https://example.com/images/hotels/tokyo-grand.jpg"),
-            new Hotel("Shibuya Business Tower", "Ultra-modern hotel in the heart of Shibuya with cutting-edge technology.", 4.4m, tokyo.Id, "https://example.com/images/hotels/shibuya.jpg")
+            new Hotel("Tokyo Grand Hotel", "Premium hotel offering traditional Japanese hospitality with modern amenities.", 4.6m, tokyo.Id),
+            new Hotel("Shibuya Business Tower", "Ultra-modern hotel in the heart of Shibuya with cutting-edge technology.", 4.4m, tokyo.Id)
         });
 
         // Dubai Hotels
         var dubai = cities.First(c => c.Name == "Dubai");
         hotels.AddRange(new[]
         {
-            new Hotel("Burj Al Arab", "Iconic sail-shaped luxury hotel offering unparalleled opulence and personalized service.", 5.0m, dubai.Id, "https://example.com/images/hotels/burj-al-arab.jpg"),
-            new Hotel("Dubai Marina Resort", "Spectacular beachfront resort with world-class amenities and marina views.", 4.5m, dubai.Id, "https://example.com/images/hotels/marina-resort.jpg"),
-            new Hotel("Downtown Budget Inn", "Affordable accommodation in the heart of Dubai with essential amenities.", 3.2m, dubai.Id, "https://example.com/images/hotels/dubai-budget.jpg")
+            new Hotel("Burj Al Arab", "Iconic sail-shaped luxury hotel offering unparalleled opulence and personalized service.", 5.0m, dubai.Id),
+            new Hotel("Dubai Marina Resort", "Spectacular beachfront resort with world-class amenities and marina views.", 4.5m, dubai.Id),
+            new Hotel("Downtown Budget Inn", "Affordable accommodation in the heart of Dubai with essential amenities.", 3.2m, dubai.Id)
         });
 
         // Sydney Hotels
         var sydney = cities.First(c => c.Name == "Sydney");
         hotels.AddRange(new[]
         {
-            new Hotel("Sydney Harbour Luxury", "Premium waterfront hotel with Opera House views and world-class dining.", 4.7m, sydney.Id, "https://example.com/images/hotels/sydney-harbour.jpg"),
-            new Hotel("Bondi Beach Resort", "Relaxed beachfront hotel perfect for surfers and beach lovers.", 4.0m, sydney.Id, "https://example.com/images/hotels/bondi.jpg"),
-            new Hotel("CBD Business Center", "Modern business hotel in the financial district with conference facilities.", 3.8m, sydney.Id, "https://example.com/images/hotels/sydney-business.jpg")
+            new Hotel("Sydney Harbour Luxury", "Premium waterfront hotel with Opera House views and world-class dining.", 4.7m, sydney.Id),
+            new Hotel("Bondi Beach Resort", "Relaxed beachfront hotel perfect for surfers and beach lovers.", 4.0m, sydney.Id),
+            new Hotel("CBD Business Center", "Modern business hotel in the financial district with conference facilities.", 3.8m, sydney.Id)
         });
 
         // Barcelona Hotels
         var barcelona = cities.First(c => c.Name == "Barcelona");
         hotels.AddRange(new[]
         {
-            new Hotel("Gaudi Palace Hotel", "Artistic luxury hotel inspired by Barcelona's architectural heritage.", 4.6m, barcelona.Id, "https://example.com/images/hotels/gaudi-palace.jpg"),
-            new Hotel("Gothic Quarter Boutique", "Charming hotel in the historic heart of Barcelona.", 4.1m, barcelona.Id, "https://example.com/images/hotels/gothic-quarter.jpg"),
-            new Hotel("Beach Front Barcelona", "Modern hotel near the beach with rooftop pool and city views.", 3.9m, barcelona.Id, "https://example.com/images/hotels/barcelona-beach.jpg")
+            new Hotel("Gaudi Palace Hotel", "Artistic luxury hotel inspired by Barcelona's architectural heritage.", 4.6m, barcelona.Id),
+            new Hotel("Gothic Quarter Boutique", "Charming hotel in the historic heart of Barcelona.", 4.1m, barcelona.Id),
+            new Hotel("Beach Front Barcelona", "Modern hotel near the beach with rooftop pool and city views.", 3.9m, barcelona.Id)
         });
 
         // Rome Hotels
         var rome = cities.First(c => c.Name == "Rome");
         hotels.AddRange(new[]
         {
-            new Hotel("Imperial Roman Grand", "Luxury hotel near the Colosseum with classical elegance.", 4.8m, rome.Id, "https://example.com/images/hotels/imperial-rome.jpg"),
-            new Hotel("Vatican Hill Hotel", "Premium hotel with Vatican views and papal suite.", 4.4m, rome.Id, "https://example.com/images/hotels/vatican-hill.jpg"),
-            new Hotel("Trastevere Inn", "Cozy boutique hotel in the charming Trastevere district.", 3.7m, rome.Id, "https://example.com/images/hotels/trastevere.jpg")
+            new Hotel("Imperial Roman Grand", "Luxury hotel near the Colosseum with classical elegance.", 4.8m, rome.Id),
+            new Hotel("Vatican Hill Hotel", "Premium hotel with Vatican views and papal suite.", 4.4m, rome.Id),
+            new Hotel("Trastevere Inn", "Cozy boutique hotel in the charming Trastevere district.", 3.7m, rome.Id)
         });
 
         // Amsterdam Hotels
         var amsterdam = cities.First(c => c.Name == "Amsterdam");
         hotels.AddRange(new[]
         {
-            new Hotel("Canal House Luxury", "Historic canal-side hotel with authentic Dutch charm.", 4.5m, amsterdam.Id, "https://example.com/images/hotels/canal-house.jpg"),
-            new Hotel("Museum Quarter Hotel", "Contemporary hotel near world-famous museums.", 4.0m, amsterdam.Id, "https://example.com/images/hotels/museum-quarter.jpg"),
-            new Hotel("Amsterdam Central Lodge", "Budget-friendly hostel-hotel hybrid for backpackers.", 3.1m, amsterdam.Id, "https://example.com/images/hotels/amsterdam-lodge.jpg")
+            new Hotel("Canal House Luxury", "Historic canal-side hotel with authentic Dutch charm.", 4.5m, amsterdam.Id),
+            new Hotel("Museum Quarter Hotel", "Contemporary hotel near world-famous museums.", 4.0m, amsterdam.Id),
+            new Hotel("Amsterdam Central Lodge", "Budget-friendly hostel-hotel hybrid for backpackers.", 3.1m, amsterdam.Id)
         });
 
         // Singapore Hotels
         var singapore = cities.First(c => c.Name == "Singapore");
         hotels.AddRange(new[]
         {
-            new Hotel("Marina Bay Skyline", "Ultra-modern luxury hotel with infinity pool and city views.", 4.9m, singapore.Id, "https://example.com/images/hotels/marina-bay.jpg"),
-            new Hotel("Sentosa Island Resort", "Tropical paradise resort with theme park access.", 4.3m, singapore.Id, "https://example.com/images/hotels/sentosa.jpg"),
-            new Hotel("Chinatown Heritage Hotel", "Cultural hotel celebrating Singapore's diverse heritage.", 3.6m, singapore.Id, "https://example.com/images/hotels/chinatown.jpg")
+            new Hotel("Marina Bay Skyline", "Ultra-modern luxury hotel with infinity pool and city views.", 4.9m, singapore.Id),
+            new Hotel("Sentosa Island Resort", "Tropical paradise resort with theme park access.", 4.3m, singapore.Id),
+            new Hotel("Chinatown Heritage Hotel", "Cultural hotel celebrating Singapore's diverse heritage.", 3.6m, singapore.Id)
         });
 
         _context.Hotels.AddRange(hotels);
@@ -981,5 +982,30 @@ public class DatabaseSeeder
         _context.Deals.AddRange(deals);
         await _context.SaveChangesAsync();
         _logger.LogInformation("Seeded {Count} deals.", deals.Count);
+    }
+
+    private async Task SeedHotelImagesAsync()
+    {
+        if (await _context.HotelImages.AnyAsync())
+        {
+            _logger.LogInformation("Hotel images already exist. Skipping image seeding.");
+            return;
+        }
+
+        var hotels = await _context.Hotels.ToListAsync();
+        var images = new List<HotelImage>();
+
+        foreach (var hotel in hotels)
+        {
+            images.Add(new HotelImage(hotel.Id, $"https://example.com/images/hotels/{hotel.Name.ToLower().Replace(' ', '-')}-cover.jpg", $"The beautiful exterior of {hotel.Name}", 0, true)); // Cover Image
+            images.Add(new HotelImage(hotel.Id, $"https://example.com/images/hotels/{hotel.Name.ToLower().Replace(' ', '-')}-lobby.jpg", "Our elegant lobby and reception area", 1));
+            images.Add(new HotelImage(hotel.Id, $"https://example.com/images/hotels/{hotel.Name.ToLower().Replace(' ', '-')}-room.jpg", "A view of one of our deluxe rooms", 2));
+            images.Add(new HotelImage(hotel.Id, $"https://example.com/images/hotels/{hotel.Name.ToLower().Replace(' ', '-')}-pool.jpg", "The stunning poolside area", 3));
+            images.Add(new HotelImage(hotel.Id, $"https://example.com/images/hotels/{hotel.Name.ToLower().Replace(' ', '-')}-restaurant.jpg", "Fine dining at our in-house restaurant", 4));
+        }
+
+        _context.HotelImages.AddRange(images);
+        await _context.SaveChangesAsync();
+        _logger.LogInformation("Seeded {Count} images for {HotelCount} hotels.", images.Count, hotels.Count);
     }
 }

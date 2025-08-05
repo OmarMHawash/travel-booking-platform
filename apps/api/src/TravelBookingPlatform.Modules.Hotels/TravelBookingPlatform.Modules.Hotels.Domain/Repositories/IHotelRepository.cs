@@ -35,4 +35,6 @@ public interface IHotelRepository : IRepository<Hotel>
     Task<Hotel?> GetHotelWithDetailsAsync(Guid id);
     Task<IReadOnlyList<Hotel>> GetHotelsWithDetailsAsync(IEnumerable<Guid> hotelIds);
     Task<Hotel?> GetHotelWithRoomsAndBookingsAsync(Guid hotelId);
+
+    Task<Hotel?> GetHotelWithImagesAsync(Guid hotelId);
 }

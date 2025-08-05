@@ -20,7 +20,6 @@ public class HotelsMappingProfile : Profile
                 Rating = src.Hotel.Rating,
                 City = src.Hotel.City.Name,
                 Country = src.Hotel.City.Country,
-                ImageURL = src.Hotel.ImageURL
             }))
             .ForMember(dest => dest.RoomType, opt => opt.MapFrom(src => src.RoomType != null ? new RoomTypeSummaryDto
             {
@@ -38,7 +37,6 @@ public class HotelsMappingProfile : Profile
                 Rating = src.Hotel.Rating,
                 City = src.Hotel.City.Name,
                 Country = src.Hotel.City.Country,
-                ImageURL = src.Hotel.ImageURL
             }))
             .ForMember(dest => dest.RoomType, opt => opt.MapFrom(src => src.RoomType != null ? new RoomTypeSummaryDto
             {
@@ -50,7 +48,7 @@ public class HotelsMappingProfile : Profile
 
         // Hotel detail mappings
         CreateMap<Hotel, HotelDetailDto>()
-            .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageURL));
+            .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.OrderBy(i => i.SortOrder).ToList()));
 
         CreateMap<Room, RoomDetailDto>();
 
@@ -63,7 +61,6 @@ public class HotelsMappingProfile : Profile
     .ForMember(dest => dest.ConfirmationNumber, opt => opt.MapFrom(src => $"BKG-{src.Id.ToString().Substring(0, 8).ToUpper()}"))
     .ForMember(dest => dest.HotelId, opt => opt.MapFrom(src => src.Room.Hotel.Id))
     .ForMember(dest => dest.HotelName, opt => opt.MapFrom(src => src.Room.Hotel.Name))
-    .ForMember(dest => dest.HotelImageUrl, opt => opt.MapFrom(src => src.Room.Hotel.ImageURL))
     .ForMember(dest => dest.CityName, opt => opt.MapFrom(src => src.Room.Hotel.City.Name))
     .ForMember(dest => dest.RoomTypeName, opt => opt.MapFrom(src => src.Room.RoomType.Name))
     .ForMember(dest => dest.TotalNights, opt => opt.MapFrom(src => src.GetNumberOfNights()))
@@ -73,5 +70,9 @@ public class HotelsMappingProfile : Profile
         src.CheckOutDate.Date < DateTime.Today ? "Completed"
         : src.CheckInDate.Date > DateTime.Today ? "Upcoming"
         : "In Progress"));
+
+        CreateMap<HotelImage, HotelImageDto>();
     }
+
+
 }

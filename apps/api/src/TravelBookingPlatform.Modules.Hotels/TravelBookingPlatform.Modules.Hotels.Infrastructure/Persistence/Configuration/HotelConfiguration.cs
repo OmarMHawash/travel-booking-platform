@@ -24,9 +24,6 @@ public class HotelConfiguration : IEntityTypeConfiguration<Hotel>
             .IsRequired()
             .HasColumnType("decimal(3,2)"); // e.g., 4.75
 
-        builder.Property(h => h.ImageURL)
-            .HasMaxLength(500);
-
         builder.Property(h => h.CityId)
             .IsRequired();
 

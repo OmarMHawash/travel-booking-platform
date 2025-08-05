@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using System.Diagnostics;
 using TravelBookingPlatform.Modules.Hotels.Application.DTOs;
@@ -10,10 +11,12 @@ namespace TravelBookingPlatform.Modules.Hotels.Application.Queries.Handlers;
 public class SearchHotelsQueryHandler : IRequestHandler<SearchHotelsQuery, SearchResultDto>
 {
     private readonly IHotelRepository _hotelRepository;
+    private readonly IMapper _mapper;
 
-    public SearchHotelsQueryHandler(IHotelRepository hotelRepository)
+    public SearchHotelsQueryHandler(IHotelRepository hotelRepository, IMapper mapper)
     {
         _hotelRepository = hotelRepository;
+        _mapper = mapper;
     }
 
     public async Task<SearchResultDto> Handle(SearchHotelsQuery request, CancellationToken cancellationToken)
@@ -84,9 +87,9 @@ public class SearchHotelsQueryHandler : IRequestHandler<SearchHotelsQuery, Searc
                 City = hotel.City.Name,
                 Country = hotel.City.Country,
                 PricePerNight = minPrice,
-                ImageUrl = hotel.ImageURL,
                 AvailableRooms = availableRooms,
-                IsAvailable = isAvailable
+                IsAvailable = isAvailable,
+                Images = _mapper.Map<List<HotelImageDto>>(hotel.Images.OrderBy(i => i.SortOrder).ToList())
             });
         }
 
