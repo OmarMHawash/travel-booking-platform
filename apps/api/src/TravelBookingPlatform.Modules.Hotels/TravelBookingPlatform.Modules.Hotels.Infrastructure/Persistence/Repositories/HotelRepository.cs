@@ -248,4 +248,15 @@ public class HotelRepository : BaseRepository<Hotel>, IHotelRepository
                 .ThenInclude(r => r.RoomType)
             .ToListAsync();
     }
+
+    public async Task<Hotel?> GetHotelWithRoomsAndBookingsAsync(Guid hotelId)
+    {
+        return await _dbSet
+            .Where(h => h.Id == hotelId)
+            .Include(h => h.Rooms)
+                .ThenInclude(r => r.RoomType)
+            .Include(h => h.Rooms)
+                .ThenInclude(r => r.Bookings)
+            .FirstOrDefaultAsync();
+    }
 }

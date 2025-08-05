@@ -102,46 +102,46 @@ public class DatabaseSeeder
         var roomTypes = new List<RoomType>
         {
             // Budget Tier (Under $100)
-            new RoomType("Hostel Dorm", 45.00m, 1, 0),
-            new RoomType("Economy Single", 75.00m, 1, 0),
-            new RoomType("Budget Double", 95.00m, 2, 0),
+            new RoomType("Hostel Dorm", "A bed in a shared dormitory. Perfect for solo travelers on a tight budget. Includes locker and shared bathroom access.", 45.00m, 1, 0, "https://example.com/images/room-types/hostel-dorm.jpg"),
+            new RoomType("Economy Single", "A small, private room with a single bed and essential amenities. Ideal for a short, budget-friendly stay.", 75.00m, 1, 0, "https://example.com/images/room-types/economy-single.jpg"),
+            new RoomType("Budget Double", "A basic private room with a double bed, suitable for couples or solo travelers wanting more space.", 95.00m, 2, 0, "https://example.com/images/room-types/budget-double.jpg"),
 
             // Standard Tier ($100-200)
-            new RoomType("Standard Single", 120.00m, 1, 0),
-            new RoomType("Standard Double", 160.00m, 2, 1),
-            new RoomType("Twin Room", 140.00m, 2, 0),
-            new RoomType("Compact Triple", 180.00m, 3, 0),
+            new RoomType("Standard Single", "A comfortable room with a single bed, work desk, and en-suite bathroom. Great for solo business or leisure travelers.", 120.00m, 1, 0, "https://example.com/images/room-types/standard-single.jpg"),
+            new RoomType("Standard Double", "Our most popular room. Features a queen-sized bed, modern decor, and all standard amenities for a comfortable stay.", 160.00m, 2, 1, "https://example.com/images/room-types/standard-double.jpg"),
+            new RoomType("Twin Room", "Features two separate single beds, perfect for friends or colleagues traveling together.", 140.00m, 2, 0, "https://example.com/images/room-types/twin-room.jpg"),
+            new RoomType("Compact Triple", "A cozy room with three single beds or one double and one single, designed for small groups or families.", 180.00m, 3, 0, "https://example.com/images/room-types/compact-triple.jpg"),
 
             // Deluxe Tier ($200-400)
-            new RoomType("Deluxe Double", 240.00m, 2, 2),
-            new RoomType("Superior Twin", 220.00m, 2, 1),
-            new RoomType("Family Room", 320.00m, 4, 2),
-            new RoomType("Studio Apartment", 280.00m, 2, 1),
-            new RoomType("Business Room", 350.00m, 2, 0),
+            new RoomType("Deluxe Double", "A spacious, elegantly appointed room with a king-sized bed, premium linens, and enhanced amenities.", 240.00m, 2, 2, "https://example.com/images/room-types/deluxe-double.jpg"),
+            new RoomType("Superior Twin", "An upgraded twin room with more space, better views, and premium bathroom amenities.", 220.00m, 2, 1, "https://example.com/images/room-types/superior-twin.jpg"),
+            new RoomType("Family Room", "A large room with multiple bedding options, designed to comfortably accommodate a family of four.", 320.00m, 4, 2, "https://example.com/images/room-types/family-room.jpg"),
+            new RoomType("Studio Apartment", "Features a kitchenette and living area, offering the comforts of home for a longer stay.", 280.00m, 2, 1, "https://example.com/images/room-types/studio-apartment.jpg"),
+            new RoomType("Business Room", "Designed for the corporate traveler, featuring a large work desk, high-speed internet, and ergonomic chair.", 350.00m, 2, 0, "https://example.com/images/room-types/business-room.jpg"),
 
             // Premium Tier ($400-700)
-            new RoomType("Junior Suite", 450.00m, 2, 2),
-            new RoomType("Executive Double", 520.00m, 2, 1),
-            new RoomType("Premium Family", 580.00m, 4, 3),
-            new RoomType("Ocean View Suite", 620.00m, 2, 2),
-            new RoomType("City View Suite", 480.00m, 2, 1),
+            new RoomType("Junior Suite", "A large, open-plan suite with a distinct living area, king-sized bed, and luxurious bathroom.", 450.00m, 2, 2, "https://example.com/images/room-types/junior-suite.jpg"),
+            new RoomType("Executive Double", "Located on higher floors with exclusive lounge access, complimentary breakfast, and evening cocktails.", 520.00m, 2, 1, "https://example.com/images/room-types/executive-double.jpg"),
+            new RoomType("Premium Family", "A multi-room suite designed for families, featuring separate sleeping areas for parents and children.", 580.00m, 4, 3, "https://example.com/images/room-types/premium-family.jpg"),
+            new RoomType("Ocean View Suite", "A stunning suite offering panoramic views of the ocean from a private balcony.", 620.00m, 2, 2, "https://example.com/images/room-types/ocean-view-suite.jpg"),
+            new RoomType("City View Suite", "Enjoy breathtaking views of the city skyline from this high-floor suite with floor-to-ceiling windows.", 480.00m, 2, 1, "https://example.com/images/room-types/city-view-suite.jpg"),
 
             // Luxury Tier ($700-1500)
-            new RoomType("Executive Suite", 850.00m, 4, 2),
-            new RoomType("Penthouse Junior", 980.00m, 2, 1),
-            new RoomType("Royal Suite", 1200.00m, 4, 3),
-            new RoomType("Ambassador Suite", 1100.00m, 3, 2),
+            new RoomType("Executive Suite", "A one-bedroom suite with a separate living room, dining area, and oversized bathroom with a soaking tub.", 850.00m, 4, 2, "https://example.com/images/room-types/executive-suite.jpg"),
+            new RoomType("Penthouse Junior", "Located on the top floors, this suite offers premium luxury, exclusive services, and the best views.", 980.00m, 2, 1, "https://example.com/images/room-types/penthouse-junior.jpg"),
+            new RoomType("Royal Suite", "An opulent suite featuring lavish decor, multiple bedrooms, a private terrace, and dedicated butler service.", 1200.00m, 4, 3, "https://example.com/images/room-types/royal-suite.jpg"),
+            new RoomType("Ambassador Suite", "A residence-style suite perfect for diplomacy or entertainment, with a formal dining room and reception area.", 1100.00m, 3, 2, "https://example.com/images/room-types/ambassador-suite.jpg"),
 
             // Ultra-Luxury Tier ($1500+)
-            new RoomType("Presidential Suite", 1800.00m, 6, 4),
-            new RoomType("Imperial Suite", 2200.00m, 8, 4),
-            new RoomType("Royal Penthouse", 3500.00m, 6, 2),
+            new RoomType("Presidential Suite", "The pinnacle of luxury. A magnificent suite with multiple bedrooms, private gym, and 24/7 butler service.", 1800.00m, 6, 4, "https://example.com/images/room-types/presidential-suite.jpg"),
+            new RoomType("Imperial Suite", "A palace within the hotel. Spanning an entire wing, this suite offers unparalleled space, privacy, and opulence.", 2200.00m, 8, 4, "https://example.com/images/room-types/imperial-suite.jpg"),
+            new RoomType("Royal Penthouse", "The ultimate hotel experience. A two-story penthouse with a private rooftop pool, cinema, and staff.", 3500.00m, 6, 2, "https://example.com/images/room-types/royal-penthouse.jpg"),
 
             // Special Categories
-            new RoomType("Connecting Rooms", 420.00m, 4, 4),
-            new RoomType("Accessible Room", 180.00m, 2, 1),
-            new RoomType("Pet-Friendly Room", 200.00m, 2, 2),
-            new RoomType("Extended Stay Suite", 380.00m, 2, 2)
+            new RoomType("Connecting Rooms", "Two interconnecting rooms that can be booked together, ideal for larger families or groups needing privacy and proximity.", 420.00m, 4, 4, "https://example.com/images/room-types/connecting-rooms.jpg"),
+            new RoomType("Accessible Room", "Thoughtfully designed for guests with mobility needs, featuring wider doorways and a roll-in shower.", 180.00m, 2, 1, "https://example.com/images/room-types/accessible-room.jpg"),
+            new RoomType("Pet-Friendly Room", "Bring your furry friend along! This room includes a pet bed, bowls, and easy access to outdoor areas.", 200.00m, 2, 2, "https://example.com/images/room-types/pet-friendly-room.jpg"),
+            new RoomType("Extended Stay Suite", "A fully-equipped suite with a kitchen, laundry, and weekly housekeeping, designed for stays of a week or more.", 380.00m, 2, 2, "https://example.com/images/room-types/extended-stay-suite.jpg")
         };
 
         _context.RoomTypes.AddRange(roomTypes);
@@ -164,86 +164,86 @@ public class DatabaseSeeder
         var newYork = cities.First(c => c.Name == "New York");
         hotels.AddRange(new[]
         {
-            new Hotel("The Plaza Hotel", "Luxury hotel in the heart of Manhattan with iconic views and world-class amenities.", 4.8m, newYork.Id, "https://example.com/plaza.jpg"),
-            new Hotel("Manhattan Business Hotel", "Modern business hotel perfect for corporate travelers with state-of-the-art facilities.", 4.2m, newYork.Id, "https://example.com/manhattan-business.jpg")
+            new Hotel("The Plaza Hotel", "Luxury hotel in the heart of Manhattan with iconic views and world-class amenities.", 4.8m, newYork.Id, "https://example.com/images/hotels/plaza.jpg"),
+            new Hotel("Manhattan Business Hotel", "Modern business hotel perfect for corporate travelers with state-of-the-art facilities.", 4.2m, newYork.Id, "https://example.com/images/hotels/manhattan-business.jpg")
         });
 
         // London Hotels
         var london = cities.First(c => c.Name == "London");
         hotels.AddRange(new[]
         {
-            new Hotel("The Ritz London", "Legendary luxury hotel offering timeless elegance and exceptional service since 1906.", 4.9m, london.Id, "https://example.com/ritz-london.jpg"),
-            new Hotel("London Bridge Hotel", "Contemporary hotel with stunning Thames views and easy access to major attractions.", 4.1m, london.Id, "https://example.com/london-bridge.jpg")
+            new Hotel("The Ritz London", "Legendary luxury hotel offering timeless elegance and exceptional service since 1906.", 4.9m, london.Id, "https://example.com/images/hotels/ritz-london.jpg"),
+            new Hotel("London Bridge Hotel", "Contemporary hotel with stunning Thames views and easy access to major attractions.", 4.1m, london.Id, "https://example.com/images/hotels/london-bridge.jpg")
         });
 
         // Paris Hotels
         var paris = cities.First(c => c.Name == "Paris");
         hotels.AddRange(new[]
         {
-            new Hotel("Hotel de Crillon", "Palatial hotel on Place de la Concorde combining French elegance with modern luxury.", 4.7m, paris.Id, "https://example.com/crillon.jpg"),
-            new Hotel("Boutique Marais Hotel", "Charming boutique hotel in the historic Marais district with artistic flair.", 4.3m, paris.Id, "https://example.com/marais.jpg")
+            new Hotel("Hotel de Crillon", "Palatial hotel on Place de la Concorde combining French elegance with modern luxury.", 4.7m, paris.Id, "https://example.com/images/hotels/crillon.jpg"),
+            new Hotel("Boutique Marais Hotel", "Charming boutique hotel in the historic Marais district with artistic flair.", 4.3m, paris.Id, "https://example.com/images/hotels/marais.jpg")
         });
 
         // Tokyo Hotels
         var tokyo = cities.First(c => c.Name == "Tokyo");
         hotels.AddRange(new[]
         {
-            new Hotel("Tokyo Grand Hotel", "Premium hotel offering traditional Japanese hospitality with modern amenities.", 4.6m, tokyo.Id, "https://example.com/tokyo-grand.jpg"),
-            new Hotel("Shibuya Business Tower", "Ultra-modern hotel in the heart of Shibuya with cutting-edge technology.", 4.4m, tokyo.Id, "https://example.com/shibuya.jpg")
+            new Hotel("Tokyo Grand Hotel", "Premium hotel offering traditional Japanese hospitality with modern amenities.", 4.6m, tokyo.Id, "https://example.com/images/hotels/tokyo-grand.jpg"),
+            new Hotel("Shibuya Business Tower", "Ultra-modern hotel in the heart of Shibuya with cutting-edge technology.", 4.4m, tokyo.Id, "https://example.com/images/hotels/shibuya.jpg")
         });
 
         // Dubai Hotels
         var dubai = cities.First(c => c.Name == "Dubai");
         hotels.AddRange(new[]
         {
-            new Hotel("Burj Al Arab", "Iconic sail-shaped luxury hotel offering unparalleled opulence and personalized service.", 5.0m, dubai.Id, "https://example.com/burj-al-arab.jpg"),
-            new Hotel("Dubai Marina Resort", "Spectacular beachfront resort with world-class amenities and marina views.", 4.5m, dubai.Id, "https://example.com/marina-resort.jpg"),
-            new Hotel("Downtown Budget Inn", "Affordable accommodation in the heart of Dubai with essential amenities.", 3.2m, dubai.Id, "https://example.com/dubai-budget.jpg")
+            new Hotel("Burj Al Arab", "Iconic sail-shaped luxury hotel offering unparalleled opulence and personalized service.", 5.0m, dubai.Id, "https://example.com/images/hotels/burj-al-arab.jpg"),
+            new Hotel("Dubai Marina Resort", "Spectacular beachfront resort with world-class amenities and marina views.", 4.5m, dubai.Id, "https://example.com/images/hotels/marina-resort.jpg"),
+            new Hotel("Downtown Budget Inn", "Affordable accommodation in the heart of Dubai with essential amenities.", 3.2m, dubai.Id, "https://example.com/images/hotels/dubai-budget.jpg")
         });
 
         // Sydney Hotels
         var sydney = cities.First(c => c.Name == "Sydney");
         hotels.AddRange(new[]
         {
-            new Hotel("Sydney Harbour Luxury", "Premium waterfront hotel with Opera House views and world-class dining.", 4.7m, sydney.Id, "https://example.com/sydney-harbour.jpg"),
-            new Hotel("Bondi Beach Resort", "Relaxed beachfront hotel perfect for surfers and beach lovers.", 4.0m, sydney.Id, "https://example.com/bondi.jpg"),
-            new Hotel("CBD Business Center", "Modern business hotel in the financial district with conference facilities.", 3.8m, sydney.Id, "https://example.com/sydney-business.jpg")
+            new Hotel("Sydney Harbour Luxury", "Premium waterfront hotel with Opera House views and world-class dining.", 4.7m, sydney.Id, "https://example.com/images/hotels/sydney-harbour.jpg"),
+            new Hotel("Bondi Beach Resort", "Relaxed beachfront hotel perfect for surfers and beach lovers.", 4.0m, sydney.Id, "https://example.com/images/hotels/bondi.jpg"),
+            new Hotel("CBD Business Center", "Modern business hotel in the financial district with conference facilities.", 3.8m, sydney.Id, "https://example.com/images/hotels/sydney-business.jpg")
         });
 
         // Barcelona Hotels
         var barcelona = cities.First(c => c.Name == "Barcelona");
         hotels.AddRange(new[]
         {
-            new Hotel("Gaudi Palace Hotel", "Artistic luxury hotel inspired by Barcelona's architectural heritage.", 4.6m, barcelona.Id, "https://example.com/gaudi-palace.jpg"),
-            new Hotel("Gothic Quarter Boutique", "Charming hotel in the historic heart of Barcelona.", 4.1m, barcelona.Id, "https://example.com/gothic-quarter.jpg"),
-            new Hotel("Beach Front Barcelona", "Modern hotel near the beach with rooftop pool and city views.", 3.9m, barcelona.Id, "https://example.com/barcelona-beach.jpg")
+            new Hotel("Gaudi Palace Hotel", "Artistic luxury hotel inspired by Barcelona's architectural heritage.", 4.6m, barcelona.Id, "https://example.com/images/hotels/gaudi-palace.jpg"),
+            new Hotel("Gothic Quarter Boutique", "Charming hotel in the historic heart of Barcelona.", 4.1m, barcelona.Id, "https://example.com/images/hotels/gothic-quarter.jpg"),
+            new Hotel("Beach Front Barcelona", "Modern hotel near the beach with rooftop pool and city views.", 3.9m, barcelona.Id, "https://example.com/images/hotels/barcelona-beach.jpg")
         });
 
         // Rome Hotels
         var rome = cities.First(c => c.Name == "Rome");
         hotels.AddRange(new[]
         {
-            new Hotel("Imperial Roman Grand", "Luxury hotel near the Colosseum with classical elegance.", 4.8m, rome.Id, "https://example.com/imperial-rome.jpg"),
-            new Hotel("Vatican Hill Hotel", "Premium hotel with Vatican views and papal suite.", 4.4m, rome.Id, "https://example.com/vatican-hill.jpg"),
-            new Hotel("Trastevere Inn", "Cozy boutique hotel in the charming Trastevere district.", 3.7m, rome.Id, "https://example.com/trastevere.jpg")
+            new Hotel("Imperial Roman Grand", "Luxury hotel near the Colosseum with classical elegance.", 4.8m, rome.Id, "https://example.com/images/hotels/imperial-rome.jpg"),
+            new Hotel("Vatican Hill Hotel", "Premium hotel with Vatican views and papal suite.", 4.4m, rome.Id, "https://example.com/images/hotels/vatican-hill.jpg"),
+            new Hotel("Trastevere Inn", "Cozy boutique hotel in the charming Trastevere district.", 3.7m, rome.Id, "https://example.com/images/hotels/trastevere.jpg")
         });
 
         // Amsterdam Hotels
         var amsterdam = cities.First(c => c.Name == "Amsterdam");
         hotels.AddRange(new[]
         {
-            new Hotel("Canal House Luxury", "Historic canal-side hotel with authentic Dutch charm.", 4.5m, amsterdam.Id, "https://example.com/canal-house.jpg"),
-            new Hotel("Museum Quarter Hotel", "Contemporary hotel near world-famous museums.", 4.0m, amsterdam.Id, "https://example.com/museum-quarter.jpg"),
-            new Hotel("Amsterdam Central Lodge", "Budget-friendly hostel-hotel hybrid for backpackers.", 3.1m, amsterdam.Id, "https://example.com/amsterdam-lodge.jpg")
+            new Hotel("Canal House Luxury", "Historic canal-side hotel with authentic Dutch charm.", 4.5m, amsterdam.Id, "https://example.com/images/hotels/canal-house.jpg"),
+            new Hotel("Museum Quarter Hotel", "Contemporary hotel near world-famous museums.", 4.0m, amsterdam.Id, "https://example.com/images/hotels/museum-quarter.jpg"),
+            new Hotel("Amsterdam Central Lodge", "Budget-friendly hostel-hotel hybrid for backpackers.", 3.1m, amsterdam.Id, "https://example.com/images/hotels/amsterdam-lodge.jpg")
         });
 
         // Singapore Hotels
         var singapore = cities.First(c => c.Name == "Singapore");
         hotels.AddRange(new[]
         {
-            new Hotel("Marina Bay Skyline", "Ultra-modern luxury hotel with infinity pool and city views.", 4.9m, singapore.Id, "https://example.com/marina-bay.jpg"),
-            new Hotel("Sentosa Island Resort", "Tropical paradise resort with theme park access.", 4.3m, singapore.Id, "https://example.com/sentosa.jpg"),
-            new Hotel("Chinatown Heritage Hotel", "Cultural hotel celebrating Singapore's diverse heritage.", 3.6m, singapore.Id, "https://example.com/chinatown.jpg")
+            new Hotel("Marina Bay Skyline", "Ultra-modern luxury hotel with infinity pool and city views.", 4.9m, singapore.Id, "https://example.com/images/hotels/marina-bay.jpg"),
+            new Hotel("Sentosa Island Resort", "Tropical paradise resort with theme park access.", 4.3m, singapore.Id, "https://example.com/images/hotels/sentosa.jpg"),
+            new Hotel("Chinatown Heritage Hotel", "Cultural hotel celebrating Singapore's diverse heritage.", 3.6m, singapore.Id, "https://example.com/images/hotels/chinatown.jpg")
         });
 
         _context.Hotels.AddRange(hotels);

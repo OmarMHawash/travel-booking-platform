@@ -82,6 +82,31 @@ public class HotelsController : ControllerBase
     }
 
     /// <summary>
+    /// Gets available room types for a given hotel, date range, and guest count.
+    /// </summary>
+    /// <param name="hotelId">The ID of the hotel.</param>
+    /// <param name="checkInDate">The check-in date.</param>
+    /// <param name="checkOutDate">The check-out date.</param>
+    /// <param name="numberOfAdults">The number of adults.</param>
+    /// <param name="numberOfChildren">The number of children.</param>
+    /// <returns>A list of available room types with their details and availability count.</returns>
+    [HttpGet("{hotelId}/availability")]
+    [ProducesResponseType(typeof(List<AvailableRoomTypeDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetHotelRoomAvailability(
+        [FromRoute] Guid hotelId,
+        [FromQuery] DateTime checkInDate,
+        [FromQuery] DateTime checkOutDate,
+        [FromQuery] int numberOfAdults = 2,
+        [FromQuery] int numberOfChildren = 0)
+    {
+        var query = new GetHotelRoomAvailabilityQuery(hotelId, checkInDate, checkOutDate, numberOfAdults, numberOfChildren);
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    /// <summary>
     /// Extracts the current user ID from the authentication claims
     /// </summary>
     /// <returns>User ID if authenticated, null otherwise</returns>

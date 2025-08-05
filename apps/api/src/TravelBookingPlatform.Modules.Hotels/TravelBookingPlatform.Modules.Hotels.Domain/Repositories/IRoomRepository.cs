@@ -25,4 +25,10 @@ public interface IRoomRepository : IRepository<Room>
         DateTime checkOutDate,
         int adults,
         int children);
+
+    Task<IReadOnlyList<Room>> GetAvailableRoomsByTypeForPeriodAsync(
+        Guid hotelId,
+        Guid roomTypeId,
+        DateTime checkInDate,
+        DateTime checkOutDate);
 }

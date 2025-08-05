@@ -16,6 +16,14 @@ public class RoomTypeConfiguration : IEntityTypeConfiguration<RoomType>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(rt => rt.Description)
+            .IsRequired()
+            .HasMaxLength(1000);
+
+        builder.Property(rt => rt.ImageUrl)
+            .HasMaxLength(500)
+            .IsRequired(false);
+
         builder.Property(rt => rt.PricePerNight)
             .IsRequired()
             .HasColumnType("decimal(10,2)"); // e.g., 9999999.99

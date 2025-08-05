@@ -42,6 +42,19 @@ public class RoomRepository : BaseRepository<Room>, IRoomRepository
             .FirstOrDefaultAsync(r => r.HotelId == hotelId && r.RoomNumber == roomNumber);
     }
 
+    public async Task<IReadOnlyList<Room>> GetAvailableRoomsByTypeForPeriodAsync(
+        Guid hotelId,
+        Guid roomTypeId,
+        DateTime checkInDate,
+        DateTime checkOutDate)
+    {
+        return await _dbSet
+            .Where(r => r.HotelId == hotelId && r.RoomTypeId == roomTypeId)
+            .Where(r => !r.Bookings.Any(b =>
+                b.CheckInDate < checkOutDate && b.CheckOutDate > checkInDate))
+            .ToListAsync();
+    }
+
     public async Task<bool> RoomNumberExistsInHotelAsync(Guid hotelId, string roomNumber, Guid? excludeRoomId = null)
     {
         var query = _dbSet

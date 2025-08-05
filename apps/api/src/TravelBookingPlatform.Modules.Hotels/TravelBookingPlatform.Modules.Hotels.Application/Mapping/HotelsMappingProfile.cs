@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using TravelBookingPlatform.Modules.Hotels.Application.DTOs;
+using TravelBookingPlatform.Modules.Hotels.Application.Commands;
 using TravelBookingPlatform.Modules.Hotels.Domain.Entities;
 
 namespace TravelBookingPlatform.Modules.Hotels.Application.Mapping;
@@ -55,6 +56,22 @@ public class HotelsMappingProfile : Profile
 
         CreateMap<RoomType, RoomTypeDetailDto>();
 
-        // other mappings here
+        CreateMap<CreateBookingRequestDto, CreateBookingCommand>();
+
+        CreateMap<Booking, UserBookingDto>()
+    .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.Id))
+    .ForMember(dest => dest.ConfirmationNumber, opt => opt.MapFrom(src => $"BKG-{src.Id.ToString().Substring(0, 8).ToUpper()}"))
+    .ForMember(dest => dest.HotelId, opt => opt.MapFrom(src => src.Room.Hotel.Id))
+    .ForMember(dest => dest.HotelName, opt => opt.MapFrom(src => src.Room.Hotel.Name))
+    .ForMember(dest => dest.HotelImageUrl, opt => opt.MapFrom(src => src.Room.Hotel.ImageURL))
+    .ForMember(dest => dest.CityName, opt => opt.MapFrom(src => src.Room.Hotel.City.Name))
+    .ForMember(dest => dest.RoomTypeName, opt => opt.MapFrom(src => src.Room.RoomType.Name))
+    .ForMember(dest => dest.TotalNights, opt => opt.MapFrom(src => src.GetNumberOfNights()))
+    .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.GetNumberOfNights() * src.Room.RoomType.PricePerNight))
+    .ForMember(dest => dest.BookedAt, opt => opt.MapFrom(src => src.CreatedAt))
+    .ForMember(dest => dest.BookingStatus, opt => opt.MapFrom(src =>
+        src.CheckOutDate.Date < DateTime.Today ? "Completed"
+        : src.CheckInDate.Date > DateTime.Today ? "Upcoming"
+        : "In Progress"));
     }
 }

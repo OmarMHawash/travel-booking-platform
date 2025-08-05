@@ -6,7 +6,7 @@ services:
     build:
       context: ./apps/api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
       - "ConnectionStrings__DefaultConnection=Server=sql-server-db;Database=TravelBookingPlatform;User Id=sa;Password=Aa@1231Bb!;TrustServerCertificate=True;"
       - "ConnectionStrings__SerilogConnection=Server=sql-server-db;Database=master;User Id=sa;Password=Aa@1231Bb!;TrustServerCertificate=True;"
@@ -26,8 +26,7 @@ services:
     build:
       context: ./apps/docs
     environment:
-      - NODE_ENV=production
-      - PORT=3000
+      - NODE_ENV=development
     expose:
       - "3000"
     ports:
@@ -41,8 +40,7 @@ services:
     build:
       context: ./apps/client
     environment:
-      - NODE_ENV=production
-      - PORT=3001
+      - NODE_ENV=development
     expose:
       - "3001"
     ports:
