@@ -74,4 +74,42 @@ public class BookingsController : ControllerBase
 
         return Created($"/api/v1/bookings/{result.BookingId}", result);
     }
+
+    /// <summary>
+    /// Creates a new review for a completed booking.
+    /// </summary>
+    /// <param name="bookingId">The ID of the booking to review.</param>
+    /// <param name="requestDto">The review content, including star rating and description.</param>
+    /// <returns>The created review.</returns>
+    [HttpPost("{bookingId}/reviews")]
+    [ProducesResponseType(typeof(ReviewDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateReview(
+        [FromRoute] Guid bookingId,
+        [FromBody] CreateReviewRequestDto requestDto)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized(new { Message = "Invalid user identifier in token." });
+        }
+
+        var command = new CreateReviewCommand(
+            bookingId,
+            userId,
+            requestDto.StarRating,
+            requestDto.Description);
+
+        var result = await _mediator.Send(command);
+
+        return CreatedAtAction(
+            "GetHotelReviews",
+            "Hotels",
+            new { hotelId = result.Id, version = "1.0" },
+            result);
+    }
 }

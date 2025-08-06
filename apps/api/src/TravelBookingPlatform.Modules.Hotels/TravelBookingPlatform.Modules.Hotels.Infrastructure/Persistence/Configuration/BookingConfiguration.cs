@@ -61,5 +61,12 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
 
         // Note: No foreign key constraint to User table (loose coupling)
         // UserId is stored as Guid but not enforced by database
+
+        builder.Property(b => b.HasBeenReviewed)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.HasIndex(b => new { b.UserId, b.CheckOutDate, b.HasBeenReviewed })
+            .HasDatabaseName("IX_Booking_Reviewable");
     }
 }

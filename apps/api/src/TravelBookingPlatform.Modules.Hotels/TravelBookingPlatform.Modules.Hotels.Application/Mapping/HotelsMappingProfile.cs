@@ -72,6 +72,9 @@ public class HotelsMappingProfile : Profile
         : "In Progress"));
 
         CreateMap<HotelImage, HotelImageDto>();
+
+        CreateMap<Review, ReviewDto>()
+            .ForMember(dest => dest.AuthorId, opt => opt.MapFrom(src => src.UserId));
     }
 
 

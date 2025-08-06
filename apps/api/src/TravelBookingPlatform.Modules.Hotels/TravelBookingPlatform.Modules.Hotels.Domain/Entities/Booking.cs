@@ -8,6 +8,7 @@ public class Booking : AggregateRoot
     public DateTime CheckOutDate { get; private set; }
     public Guid RoomId { get; private set; }
     public Guid UserId { get; private set; } // Loose coupling - no navigation property
+    public bool HasBeenReviewed { get; private set; }
 
     // Navigation properties
     public Room Room { get; private set; } = null!;
@@ -30,6 +31,7 @@ public class Booking : AggregateRoot
         CheckOutDate = checkOutDate.Date;
         RoomId = roomId;
         UserId = userId;
+        HasBeenReviewed = false;
     }
 
     public void Update(DateTime checkInDate, DateTime checkOutDate)
@@ -41,6 +43,21 @@ public class Booking : AggregateRoot
 
         CheckInDate = checkInDate.Date;
         CheckOutDate = checkOutDate.Date;
+        MarkAsUpdated();
+    }
+
+    /// <summary>
+    /// Marks the booking as having been reviewed to prevent duplicate reviews.
+    /// </summary>
+    public void MarkAsReviewed()
+    {
+        if (HasBeenReviewed)
+        {
+            // Optionally throw an exception if trying to review twice,
+            // though the application layer should prevent this.
+            return;
+        }
+        HasBeenReviewed = true;
         MarkAsUpdated();
     }
 

@@ -847,7 +847,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Travel Booking Platform")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+93a496f363cd4aacb8bcf1ebace0e342d89deb01")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c8bd15443660753488f220331bb2665925ff986b")]
 [assembly: System.Reflection.AssemblyProductAttribute("TravelBookingPlatform.Modules.Hotels.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TravelBookingPlatform.Modules.Hotels.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
@@ -1680,7 +1680,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Travel Booking Platform")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+93a496f363cd4aacb8bcf1ebace0e342d89deb01")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c8bd15443660753488f220331bb2665925ff986b")]
 [assembly: System.Reflection.AssemblyProductAttribute("TravelBookingPlatform.Modules.Hotels.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TravelBookingPlatform.Modules.Hotels.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
@@ -3100,11 +3100,11 @@ namespace TravelBookingPlatform.Modules.Hotels.Domain.Entities;
 public class RoomType : AggregateRoot
 {
     public string Name { get; private set; }
-    public string Description { get; private set; } // <-- ADDED
+    public string Description { get; private set; }
     public decimal PricePerNight { get; private set; }
     public int MaxAdults { get; private set; }
     public int MaxChildren { get; private set; }
-    public string? ImageUrl { get; private set; } // <-- ADDED
+    public string? ImageUrl { get; private set; }
 
     // Navigation properties
     public ICollection<Room> Rooms { get; private set; } = new List<Room>();
@@ -3180,7 +3180,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Travel Booking Platform")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+93a496f363cd4aacb8bcf1ebace0e342d89deb01")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c8bd15443660753488f220331bb2665925ff986b")]
 [assembly: System.Reflection.AssemblyProductAttribute("TravelBookingPlatform.Modules.Hotels.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TravelBookingPlatform.Modules.Hotels.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
@@ -3496,7 +3496,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Travel Booking Platform")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+93a496f363cd4aacb8bcf1ebace0e342d89deb01")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c8bd15443660753488f220331bb2665925ff986b")]
 [assembly: System.Reflection.AssemblyProductAttribute("TravelBookingPlatform.Modules.Hotels.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TravelBookingPlatform.Modules.Hotels.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

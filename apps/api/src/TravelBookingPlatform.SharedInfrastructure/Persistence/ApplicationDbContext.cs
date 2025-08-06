@@ -30,6 +30,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Booking> Bookings { get; set; } = null!;
     public DbSet<Deal> Deals { get; set; } = null!;
     public DbSet<HotelImage> HotelImages { get; set; } = null!;
+    public DbSet<Review> Reviews { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

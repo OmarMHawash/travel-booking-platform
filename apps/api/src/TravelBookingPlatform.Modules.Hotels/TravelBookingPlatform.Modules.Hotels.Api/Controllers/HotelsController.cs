@@ -8,6 +8,7 @@ using TravelBookingPlatform.Core.Domain.Exceptions;
 using TravelBookingPlatform.Modules.Hotels.Application.DTOs;
 using TravelBookingPlatform.Modules.Hotels.Application.Queries;
 using TravelBookingPlatform.Modules.Identity.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TravelBookingPlatform.Modules.Hotels.Api.Controllers;
 
@@ -133,6 +134,31 @@ public class HotelsController : ControllerBase
     public async Task<IActionResult> GetHotelGallery(Guid hotelId)
     {
         var query = new GetHotelGalleryQuery(hotelId);
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Gets a paginated list of reviews for a specific hotel.
+    /// </summary>
+    /// <param name="hotelId">The ID of the hotel.</param>
+    /// <param name="pageNumber">The page number for pagination.</param>
+    /// <param name="pageSize">The number of items per page.</param>
+    /// <returns>A paginated list of reviews.</returns>
+    [HttpGet("{hotelId}/reviews", Name = "GetHotelReviews")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(PaginatedReviewsDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetHotelReviews(
+        [FromRoute] Guid hotelId,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (pageSize > 50) pageSize = 50;
+
+        var query = new GetHotelReviewsQuery(hotelId, pageNumber, pageSize);
         var result = await _mediator.Send(query);
         return Ok(result);
     }

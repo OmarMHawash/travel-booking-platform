@@ -12,7 +12,8 @@ public class Hotel : AggregateRoot
     // Navigation properties
     public City City { get; private set; } = null!;
     public ICollection<Room> Rooms { get; private set; } = new List<Room>();
-    public ICollection<HotelImage> Images { get; private set; } = new List<HotelImage>(); // <-- ADD THIS LINE
+    public ICollection<HotelImage> Images { get; private set; } = new List<HotelImage>();
+    public ICollection<Review> Reviews { get; private set; } = new List<Review>();
 
     // For EF Core
     private Hotel() { }
@@ -30,22 +31,34 @@ public class Hotel : AggregateRoot
 
         Name = name;
         Description = description;
-        Rating = rating;
+        Rating = rating; // Initial rating, will be updated by reviews over time
         CityId = cityId;
     }
 
-    public void Update(string name, string description, decimal rating, string? imageUrl = null)
+    public void Update(string name, string description)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Hotel name cannot be empty.", nameof(name));
         if (string.IsNullOrWhiteSpace(description))
             throw new ArgumentException("Description cannot be empty.", nameof(description));
-        if (rating < 0 || rating > 5)
-            throw new ArgumentException("Rating must be between 0 and 5.", nameof(rating));
 
         Name = name;
         Description = description;
-        Rating = rating;
+        MarkAsUpdated();
+    }
+
+    /// <summary>
+    /// Updates the hotel's average rating based on its reviews.
+    /// </summary>
+    /// <param name="newAverageRating">The newly calculated average rating.</param>
+    public void UpdateRating(decimal newAverageRating)
+    {
+        if (newAverageRating < 0 || newAverageRating > 5)
+        {
+            throw new ArgumentException("New average rating must be between 0 and 5.", nameof(newAverageRating));
+        }
+
+        Rating = newAverageRating;
         MarkAsUpdated();
     }
 

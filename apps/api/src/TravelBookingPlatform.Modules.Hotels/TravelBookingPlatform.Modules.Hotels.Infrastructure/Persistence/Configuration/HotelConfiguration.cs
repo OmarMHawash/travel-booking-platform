@@ -58,5 +58,10 @@ public class HotelConfiguration : IEntityTypeConfiguration<Hotel>
             .WithOne(r => r.Hotel)
             .HasForeignKey(r => r.HotelId)
             .OnDelete(DeleteBehavior.Cascade); // Delete all rooms when hotel is deleted
+
+        builder.HasMany(h => h.Reviews)
+            .WithOne(r => r.Hotel)
+            .HasForeignKey(r => r.HotelId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -33,6 +33,7 @@ public class DatabaseSeeder
             await SeedRoomsAsync();
             await SeedBookingsAsync();
             await SeedDealsAsync();
+            await SeedReviewsAsync();
 
             _logger.LogInformation("Database seeding completed successfully.");
         }
@@ -41,6 +42,85 @@ public class DatabaseSeeder
             _logger.LogError(ex, "An error occurred while seeding the database.");
             throw;
         }
+    }
+
+    private async Task SeedReviewsAsync()
+    {
+        if (await _context.Reviews.AnyAsync())
+        {
+            _logger.LogInformation("Reviews already exist. Skipping review seeding.");
+            return;
+        }
+
+        _logger.LogInformation("Seeding reviews for past bookings...");
+
+        var pastBookings = await _context.Bookings
+            .Where(b => b.CheckOutDate < DateTime.Today && !b.HasBeenReviewed)
+            .Include(b => b.Room)
+                .ThenInclude(r => r.Hotel)
+            .ToListAsync();
+
+        if (!pastBookings.Any())
+        {
+            _logger.LogInformation("No past, unreviewed bookings found to seed reviews for.");
+            return;
+        }
+
+        var reviewsToAdd = new List<Review>();
+        var random = new Random(1337); // Fixed seed for consistency
+
+        // Create reviews for about 70% of past bookings
+        var bookingsToReview = pastBookings.OrderBy(b => random.Next()).Take((int)(pastBookings.Count * 0.7)).ToList();
+
+        foreach (var booking in bookingsToReview)
+        {
+            var hotel = booking.Room.Hotel;
+
+            // Generate a rating slightly biased by the hotel's current rating
+            int ratingAdjustment = random.Next(-1, 2); // -1, 0, or 1
+            int baseRating = (int)Math.Round(hotel.Rating);
+            int starRating = Math.Clamp(baseRating + ratingAdjustment, 1, 5);
+
+            var reviewText = GetReviewTextForRating(starRating, hotel.Name);
+
+            var review = new Review(hotel.Id, booking.Id, booking.UserId, starRating, reviewText);
+            reviewsToAdd.Add(review);
+
+            // Mark the booking as reviewed to prevent re-seeding or duplicate reviews
+            booking.MarkAsReviewed();
+        }
+
+        _context.Reviews.AddRange(reviewsToAdd);
+
+        // Recalculate average ratings for all hotels that received new reviews
+        var affectedHotelIds = reviewsToAdd.Select(r => r.HotelId).Distinct();
+        var affectedHotels = await _context.Hotels
+            .Where(h => affectedHotelIds.Contains(h.Id))
+            .Include(h => h.Reviews)
+            .ToListAsync();
+
+        foreach (var hotel in affectedHotels)
+        {
+            var allRatings = hotel.Reviews.Select(r => r.StarRating).ToList();
+            var newAverage = allRatings.Any() ? (decimal)allRatings.Average() : hotel.Rating;
+            hotel.UpdateRating(Math.Round(newAverage, 2));
+        }
+
+        await _context.SaveChangesAsync();
+        _logger.LogInformation("Seeded {Count} reviews and updated hotel average ratings.", reviewsToAdd.Count);
+    }
+
+    private string GetReviewTextForRating(int rating, string hotelName) // <-- NEW HELPER METHOD
+    {
+        return rating switch
+        {
+            1 => $"A truly disappointing experience at {hotelName}. The service was poor and the facilities were not as described. Would not recommend.",
+            2 => $"The stay at {hotelName} was below expectations. While the location was okay, the room was not clean and the staff were unhelpful.",
+            3 => $"An average stay at {hotelName}. Nothing particularly wrong, but also nothing special. It served its purpose for a short trip.",
+            4 => $"A very good stay at {hotelName}. The room was clean, comfortable, and the staff were friendly and professional. Would consider staying again.",
+            5 => $"Absolutely fantastic! Our stay at {hotelName} was perfect from start to finish. The service was exceptional, the room was luxurious, and the location was ideal. Highly recommended!",
+            _ => "A standard stay."
+        };
     }
 
     private async Task SeedUsersAsync()
