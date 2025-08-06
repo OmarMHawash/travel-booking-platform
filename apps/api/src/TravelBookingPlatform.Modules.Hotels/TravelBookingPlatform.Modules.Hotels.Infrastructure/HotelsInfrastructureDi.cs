@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using TravelBookingPlatform.Modules.Hotels.Infrastructure.Persistence.Repositories;
 using TravelBookingPlatform.Modules.Hotels.Domain.Repositories;
+using TravelBookingPlatform.Modules.Hotels.Infrastructure.Services;
+using TravelBookingPlatform.Modules.Hotels.Application.Interfaces;
 
 namespace TravelBookingPlatform.Modules.Hotels.Infrastructure;
 
@@ -17,6 +19,12 @@ public static class HotelsInfrastructureDi
         services.AddScoped<IBookingRepository, BookingRepository>();
         services.AddScoped<IDealRepository, DealRepository>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
+        services.Configure<StripeSettings>(configuration.GetSection("Stripe"));
+        services.AddScoped<IPaymentGatewayService, StripeService>();
+        services.Configure<SendGridSettings>(configuration.GetSection("SendGrid"));
+        services.AddScoped<IEmailService, SendGridEmailService>();
+        services.AddScoped<IPdfService, QuestPdfService>();
+        services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
         return services;
     }

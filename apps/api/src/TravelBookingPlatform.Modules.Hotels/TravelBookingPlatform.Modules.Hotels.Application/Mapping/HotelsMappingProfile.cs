@@ -56,20 +56,31 @@ public class HotelsMappingProfile : Profile
 
         CreateMap<CreateBookingRequestDto, CreateBookingCommand>();
 
+        CreateMap<InitiateBookingRequestDto, InitiateBookingCommand>();
+
         CreateMap<Booking, UserBookingDto>()
-    .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.Id))
-    .ForMember(dest => dest.ConfirmationNumber, opt => opt.MapFrom(src => $"BKG-{src.Id.ToString().Substring(0, 8).ToUpper()}"))
-    .ForMember(dest => dest.HotelId, opt => opt.MapFrom(src => src.Room.Hotel.Id))
-    .ForMember(dest => dest.HotelName, opt => opt.MapFrom(src => src.Room.Hotel.Name))
-    .ForMember(dest => dest.CityName, opt => opt.MapFrom(src => src.Room.Hotel.City.Name))
-    .ForMember(dest => dest.RoomTypeName, opt => opt.MapFrom(src => src.Room.RoomType.Name))
-    .ForMember(dest => dest.TotalNights, opt => opt.MapFrom(src => src.GetNumberOfNights()))
-    .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.GetNumberOfNights() * src.Room.RoomType.PricePerNight))
-    .ForMember(dest => dest.BookedAt, opt => opt.MapFrom(src => src.CreatedAt))
-    .ForMember(dest => dest.BookingStatus, opt => opt.MapFrom(src =>
-        src.CheckOutDate.Date < DateTime.Today ? "Completed"
-        : src.CheckInDate.Date > DateTime.Today ? "Upcoming"
-        : "In Progress"));
+            .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.ConfirmationNumber, opt => opt.MapFrom(src => $"BKG-{src.Id.ToString().Substring(0, 8).ToUpper()}"))
+            .ForMember(dest => dest.HotelId, opt => opt.MapFrom(src => src.Room.Hotel.Id))
+            .ForMember(dest => dest.HotelName, opt => opt.MapFrom(src => src.Room.Hotel.Name))
+            .ForMember(dest => dest.CityName, opt => opt.MapFrom(src => src.Room.Hotel.City.Name))
+            .ForMember(dest => dest.RoomTypeName, opt => opt.MapFrom(src => src.Room.RoomType.Name))
+            .ForMember(dest => dest.TotalNights, opt => opt.MapFrom(src => src.GetNumberOfNights()))
+            .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.GetNumberOfNights() * src.Room.RoomType.PricePerNight))
+            .ForMember(dest => dest.BookedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.BookingStatus, opt => opt.MapFrom(src => src.Status.ToString()));
+
+        CreateMap<Booking, BookingDetailsDto>()
+            .ForMember(dest => dest.ConfirmationNumber, opt => opt.MapFrom(src => $"BKG-{src.Id.ToString().Substring(0, 8).ToUpper()}"))
+            .ForMember(dest => dest.HotelId, opt => opt.MapFrom(src => src.Room.Hotel.Id))
+            .ForMember(dest => dest.HotelName, opt => opt.MapFrom(src => src.Room.Hotel.Name))
+            .ForMember(dest => dest.CityName, opt => opt.MapFrom(src => src.Room.Hotel.City.Name))
+            .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Room.Hotel.City.Country))
+            .ForMember(dest => dest.RoomTypeName, opt => opt.MapFrom(src => src.Room.RoomType.Name))
+            .ForMember(dest => dest.TotalNights, opt => opt.MapFrom(src => src.GetNumberOfNights()))
+            .ForMember(dest => dest.BookedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.BookingStatus, opt => opt.MapFrom(src => src.Status.ToString()));
+
 
         CreateMap<HotelImage, HotelImageDto>();
 
