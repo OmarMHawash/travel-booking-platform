@@ -23,7 +23,7 @@ public class GetBookingConfirmationQueryHandler : IRequestHandler<GetBookingConf
 
     public async Task<BookingDetailsDto> Handle(GetBookingConfirmationQuery request, CancellationToken cancellationToken)
     {
-        var booking = await _bookingRepository.GetByIdAsync(request.BookingId);
+        var booking = await _bookingRepository.GetByIdWithDetailsAsync(request.BookingId);
 
         if (booking is null || booking.UserId != request.UserId)
         {

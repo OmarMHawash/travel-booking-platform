@@ -7,6 +7,8 @@ public interface IBookingRepository : IRepository<Booking>
 {
     Task<IReadOnlyList<Booking>> GetByUserIdAsync(Guid userId);
     Task<IReadOnlyList<Booking>> GetByRoomIdAsync(Guid roomId);
+
+    Task<Booking?> GetByIdWithDetailsAsync(Guid bookingId);
     Task<IReadOnlyList<Booking>> GetByDateRangeAsync(DateTime startDate, DateTime endDate);
     Task<IReadOnlyList<Booking>> GetOverlappingBookingsAsync(
         Guid roomId,

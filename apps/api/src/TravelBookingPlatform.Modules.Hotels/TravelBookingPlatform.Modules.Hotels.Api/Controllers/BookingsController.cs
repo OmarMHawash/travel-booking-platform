@@ -125,6 +125,12 @@ public class BookingsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> InitiateBooking([FromBody] InitiateBookingRequestDto requestDto)
     {
+
+        if (requestDto == null)
+        {
+            return BadRequest(new { Message = "please provide a valid request body" });
+        }
+
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (!Guid.TryParse(userIdClaim, out var userId))
@@ -182,15 +188,25 @@ public class BookingsController : ControllerBase
 
         var booking = await _bookingRepository.GetByIdAsync(id);
 
-        if (booking is null || booking.UserId != userId || string.IsNullOrEmpty(booking.ConfirmationPdfUrl))
+        if (booking is null || booking.UserId != userId)
         {
-            return NotFound(new { Message = "Booking confirmation PDF not found." });
+            return NotFound(new { Message = "Booking not found." });
+        }
+
+        if (booking.PdfGenerationFailed)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new { Message = "We encountered an issue generating your confirmation PDF. Please try again later." });
+        }
+
+        if (string.IsNullOrEmpty(booking.ConfirmationPdfUrl))
+        {
+            return Accepted(new { Message = "Your booking confirmation is still being generated. Please check back in a moment." });
         }
 
         var fileBytes = await _fileStorageService.GetFileAsync(booking.ConfirmationPdfUrl);
         if (fileBytes is null)
         {
-            return NotFound(new { Message = "Booking confirmation PDF not found." });
+            return NotFound(new { Message = "Booking confirmation PDF not found. It may have been moved or deleted." });
         }
 
         return File(fileBytes, "application/pdf", $"booking-confirmation-{id}.pdf");
