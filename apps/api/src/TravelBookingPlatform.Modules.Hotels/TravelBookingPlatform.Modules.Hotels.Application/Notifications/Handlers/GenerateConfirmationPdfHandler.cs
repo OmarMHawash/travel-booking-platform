@@ -2,7 +2,6 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using TravelBookingPlatform.Core.Domain;
-using TravelBookingPlatform.Core.Domain.Exceptions;
 using TravelBookingPlatform.Modules.Hotels.Application.DTOs;
 using TravelBookingPlatform.Modules.Hotels.Application.Interfaces;
 using TravelBookingPlatform.Modules.Hotels.Domain.Repositories;
@@ -31,10 +30,17 @@ public class GenerateConfirmationPdfHandler : INotificationHandler<BookingConfir
     public async Task Handle(BookingConfirmedNotification notification, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Generating PDF confirmation for Booking ID: {BookingId}", notification.BookingId);
+        var booking = await _bookingRepository.GetByIdAsync(notification.BookingId);
+
+        if (booking is null)
+        {
+            _logger.LogError("Booking {BookingId} not found for PDF generation.", notification.BookingId);
+            return;
+        }
+
         try
         {
-            var booking = await _bookingRepository.GetByIdAsync(notification.BookingId)
-                ?? throw new NotFoundException("Booking", notification.BookingId);
+            booking.ResetPdfGenerationStatus();
 
             var bookingDetailsDto = _mapper.Map<BookingDetailsDto>(booking);
             var pdfBytes = await _pdfService.GenerateBookingConfirmationPdfAsync(bookingDetailsDto);
@@ -43,14 +49,17 @@ public class GenerateConfirmationPdfHandler : INotificationHandler<BookingConfir
             var fileUrl = await _fileStorageService.UploadFileAsync(fileName, pdfBytes, "application/pdf");
 
             booking.SetConfirmationPdfUrl(fileUrl);
-            _bookingRepository.Update(booking);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            _logger.LogInformation("Successfully generated and saved PDF for Booking ID: {BookingId} at {Url}", notification.BookingId, fileUrl);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to generate PDF for Booking ID: {BookingId}", notification.BookingId);
+
+            booking.MarkPdfGenerationAsFailed(ex.Message);
+        }
+        finally
+        {
+            _bookingRepository.Update(booking);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

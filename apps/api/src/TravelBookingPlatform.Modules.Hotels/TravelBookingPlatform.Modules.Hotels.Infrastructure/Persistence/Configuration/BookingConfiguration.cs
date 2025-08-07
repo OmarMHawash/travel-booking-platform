@@ -67,6 +67,14 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         .IsRequired()
         .HasPrecision(18, 2);
 
+        builder.Property(b => b.PdfGenerationFailed)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(b => b.PdfGenerationErrorMessage)
+            .HasMaxLength(1000)
+            .IsRequired(false);
+
         builder.HasIndex(b => new { b.UserId, b.CheckOutDate, b.HasBeenReviewed })
             .HasDatabaseName("IX_Booking_Reviewable");
     }

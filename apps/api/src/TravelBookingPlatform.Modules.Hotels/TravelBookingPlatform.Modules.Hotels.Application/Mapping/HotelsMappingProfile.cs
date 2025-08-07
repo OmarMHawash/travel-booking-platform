@@ -71,6 +71,7 @@ public class HotelsMappingProfile : Profile
             .ForMember(dest => dest.BookingStatus, opt => opt.MapFrom(src => src.Status.ToString()));
 
         CreateMap<Booking, BookingDetailsDto>()
+            .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.ConfirmationNumber, opt => opt.MapFrom(src => $"BKG-{src.Id.ToString().Substring(0, 8).ToUpper()}"))
             .ForMember(dest => dest.HotelId, opt => opt.MapFrom(src => src.Room.Hotel.Id))
             .ForMember(dest => dest.HotelName, opt => opt.MapFrom(src => src.Room.Hotel.Name))

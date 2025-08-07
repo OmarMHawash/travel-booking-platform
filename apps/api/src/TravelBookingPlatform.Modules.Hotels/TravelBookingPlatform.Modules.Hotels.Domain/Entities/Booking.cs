@@ -16,6 +16,8 @@ public class Booking : AggregateRoot
     public string GuestName { get; private set; }
     public string? SpecialRequests { get; private set; }
     public string? ConfirmationPdfUrl { get; private set; }
+    public bool PdfGenerationFailed { get; private set; }
+    public string? PdfGenerationErrorMessage { get; private set; }
 
     // Navigation properties
     public Room Room { get; private set; } = null!;
@@ -103,6 +105,21 @@ public class Booking : AggregateRoot
             throw new ArgumentException("PDF URL cannot be empty.", nameof(url));
 
         ConfirmationPdfUrl = url;
+        MarkAsUpdated();
+    }
+
+    public void MarkPdfGenerationAsFailed(string errorMessage)
+    {
+        PdfGenerationFailed = true;
+        PdfGenerationErrorMessage =
+            errorMessage.Length > 1000 ? errorMessage.Substring(0, 1000) : errorMessage;
+        MarkAsUpdated();
+    }
+
+    public void ResetPdfGenerationStatus()
+    {
+        PdfGenerationFailed = false;
+        PdfGenerationErrorMessage = null;
         MarkAsUpdated();
     }
 }
