@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using TravelBookingPlatform.Modules.Hotels.Domain.Entities;
 using TravelBookingPlatform.Modules.Identity.Domain.Entities;
 using TravelBookingPlatform.Modules.Identity.Domain.Enums;
-using TravelBookingPlatform.Modules.Identity.Domain.ValueObjects;
+using TravelBookingPlatform.Modules.Hotels.Domain.Enums;
 using TravelBookingPlatform.SharedInfrastructure.Persistence;
 
 namespace TravelBookingPlatform.SharedInfrastructure.Seeding;
@@ -31,7 +31,7 @@ public class DatabaseSeeder
             await SeedHotelsAsync();
             await SeedHotelImagesAsync();
             await SeedRoomsAsync();
-            await SeedBookingsAsync();
+            await SeedBookingsAsync(); // This method is now fixed
             await SeedDealsAsync();
             await SeedReviewsAsync();
 
@@ -43,6 +43,8 @@ public class DatabaseSeeder
             throw;
         }
     }
+
+    // ... (No changes needed in SeedReviewsAsync, GetReviewTextForRating, SeedUsersAsync, SeedCitiesAsync, SeedRoomTypesAsync, SeedHotelsAsync, SeedRoomsAsync and its helpers)
 
     private async Task SeedReviewsAsync()
     {
@@ -657,24 +659,23 @@ public class DatabaseSeeder
         var random = new Random(42); // Fixed seed for consistent data
 
         // Create strategic booking patterns for testing
-
         // 1. Past bookings (completed stays)
-        await CreatePastBookings(rooms, users, bookings, random);
+        CreatePastBookings(rooms, users, bookings, random);
 
         // 2. Current bookings (ongoing stays)
-        await CreateCurrentBookings(rooms, users, bookings, random);
+        CreateCurrentBookings(rooms, users, bookings, random);
 
         // 3. Near future bookings (next 30 days)
-        await CreateNearFutureBookings(rooms, users, bookings, random);
+        CreateNearFutureBookings(rooms, users, bookings, random);
 
         // 4. Far future bookings (31-180 days)
-        await CreateFarFutureBookings(rooms, users, bookings, random);
+        CreateFarFutureBookings(rooms, users, bookings, random);
 
         // 5. Weekend and holiday pattern bookings
-        await CreateWeekendBookings(rooms, users, bookings, random);
+        CreateWeekendBookings(rooms, users, bookings, random);
 
         // 6. Extended stay bookings
-        await CreateExtendedStayBookings(rooms, users, bookings, random);
+        CreateExtendedStayBookings(rooms, users, bookings, random);
 
         if (bookings.Any())
         {
@@ -684,7 +685,7 @@ public class DatabaseSeeder
         }
     }
 
-    private async Task CreatePastBookings(List<Room> rooms, List<User> users, List<Booking> bookings, Random random)
+    private void CreatePastBookings(List<Room> rooms, List<User> users, List<Booking> bookings, Random random)
     {
         // Create 50 past bookings (last 6 months)
         for (int i = 0; i < 50; i++)
@@ -702,7 +703,14 @@ public class DatabaseSeeder
             {
                 try
                 {
-                    var booking = new Booking(checkInDate, checkOutDate, room.Id, user.Id);
+                    var totalPrice = nights * room.RoomType.PricePerNight;
+                    var guestName = user.Username;
+
+                    var booking = new Booking(checkInDate, checkOutDate, room.Id, user.Id, totalPrice, guestName, null);
+
+                    // Past bookings should be confirmed
+                    booking.Confirm(Guid.NewGuid());
+
                     bookings.Add(booking);
                 }
                 catch (ArgumentException ex)
@@ -713,7 +721,7 @@ public class DatabaseSeeder
         }
     }
 
-    private async Task CreateCurrentBookings(List<Room> rooms, List<User> users, List<Booking> bookings, Random random)
+    private void CreateCurrentBookings(List<Room> rooms, List<User> users, List<Booking> bookings, Random random)
     {
         // Create 15 current bookings (checked in, not yet checked out)
         for (int i = 0; i < 15; i++)
@@ -725,20 +733,31 @@ public class DatabaseSeeder
             var checkInDate = DateTime.Today.AddDays(-daysBack);
             var nightsRemaining = random.Next(1, 10); // 1-10 nights remaining
             var checkOutDate = DateTime.Today.AddDays(nightsRemaining);
+            var nights = (checkOutDate - checkInDate).Days;
 
-            try
+            if (!HasConflictingBooking(bookings, room.Id, checkInDate, checkOutDate))
             {
-                var booking = new Booking(checkInDate, checkOutDate, room.Id, user.Id);
-                bookings.Add(booking);
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.LogWarning("Skipped invalid current booking: {Message}", ex.Message);
+                try
+                {
+                    var totalPrice = nights * room.RoomType.PricePerNight;
+                    var guestName = user.Username;
+
+                    var booking = new Booking(checkInDate, checkOutDate, room.Id, user.Id, totalPrice, guestName, null);
+
+                    // Current stays must be confirmed
+                    booking.Confirm(Guid.NewGuid());
+
+                    bookings.Add(booking);
+                }
+                catch (ArgumentException ex)
+                {
+                    _logger.LogWarning("Skipped invalid current booking: {Message}", ex.Message);
+                }
             }
         }
     }
 
-    private async Task CreateNearFutureBookings(List<Room> rooms, List<User> users, List<Booking> bookings, Random random)
+    private void CreateNearFutureBookings(List<Room> rooms, List<User> users, List<Booking> bookings, Random random)
     {
         // Create 80 bookings for the next 30 days
         for (int i = 0; i < 80; i++)
@@ -751,12 +770,22 @@ public class DatabaseSeeder
             var nights = GetNightsBasedOnRoomType(room, random);
             var checkOutDate = checkInDate.AddDays(nights);
 
-            // Check if room is available for this period
             if (!HasConflictingBooking(bookings, room.Id, checkInDate, checkOutDate))
             {
                 try
                 {
-                    var booking = new Booking(checkInDate, checkOutDate, room.Id, user.Id);
+                    var totalPrice = nights * room.RoomType.PricePerNight;
+                    var guestName = user.Username;
+                    string? specialRequest = random.Next(10) == 0 ? "High floor, please." : null; // 10% chance of special request
+
+                    var booking = new Booking(checkInDate, checkOutDate, room.Id, user.Id, totalPrice, guestName, specialRequest);
+
+                    // Confirm 90% of future bookings
+                    if (random.Next(10) != 0)
+                    {
+                        booking.Confirm(Guid.NewGuid());
+                    }
+
                     bookings.Add(booking);
                 }
                 catch (ArgumentException ex)
@@ -767,7 +796,7 @@ public class DatabaseSeeder
         }
     }
 
-    private async Task CreateFarFutureBookings(List<Room> rooms, List<User> users, List<Booking> bookings, Random random)
+    private void CreateFarFutureBookings(List<Room> rooms, List<User> users, List<Booking> bookings, Random random)
     {
         // Create 60 bookings for 31-180 days in the future
         for (int i = 0; i < 60; i++)
@@ -780,12 +809,21 @@ public class DatabaseSeeder
             var nights = GetNightsBasedOnRoomType(room, random);
             var checkOutDate = checkInDate.AddDays(nights);
 
-            // Check if room is available for this period
             if (!HasConflictingBooking(bookings, room.Id, checkInDate, checkOutDate))
             {
                 try
                 {
-                    var booking = new Booking(checkInDate, checkOutDate, room.Id, user.Id);
+                    var totalPrice = nights * room.RoomType.PricePerNight;
+                    var guestName = user.Username;
+
+                    var booking = new Booking(checkInDate, checkOutDate, room.Id, user.Id, totalPrice, guestName, null);
+
+                    // Confirm 70% of far future bookings
+                    if (random.Next(10) > 2)
+                    {
+                        booking.Confirm(Guid.NewGuid());
+                    }
+
                     bookings.Add(booking);
                 }
                 catch (ArgumentException ex)
@@ -796,30 +834,36 @@ public class DatabaseSeeder
         }
     }
 
-    private async Task CreateWeekendBookings(List<Room> rooms, List<User> users, List<Booking> bookings, Random random)
+    private void CreateWeekendBookings(List<Room> rooms, List<User> users, List<Booking> bookings, Random random)
     {
-        // Create bookings specifically for weekends over the next 8 weeks
         var currentDate = DateTime.Today;
 
         for (int week = 0; week < 8; week++)
         {
-            // Find the next Friday
             var friday = currentDate.AddDays(((int)DayOfWeek.Friday - (int)currentDate.DayOfWeek + 7) % 7 + (week * 7));
 
-            // Create some weekend bookings (Friday-Sunday or Saturday-Monday)
             for (int i = 0; i < random.Next(3, 8); i++)
             {
                 var room = rooms[random.Next(rooms.Count)];
                 var user = users[random.Next(users.Count)];
 
-                var checkInDate = random.Next(2) == 0 ? friday : friday.AddDays(1); // Friday or Saturday
-                var checkOutDate = checkInDate.AddDays(random.Next(2, 4)); // 2-3 nights
+                var checkInDate = random.Next(2) == 0 ? friday : friday.AddDays(1);
+                var nights = random.Next(2, 4);
+                var checkOutDate = checkInDate.AddDays(nights);
 
                 if (!HasConflictingBooking(bookings, room.Id, checkInDate, checkOutDate))
                 {
                     try
                     {
-                        var booking = new Booking(checkInDate, checkOutDate, room.Id, user.Id);
+                        var totalPrice = nights * room.RoomType.PricePerNight;
+                        var guestName = user.Username;
+                        string? specialRequest = random.Next(10) == 0 ? "Late check-out if possible." : null;
+
+                        var booking = new Booking(checkInDate, checkOutDate, room.Id, user.Id, totalPrice, guestName, specialRequest);
+
+                        // Confirm most weekend bookings
+                        booking.Confirm(Guid.NewGuid());
+
                         bookings.Add(booking);
                     }
                     catch (ArgumentException ex)
@@ -831,30 +875,33 @@ public class DatabaseSeeder
         }
     }
 
-    private async Task CreateExtendedStayBookings(List<Room> rooms, List<User> users, List<Booking> bookings, Random random)
+    private void CreateExtendedStayBookings(List<Room> rooms, List<User> users, List<Booking> bookings, Random random)
     {
-        // Create some extended stay bookings (7+ nights) for business travelers
         var extendedStayRooms = rooms.Where(r =>
-            r.RoomType.Name.Contains("Suite") ||
-            r.RoomType.Name.Contains("Extended") ||
-            r.RoomType.Name.Contains("Business") ||
-            r.RoomType.Name.Contains("Studio")).ToList();
+            r.RoomType.Name.Contains("Suite") || r.RoomType.Name.Contains("Extended") ||
+            r.RoomType.Name.Contains("Business") || r.RoomType.Name.Contains("Studio")).ToList();
+
+        if (!extendedStayRooms.Any()) return;
 
         for (int i = 0; i < 20; i++)
         {
-            var room = extendedStayRooms.Any() ? extendedStayRooms[random.Next(extendedStayRooms.Count)] : rooms[random.Next(rooms.Count)];
+            var room = extendedStayRooms[random.Next(extendedStayRooms.Count)];
             var user = users[random.Next(users.Count)];
 
-            var daysAhead = random.Next(1, 90); // 1-90 days from now
+            var daysAhead = random.Next(1, 90);
             var checkInDate = DateTime.Today.AddDays(daysAhead);
-            var nights = random.Next(7, 30); // 7-30 nights for extended stays
+            var nights = random.Next(7, 30);
             var checkOutDate = checkInDate.AddDays(nights);
 
             if (!HasConflictingBooking(bookings, room.Id, checkInDate, checkOutDate))
             {
                 try
                 {
-                    var booking = new Booking(checkInDate, checkOutDate, room.Id, user.Id);
+                    var totalPrice = nights * room.RoomType.PricePerNight;
+                    var guestName = user.Username;
+
+                    var booking = new Booking(checkInDate, checkOutDate, room.Id, user.Id, totalPrice, guestName, "Extended stay, weekly cleaning requested.");
+                    booking.Confirm(Guid.NewGuid());
                     bookings.Add(booking);
                 }
                 catch (ArgumentException ex)
@@ -867,28 +914,32 @@ public class DatabaseSeeder
 
     private int GetNightsBasedOnRoomType(Room room, Random random)
     {
-        // Adjust stay length based on room type
         if (room.RoomType.Name.Contains("Presidential") || room.RoomType.Name.Contains("Imperial") || room.RoomType.Name.Contains("Royal"))
-            return random.Next(3, 10); // 3-9 nights for ultra-luxury
+            return random.Next(3, 10);
         else if (room.RoomType.Name.Contains("Suite") || room.RoomType.Name.Contains("Executive"))
-            return random.Next(2, 7); // 2-6 nights for suites
+            return random.Next(2, 7);
         else if (room.RoomType.Name.Contains("Family") || room.RoomType.Name.Contains("Connecting"))
-            return random.Next(3, 8); // 3-7 nights for families
+            return random.Next(3, 8);
         else if (room.RoomType.Name.Contains("Business"))
-            return random.Next(1, 5); // 1-4 nights for business
+            return random.Next(1, 5);
         else if (room.RoomType.Name.Contains("Hostel") || room.RoomType.Name.Contains("Economy"))
-            return random.Next(1, 4); // 1-3 nights for budget
+            return random.Next(1, 4);
         else
-            return random.Next(1, 6); // 1-5 nights for standard
+            return random.Next(1, 6);
     }
 
     private bool HasConflictingBooking(List<Booking> existingBookings, Guid roomId, DateTime checkIn, DateTime checkOut)
     {
         return existingBookings.Any(b =>
             b.RoomId == roomId &&
+            b.Status != BookingStatus.Cancelled && // Corrected line
             b.CheckInDate < checkOut &&
             b.CheckOutDate > checkIn);
     }
+
+    // ==================================================================
+    // END OF MODIFIED SECTION
+    // ==================================================================
 
     private async Task SeedDealsAsync()
     {
@@ -915,7 +966,7 @@ public class DatabaseSeeder
             "Experience the magic of New York in winter! Stay at The Plaza Hotel with exclusive amenities and complimentary breakfast.",
             hotels.First(h => h.Name == "The Plaza Hotel").Id,
             350.00m, // Original price
-            249.00m, // Discounted price
+            249.99m, // Discounted price
             DateTime.Today.AddDays(-5), // Valid from (already started)
             DateTime.Today.AddDays(45), // Valid to
             true, // IsFeatured
@@ -927,7 +978,7 @@ public class DatabaseSeeder
             "Live like royalty at The Ritz London! Includes afternoon tea, spa access, and premium room upgrade.",
             hotels.First(h => h.Name == "The Ritz London").Id,
             550.00m,
-            399.00m,
+            399.99m,
             DateTime.Today.AddDays(-2),
             DateTime.Today.AddDays(60),
             true, // IsFeatured
@@ -939,7 +990,7 @@ public class DatabaseSeeder
             "Ultimate luxury at Burj Al Arab! All-inclusive package with private beach access and butler service.",
             hotels.First(h => h.Name == "Burj Al Arab").Id,
             1200.00m,
-            899.00m,
+            899.99m,
             DateTime.Today.AddDays(-1),
             DateTime.Today.AddDays(30),
             true, // IsFeatured
@@ -951,7 +1002,7 @@ public class DatabaseSeeder
             "Romantic getaway in the City of Love! Stay at Hotel de Crillon with champagne, roses, and Seine cruise.",
             hotels.First(h => h.Name == "Hotel de Crillon").Id,
             420.00m,
-            299.00m,
+            299.99m,
             DateTime.Today,
             DateTime.Today.AddDays(40),
             true, // IsFeatured
@@ -963,7 +1014,7 @@ public class DatabaseSeeder
             "Perfect for business travelers! Tokyo Grand Hotel with meeting room access and airport transfer.",
             hotels.First(h => h.Name == "Tokyo Grand Hotel").Id,
             280.00m,
-            199.00m,
+            199.99m,
             DateTime.Today.AddDays(-3),
             DateTime.Today.AddDays(50),
             true, // IsFeatured
@@ -976,7 +1027,7 @@ public class DatabaseSeeder
             "Extended stay discount for business travelers with complimentary WiFi and meeting room access.",
             hotels.First(h => h.Name == "Manhattan Business Hotel").Id,
             220.00m,
-            179.00m,
+            179.99m,
             DateTime.Today.AddDays(5),
             DateTime.Today.AddDays(90),
             false, // Not featured
@@ -988,7 +1039,7 @@ public class DatabaseSeeder
             "Perfect for families visiting London! Spacious family rooms with Thames views and kids activities.",
             hotels.First(h => h.Name == "London Bridge Hotel").Id,
             380.00m,
-            299.00m,
+            299.99m,
             DateTime.Today.AddDays(10),
             DateTime.Today.AddDays(75),
             false,
@@ -1000,7 +1051,7 @@ public class DatabaseSeeder
             "Discover Paris art scene! Boutique hotel stay with museum passes and guided art tours included.",
             hotels.First(h => h.Name == "Boutique Marais Hotel").Id,
             180.00m,
-            149.00m,
+            149.99m,
             DateTime.Today.AddDays(7),
             DateTime.Today.AddDays(80),
             false,
@@ -1012,7 +1063,7 @@ public class DatabaseSeeder
             "Modern Tokyo adventure with latest tech amenities and VR entertainment room access.",
             hotels.First(h => h.Name == "Shibuya Business Tower").Id,
             300.00m,
-            229.00m,
+            229.99m,
             DateTime.Today.AddDays(12),
             DateTime.Today.AddDays(65),
             false,
@@ -1024,7 +1075,7 @@ public class DatabaseSeeder
             "Spectacular marina views with sunset yacht tour and beachfront dining experience.",
             hotels.First(h => h.Name == "Dubai Marina Resort").Id,
             450.00m,
-            349.00m,
+            349.99m,
             DateTime.Today.AddDays(15),
             DateTime.Today.AddDays(55),
             false,
@@ -1037,7 +1088,7 @@ public class DatabaseSeeder
             "Holiday season special that has ended - for testing expired deals functionality.",
             hotels.First(h => h.Name == "The Plaza Hotel").Id,
             200.00m,
-            149.00m,
+            149.99m,
             DateTime.Today.AddDays(-30),
             DateTime.Today.AddDays(-5), // Expired
             false,
@@ -1052,7 +1103,7 @@ public class DatabaseSeeder
             "Book early for summer vacation! Limited time offer starting next month.",
             hotels.First(h => h.Name == "The Ritz London").Id,
             600.00m,
-            449.00m,
+            449.99m,
             DateTime.Today.AddDays(30), // Starts in future
             DateTime.Today.AddDays(120),
             false,

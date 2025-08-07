@@ -152,7 +152,9 @@ public static class StartupExtensions
     {
         // Configure Hotels module
         builder.Services.AddHotelsApplication();
-        builder.Services.AddHotelsInfrastructure(builder.Configuration);
+        builder.Services.AddHotelsInfrastructure(
+            builder.Configuration,
+            builder.Environment);
         builder.Services.AddHotelsApi();
 
         // Configure Identity module
