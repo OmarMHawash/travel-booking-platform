@@ -114,7 +114,9 @@ public static class StartupExtensions
                         policyBuilder.WithOrigins(origins)
                             .AllowAnyHeader()
                             .AllowAnyMethod();
-                    } else {
+                    }
+                    else
+                    {
                         Log.Warning("No origins found in Cors:Origins");
                     }
                 });
@@ -150,7 +152,9 @@ public static class StartupExtensions
     {
         // Configure Hotels module
         builder.Services.AddHotelsApplication();
-        builder.Services.AddHotelsInfrastructure(builder.Configuration);
+        builder.Services.AddHotelsInfrastructure(
+            builder.Configuration,
+            builder.Environment);
         builder.Services.AddHotelsApi();
 
         // Configure Identity module
@@ -230,7 +234,7 @@ public static class StartupExtensions
                     c.AddServer(new OpenApiServer { Url = server.Url, Description = server.Description });
                 }
             }
-            
+
             // Include XML documentation from all API projects
             var xmlFiles = new[]
             {
@@ -319,6 +323,12 @@ public static class StartupExtensions
         app.UseGlobalExceptionHandling();
         app.UseStatusCodePages();
         app.UseSerilogRequestLogging();
+
+        app.Use(async (context, next) =>
+        {
+            context.Request.EnableBuffering();
+            await next.Invoke();
+        });
 
         if (app.Environment.IsDevelopment())
         {

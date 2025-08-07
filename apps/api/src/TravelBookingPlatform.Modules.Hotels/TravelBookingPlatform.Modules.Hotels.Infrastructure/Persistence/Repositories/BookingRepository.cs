@@ -11,6 +11,19 @@ public class BookingRepository : BaseRepository<Booking>, IBookingRepository
     {
     }
 
+    public async Task<Booking?> GetByIdWithDetailsAsync(Guid bookingId)
+    {
+        return await _dbSet
+            .Where(b => b.Id == bookingId)
+            .Include(b => b.Room)
+                .ThenInclude(r => r.RoomType)
+            .Include(b => b.Room)
+                .ThenInclude(r => r.Hotel)
+                    .ThenInclude(h => h.City)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<IReadOnlyList<Booking>> GetByUserIdAsync(Guid userId)
     {
         return await _dbSet

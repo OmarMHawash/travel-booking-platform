@@ -14,17 +14,17 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
 
         builder.Property(b => b.CheckInDate)
             .IsRequired()
-            .HasColumnType("date"); // Store only date part
+            .HasColumnType("date");
 
         builder.Property(b => b.CheckOutDate)
             .IsRequired()
-            .HasColumnType("date"); // Store only date part
+            .HasColumnType("date");
 
         builder.Property(b => b.RoomId)
             .IsRequired();
 
         builder.Property(b => b.UserId)
-            .IsRequired(); // Loose coupling - no navigation property to User
+            .IsRequired();
 
         builder.Property(b => b.CreatedAt)
             .IsRequired();
@@ -57,9 +57,25 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.HasOne(b => b.Room)
             .WithMany(r => r.Bookings)
             .HasForeignKey(b => b.RoomId)
-            .OnDelete(DeleteBehavior.Cascade); // Delete booking when room is deleted
+            .OnDelete(DeleteBehavior.Cascade);
 
-        // Note: No foreign key constraint to User table (loose coupling)
-        // UserId is stored as Guid but not enforced by database
+        builder.Property(b => b.HasBeenReviewed)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(b => b.TotalPrice)
+        .IsRequired()
+        .HasPrecision(18, 2);
+
+        builder.Property(b => b.PdfGenerationFailed)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(b => b.PdfGenerationErrorMessage)
+            .HasMaxLength(1000)
+            .IsRequired(false);
+
+        builder.HasIndex(b => new { b.UserId, b.CheckOutDate, b.HasBeenReviewed })
+            .HasDatabaseName("IX_Booking_Reviewable");
     }
 }

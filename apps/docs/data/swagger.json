@@ -130,6 +130,375 @@
         }
       }
     },
+    "/api/v1/Bookings/my-bookings": {
+      "get": {
+        "tags": [
+          "Bookings"
+        ],
+        "summary": "Gets a list of all bookings for the authenticated user.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserBookingDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserBookingDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Bookings/{bookingId}/reviews": {
+      "post": {
+        "tags": [
+          "Bookings"
+        ],
+        "summary": "Creates a new review for a completed booking.",
+        "parameters": [
+          {
+            "name": "bookingId",
+            "in": "path",
+            "description": "The ID of the booking to review.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The review content, including star rating and description.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReviewRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Bookings/initiate": {
+      "post": {
+        "tags": [
+          "Bookings"
+        ],
+        "summary": "Initiates a new booking, creating it in a 'PendingPayment' state.",
+        "requestBody": {
+          "description": "The details of the booking to initiate.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitiateBookingRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/InitiateBookingResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InitiateBookingResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Bookings/{id}/confirmation": {
+      "get": {
+        "tags": [
+          "Bookings"
+        ],
+        "summary": "Gets the confirmation details for a completed booking.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the booking.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingDetailsDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingDetailsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Bookings/{id}/confirmation/download-pdf": {
+      "get": {
+        "tags": [
+          "Bookings"
+        ],
+        "summary": "Downloads the PDF confirmation for a booking.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the booking.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/Cities": {
       "post": {
         "tags": [
@@ -802,6 +1171,248 @@
         }
       }
     },
+    "/api/v1/Hotels/{hotelId}/availability": {
+      "get": {
+        "tags": [
+          "Hotels"
+        ],
+        "summary": "Gets available room types for a given hotel, date range, and guest count.",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "description": "The ID of the hotel.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "checkInDate",
+            "in": "query",
+            "description": "The check-in date.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "checkOutDate",
+            "in": "query",
+            "description": "The check-out date.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "numberOfAdults",
+            "in": "query",
+            "description": "The number of adults.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 2
+            }
+          },
+          {
+            "name": "numberOfChildren",
+            "in": "query",
+            "description": "The number of children.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AvailableRoomTypeDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AvailableRoomTypeDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Hotels/{hotelId}/gallery": {
+      "get": {
+        "tags": [
+          "Hotels"
+        ],
+        "summary": "Gets the image gallery for a specific hotel.",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "description": "The ID of the hotel.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HotelImageDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HotelImageDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Hotels/{hotelId}/reviews": {
+      "get": {
+        "tags": [
+          "Hotels"
+        ],
+        "summary": "Gets a paginated list of reviews for a specific hotel.",
+        "operationId": "GetHotelReviews",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "description": "The ID of the hotel.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "description": "The page number for pagination.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "The number of items per page.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedReviewsDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedReviewsDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/Search/suggestions": {
       "get": {
         "tags": [
@@ -1186,6 +1797,19 @@
           }
         }
       }
+    },
+    "/api/v1/Webhooks/stripe": {
+      "post": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Endpoint for receiving Stripe webhook events.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1198,6 +1822,118 @@
           },
           "user": {
             "$ref": "#/components/schemas/UserDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AvailableRoomTypeDto": {
+        "type": "object",
+        "properties": {
+          "roomTypeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "pricePerNight": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxAdults": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxChildren": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "numberOfAvailableRooms": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BookingDetailsDto": {
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "confirmationNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "bookingStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "guestName": {
+            "type": "string",
+            "nullable": true
+          },
+          "specialRequests": {
+            "type": "string",
+            "nullable": true
+          },
+          "hotelId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "hotelName": {
+            "type": "string",
+            "nullable": true
+          },
+          "cityName": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "roomTypeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "checkInDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "checkOutDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totalNights": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPrice": {
+            "type": "number",
+            "format": "double"
+          },
+          "bookedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userEmail": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1312,6 +2048,20 @@
             "format": "int32"
           },
           "imageURL": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateReviewRequestDto": {
+        "type": "object",
+        "properties": {
+          "starRating": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
             "type": "string",
             "nullable": true
           }
@@ -1461,8 +2211,11 @@
             "type": "number",
             "format": "double"
           },
-          "imageUrl": {
-            "type": "string",
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HotelImageDto"
+            },
             "nullable": true
           },
           "createdAt": {
@@ -1508,6 +2261,31 @@
         },
         "additionalProperties": false
       },
+      "HotelImageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "caption": {
+            "type": "string",
+            "nullable": true
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isCoverImage": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "HotelSearchResultDto": {
         "type": "object",
         "properties": {
@@ -1540,8 +2318,11 @@
             "format": "double",
             "nullable": true
           },
-          "imageUrl": {
-            "type": "string",
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HotelImageDto"
+            },
             "nullable": true
           },
           "availableRooms": {
@@ -1584,6 +2365,58 @@
         },
         "additionalProperties": false
       },
+      "InitiateBookingRequestDto": {
+        "type": "object",
+        "properties": {
+          "hotelId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "roomTypeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "checkInDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "checkOutDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "numberOfAdults": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "numberOfChildren": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "guestName": {
+            "type": "string",
+            "nullable": true
+          },
+          "specialRequests": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InitiateBookingResponseDto": {
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clientSecret": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "LoginCommand": {
         "type": "object",
         "properties": {
@@ -1594,6 +2427,36 @@
           "password": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PaginatedReviewsDto": {
+        "type": "object",
+        "properties": {
+          "reviews": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewDto"
+            },
+            "nullable": true
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
           }
         },
         "additionalProperties": false
@@ -1639,6 +2502,36 @@
           "password": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReviewDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "authorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "authorDisplayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "starRating": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -1917,6 +2810,64 @@
           "imageURL": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserBookingDto": {
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "confirmationNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "bookingStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "hotelId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "hotelName": {
+            "type": "string",
+            "nullable": true
+          },
+          "hotelImageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "cityName": {
+            "type": "string",
+            "nullable": true
+          },
+          "roomTypeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "checkInDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "checkOutDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totalNights": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPrice": {
+            "type": "number",
+            "format": "double"
+          },
+          "bookedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false

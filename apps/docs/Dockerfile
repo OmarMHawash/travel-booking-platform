@@ -1,40 +1,33 @@
-# Base image for installing dependencies
-# We use --ignore-scripts to prevent postinstall from running without the full source code
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json yarn.lock ./
-RUN yarn install --ignore-scripts
+RUN yarn install --frozen-lockfile --network-timeout 60000 --ignore-scripts
 
-# Builder image
 FROM node:22-alpine AS builder
 WORKDIR /app
-# Copy dependencies from the previous stage
+ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
-# Copy the rest of the application source code
 COPY . .
-# Now, run the build. This will also trigger the postinstall script if needed,
-# and the `generate-docs` script will run as part of the build.
 RUN yarn build
 
-# Production image
 FROM node:22-alpine AS runner
 WORKDIR /app
-
 ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
 
-# Create a non-root user for security
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Non-root user
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 
-# Copy only the necessary build artifacts from the builder stage
-COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+# Copy only runtime assets
+# COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Switch to the non-root user
 USER nextjs
-
 EXPOSE 3000
 
-# The command to start the application
-CMD ["yarn", "start"]
+# Healthcheck: basic root path
+# HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- http://localhost:3000 || exit 1
+
+CMD ["node", "server.js"]

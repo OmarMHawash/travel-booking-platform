@@ -24,9 +24,6 @@ public class HotelConfiguration : IEntityTypeConfiguration<Hotel>
             .IsRequired()
             .HasColumnType("decimal(3,2)"); // e.g., 4.75
 
-        builder.Property(h => h.ImageURL)
-            .HasMaxLength(500);
-
         builder.Property(h => h.CityId)
             .IsRequired();
 
@@ -61,5 +58,10 @@ public class HotelConfiguration : IEntityTypeConfiguration<Hotel>
             .WithOne(r => r.Hotel)
             .HasForeignKey(r => r.HotelId)
             .OnDelete(DeleteBehavior.Cascade); // Delete all rooms when hotel is deleted
+
+        builder.HasMany(h => h.Reviews)
+            .WithOne(r => r.Hotel)
+            .HasForeignKey(r => r.HotelId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

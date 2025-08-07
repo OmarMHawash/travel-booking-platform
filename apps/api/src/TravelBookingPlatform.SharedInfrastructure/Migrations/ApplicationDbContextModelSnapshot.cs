@@ -34,11 +34,45 @@ namespace OmarHawash.TravelBookingPlatform.Migrations
                     b.Property<DateTime>("CheckOutDate")
                         .HasColumnType("date");
 
+                    b.Property<string>("ConfirmationPdfUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("GuestName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("HasBeenReviewed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid?>("PaymentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PdfGenerationErrorMessage")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("PdfGenerationFailed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<Guid>("RoomId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SpecialRequests")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -65,6 +99,9 @@ namespace OmarHawash.TravelBookingPlatform.Migrations
 
                     b.HasIndex("RoomId", "CheckInDate", "CheckOutDate")
                         .HasDatabaseName("IX_Booking_Room_Dates");
+
+                    b.HasIndex("UserId", "CheckOutDate", "HasBeenReviewed")
+                        .HasDatabaseName("IX_Booking_Reviewable");
 
                     b.ToTable("Booking", (string)null);
                 });
@@ -217,10 +254,6 @@ namespace OmarHawash.TravelBookingPlatform.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<string>("ImageURL")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -245,6 +278,130 @@ namespace OmarHawash.TravelBookingPlatform.Migrations
                         .HasDatabaseName("IX_Hotel_Rating");
 
                     b.ToTable("Hotel", (string)null);
+                });
+
+            modelBuilder.Entity("TravelBookingPlatform.Modules.Hotels.Domain.Entities.HotelImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Caption")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsCoverImage")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HotelId", "SortOrder");
+
+                    b.ToTable("HotelImage", (string)null);
+                });
+
+            modelBuilder.Entity("TravelBookingPlatform.Modules.Hotels.Domain.Entities.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StripePaymentIntentId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique();
+
+                    b.HasIndex("StripePaymentIntentId")
+                        .IsUnique();
+
+                    b.ToTable("Payment", (string)null);
+                });
+
+            modelBuilder.Entity("TravelBookingPlatform.Modules.Hotels.Domain.Entities.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("StarRating")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Review_BookingId_Unique");
+
+                    b.HasIndex("HotelId")
+                        .HasDatabaseName("IX_Review_HotelId");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_Review_UserId");
+
+                    b.ToTable("Review", (string)null);
                 });
 
             modelBuilder.Entity("TravelBookingPlatform.Modules.Hotels.Domain.Entities.Room", b =>
@@ -296,6 +453,15 @@ namespace OmarHawash.TravelBookingPlatform.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("MaxAdults")
                         .HasColumnType("int");
@@ -456,6 +622,47 @@ namespace OmarHawash.TravelBookingPlatform.Migrations
                     b.Navigation("City");
                 });
 
+            modelBuilder.Entity("TravelBookingPlatform.Modules.Hotels.Domain.Entities.HotelImage", b =>
+                {
+                    b.HasOne("TravelBookingPlatform.Modules.Hotels.Domain.Entities.Hotel", "Hotel")
+                        .WithMany("Images")
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+                });
+
+            modelBuilder.Entity("TravelBookingPlatform.Modules.Hotels.Domain.Entities.Payment", b =>
+                {
+                    b.HasOne("TravelBookingPlatform.Modules.Hotels.Domain.Entities.Booking", "Booking")
+                        .WithOne()
+                        .HasForeignKey("TravelBookingPlatform.Modules.Hotels.Domain.Entities.Payment", "BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("TravelBookingPlatform.Modules.Hotels.Domain.Entities.Review", b =>
+                {
+                    b.HasOne("TravelBookingPlatform.Modules.Hotels.Domain.Entities.Booking", "Booking")
+                        .WithOne()
+                        .HasForeignKey("TravelBookingPlatform.Modules.Hotels.Domain.Entities.Review", "BookingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TravelBookingPlatform.Modules.Hotels.Domain.Entities.Hotel", "Hotel")
+                        .WithMany("Reviews")
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("Hotel");
+                });
+
             modelBuilder.Entity("TravelBookingPlatform.Modules.Hotels.Domain.Entities.Room", b =>
                 {
                     b.HasOne("TravelBookingPlatform.Modules.Hotels.Domain.Entities.Hotel", "Hotel")
@@ -521,6 +728,10 @@ namespace OmarHawash.TravelBookingPlatform.Migrations
 
             modelBuilder.Entity("TravelBookingPlatform.Modules.Hotels.Domain.Entities.Hotel", b =>
                 {
+                    b.Navigation("Images");
+
+                    b.Navigation("Reviews");
+
                     b.Navigation("Rooms");
                 });
 

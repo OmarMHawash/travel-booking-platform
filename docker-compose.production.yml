@@ -1,11 +1,13 @@
+version: "3.9"
+
 services:
-  travel-booking-api:
+  travel-bp-api:
     container_name: travel-bp-api
     build:
       context: ./apps/api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080;http://+:8081
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
       - "ConnectionStrings__DefaultConnection=Server=sql-server-db;Database=TravelBookingPlatform;User Id=sa;Password=Aa@1231Bb!;TrustServerCertificate=True;"
       - "ConnectionStrings__SerilogConnection=Server=sql-server-db;Database=master;User Id=sa;Password=Aa@1231Bb!;TrustServerCertificate=True;"
     depends_on:
@@ -13,9 +15,9 @@ services:
         condition: service_healthy
     networks:
       - travel-network
+    restart: unless-stopped
 
-  # Next.js Documentation Service (Production)
-  travel-booking-docs:
+  travel-bp-docs:
     container_name: travel-bp-docs
     build:
       context: ./apps/docs
@@ -23,10 +25,9 @@ services:
       - NODE_ENV=production
     networks:
       - travel-network
-    restart: unless-stopped # Add restart policy
+    restart: unless-stopped
 
-  # Next.js Client Application Service (NEW - Production)
-  travel-booking-client:
+  travel-bp-client:
     container_name: travel-bp-client
     build:
       context: ./apps/client
@@ -36,20 +37,18 @@ services:
       - travel-network
     restart: unless-stopped
 
-  # MS SQL Server Database Service
   sql-server-db:
     container_name: sql-server-db
     build:
       context: ./apps/api/docker/sql-server
     environment:
       - ACCEPT_EULA=Y
-      - "MSSQL_SA_PASSWORD=Aa@1231Bb!"
-    ports:
-      - "1433:1433"
+      - MSSQL_SA_PASSWORD=Aa@1231Bb!
     volumes:
       - sql-server-data:/var/opt/mssql
     networks:
       - travel-network
+    restart: unless-stopped
     healthcheck:
       test:
         [
@@ -67,15 +66,13 @@ services:
         ]
       interval: 10s
       timeout: 5s
-      retries: 3
-      start_period: 20s
+      retries: 5
+      start_period: 30s
 
-# Define a network for the services to communicate
 networks:
   travel-network:
     driver: bridge
 
-# Define a volume to persist database data across container restarts
 volumes:
   sql-server-data:
     driver: local

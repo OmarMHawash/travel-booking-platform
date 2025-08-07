@@ -1,0 +1,17 @@
+bin
+obj
+**/bin
+**/obj
+**/TestResults
+**/*.user
+**/*.suo
+**/*.csproj.user
+.vscode
+.idea
+.git
+.gitignore
+Dockerfile*
+docker-compose*.yml
+artifacts
+node_modules
+dist

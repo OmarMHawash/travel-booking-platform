@@ -1,38 +1,31 @@
-# 1. Builder Stage: Install dependencies and build the project
+# Next.js standalone build (same pattern as docs)
+FROM node:22-alpine AS deps
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --network-timeout 60000
+
 FROM node:22-alpine AS builder
 WORKDIR /app
-
-# Install dependencies
-COPY package.json package-lock.json* ./
-RUN npm install
-
-# Copy the rest of the source code
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN yarn build
 
-# Run the build command
-# The output: 'standalone' option in next.config.js will be used here
-RUN npm run build
-
-# 2. Runner Stage: Create the final, lean production image
 FROM node:22-alpine AS runner
 WORKDIR /app
-
 ENV NODE_ENV=production
-# Disable telemetry in the final image
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3001
 
-# Create a non-root user for better security
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 
-# Copy the standalone output from the builder stage
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
+EXPOSE 3001
 
-EXPOSE 3000
+# HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- http://localhost:3001 || exit 1
 
-# The command to start the production server
 CMD ["node", "server.js"]

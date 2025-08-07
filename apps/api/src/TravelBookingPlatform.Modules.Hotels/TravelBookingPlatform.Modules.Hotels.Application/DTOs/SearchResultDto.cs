@@ -19,7 +19,7 @@ public class HotelSearchResultDto
     public string City { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
     public decimal? PricePerNight { get; set; }
-    public string? ImageUrl { get; set; }
+    public List<HotelImageDto> Images { get; set; } = new();
     public int AvailableRooms { get; set; }
     public bool IsAvailable { get; set; }
 }
